@@ -1587,7 +1587,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupWalletPage();
     setupEarningsPage();
     // REMOVE: setupAddListingPage
-    showNotification('Welcome back, Theophilus!', 'success');
+    // Removed hardcoded notification. Only dynamic notification will be shown.
 });
 
 // Utility Functions
@@ -1723,7 +1723,189 @@ function setupProfileStatusPage() {
 // Initialize Profile Status Page when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     setupProfileStatusPage();
+    updateProfileCompletion();
+    setupLiveProfileForm();
+    setupLiveVerificationForm();
+    setupLivePaymentForm();
+    setupLivePasswordForm();
 });
+
+function setupLiveVerificationForm() {
+    const idUploadBtn = document.querySelector('.verify-btn');
+    if (!idUploadBtn) return;
+    idUploadBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        let user = JSON.parse(localStorage.getItem('user')) || {};
+        // Send verification to backend
+        try {
+            const res = await fetch('http://localhost:5000/api/user/verify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: JSON.stringify({ userId: user._id })
+            });
+            const result = await res.json();
+            if (res.ok) {
+                user = { ...user, ...result, verified: true };
+                localStorage.setItem('user', JSON.stringify(user));
+                showNotification('Verification submitted and saved!', 'success');
+                updateProfileCompletion();
+            } else {
+                showNotification(result.message || 'Verification failed.', 'error');
+            }
+        } catch (err) {
+            showNotification('Server error. Please try again.', 'error');
+        }
+    });
+}
+
+function setupLivePaymentForm() {
+    const paymentForm = document.querySelector('.payout-method-form');
+    if (!paymentForm) return;
+    paymentForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        let user = JSON.parse(localStorage.getItem('user')) || {};
+        // Collect payment method data (example)
+        const paymentData = {};
+        paymentForm.querySelectorAll('input, select').forEach(input => {
+            paymentData[input.name] = input.value;
+        });
+        // Send payment method to backend
+        try {
+            const res = await fetch('http://localhost:5000/api/user/payment-method', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: JSON.stringify(paymentData)
+            });
+            const result = await res.json();
+            if (res.ok) {
+                user = { ...user, ...result, paymentMethodAdded: true };
+                localStorage.setItem('user', JSON.stringify(user));
+                showNotification('Payment method saved!', 'success');
+                updateProfileCompletion();
+            } else {
+                showNotification(result.message || 'Payment method failed.', 'error');
+            }
+        } catch (err) {
+            showNotification('Server error. Please try again.', 'error');
+        }
+    });
+}
+
+function setupLivePasswordForm() {
+    const passwordForm = document.querySelector('.password-form');
+    if (!passwordForm) return;
+    passwordForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const newPassword = passwordForm.querySelector('#new-password').value;
+        const confirmPassword = passwordForm.querySelector('#confirm-password').value;
+        if (newPassword !== confirmPassword) {
+            showNotification('Passwords do not match.', 'error');
+            return;
+        }
+        let user = JSON.parse(localStorage.getItem('user')) || {};
+        // Send password change to backend
+        try {
+            const res = await fetch('http://localhost:5000/api/user/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: JSON.stringify({ userId: user._id, newPassword })
+            });
+            const result = await res.json();
+            if (res.ok) {
+                user = { ...user, ...result, passwordChanged: true };
+                localStorage.setItem('user', JSON.stringify(user));
+                showNotification('Password changed successfully!', 'success');
+                passwordForm.reset();
+            } else {
+                showNotification(result.message || 'Password change failed.', 'error');
+            }
+        } catch (err) {
+            showNotification('Server error. Please try again.', 'error');
+        }
+    });
+}
+
+function setupLiveProfileForm() {
+    const infoForm = document.querySelector('.info-form');
+    if (!infoForm) return;
+
+    // Fetch user data (replace with API call in production)
+    let user = JSON.parse(localStorage.getItem('user')) || {};
+
+    // Populate fields
+    infoForm.querySelector('input[placeholder="Enter your name"]').value = user.firstName || '';
+    infoForm.querySelector('input[placeholder="Enter your last name"]').value = user.lastName || '';
+    infoForm.querySelector('input[placeholder="Native Language"]').value = user.nativeLanguage || '';
+    infoForm.querySelector('input[placeholder="Other Language"]').value = user.otherLanguage || '';
+    infoForm.querySelector('input[placeholder="Display name publicly as"]').value = user.displayName || '';
+    // Username is readonly
+    infoForm.querySelector('input[readonly]').value = user.username || '';
+
+    // Save handler
+    infoForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        // Collect updated data
+        user.firstName = infoForm.querySelector('input[placeholder="Enter your name"]').value;
+        user.lastName = infoForm.querySelector('input[placeholder="Enter your last name"]').value;
+        user.nativeLanguage = infoForm.querySelector('input[placeholder="Native Language"]').value;
+        user.otherLanguage = infoForm.querySelector('input[placeholder="Other Language"]').value;
+        user.displayName = infoForm.querySelector('input[placeholder="Display name publicly as"]').value;
+
+        // Send to backend API
+        try {
+            const res = await fetch('http://localhost:5000/api/user/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: JSON.stringify(user)
+            });
+            const result = await res.json();
+            if (res.ok) {
+                user = { ...user, ...result, profileInfoCompleted: true };
+                localStorage.setItem('user', JSON.stringify(user));
+                showNotification('Profile updated successfully!', 'success');
+                updateProfileCompletion();
+            } else {
+                showNotification(result.message || 'Profile update failed.', 'error');
+            }
+        } catch (err) {
+            showNotification('Server error. Please try again.', 'error');
+        }
+    });
+}
+
+function updateProfileCompletion() {
+    // Example: Fetch user data from localStorage (replace with API call for production)
+    const user = JSON.parse(localStorage.getItem('user')) || {};
+    let percent = 20; // Default after sign-in
+
+    // Check profile info completion
+    if (user.profileInfoCompleted) percent += 30;
+    // Check verification
+    if (user.verified) percent += 30;
+    // Check payment method
+    if (user.paymentMethodAdded) percent += 20;
+
+    // Clamp percent to 100
+    percent = Math.min(percent, 100);
+
+    // Update text and bar
+    const completionText = document.getElementById('profile-completion-text');
+    const completionBar = document.getElementById('profile-completion-bar');
+    if (completionText) completionText.textContent = `Profile Completed ${percent}%`;
+    if (completionBar) completionBar.style.width = `${percent}%`;
+}
 
 // Export functions for potential module usage
 window.CribzConnect = {
