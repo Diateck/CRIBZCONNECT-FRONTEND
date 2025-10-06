@@ -80,14 +80,15 @@ function showPage(pageId) {
     const targetPage = document.getElementById(pageId + '-page');
     if (targetPage) {
         targetPage.classList.add('active');
+        targetPage.style.display = '';
     }
 
-    // Special handling for hotel page
-    if (pageId === 'add-hotel') {
-        document.getElementById('add-hotel-page').style.display = 'block';
-    } else if (document.getElementById('add-hotel-page')) {
-        document.getElementById('add-hotel-page').style.display = 'none';
-    }
+    // Hide all other .page elements (for legacy inline style)
+    pages.forEach(page => {
+        if (page !== targetPage) {
+            page.style.display = 'none';
+        }
+    });
 
     // Update active nav link
     navLinks.forEach(link => {
