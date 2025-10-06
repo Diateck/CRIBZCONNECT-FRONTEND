@@ -1,4 +1,4 @@
-    // Fetch and update dashboard stats for logged-in user
+// Fetch and update dashboard stats for logged-in user
     async function updateDashboardStats() {
         const API_BASE_URL = 'https://cribzconnect-backend.onrender.com'; // <-- use your actual backend URL
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -82,6 +82,13 @@ function showPage(pageId) {
         targetPage.classList.add('active');
     }
 
+    // Special handling for hotel page
+    if (pageId === 'add-hotel') {
+        document.getElementById('add-hotel-page').style.display = 'block';
+    } else if (document.getElementById('add-hotel-page')) {
+        document.getElementById('add-hotel-page').style.display = 'none';
+    }
+
     // Update active nav link
     navLinks.forEach(link => {
         link.classList.remove('active');
@@ -112,6 +119,19 @@ navLinks.forEach(link => {
             e.preventDefault();
             handleLogout();
         }
+    });
+});
+// Add Hotel navigation
+const addHotelNav = document.createElement('li');
+addHotelNav.innerHTML = `<a href="#add-hotel" class="nav-link" data-page="add-hotel"><i class="fas fa-hotel"></i><span>Add Hotel</span></a>`;
+const sidebarNav = document.querySelector('.sidebar-nav ul');
+if (sidebarNav) {
+    sidebarNav.insertBefore(addHotelNav, sidebarNav.querySelector('li[data-page="bookings"]'));
+}
+document.querySelectorAll('.nav-link[data-page="add-hotel"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        showPage('add-hotel');
     });
 });
 
@@ -1588,7 +1608,36 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEarningsPage();
     // REMOVE: setupAddListingPage
     // Removed hardcoded notification. Only dynamic notification will be shown.
+    setupAddHotelForm();
 });
+// Add Hotel Form Handler
+function setupAddHotelForm() {
+    const hotelForm = document.querySelector('.add-hotel-form');
+    if (!hotelForm) return;
+    hotelForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(hotelForm);
+        let user = JSON.parse(localStorage.getItem('user')) || {};
+        try {
+            const res = await fetch('https://cribzconnect-backend.onrender.com/api/hotels', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: formData
+            });
+            const result = await res.json();
+            if (res.ok) {
+                showNotification('Hotel listing added successfully!', 'success');
+                hotelForm.reset();
+            } else {
+                showNotification(result.message || 'Failed to add hotel.', 'error');
+            }
+        } catch (err) {
+            showNotification('Server error. Please try again.', 'error');
+        }
+    });
+}
 
 // Utility Functions
 function formatCurrency(amount, currency = 'XAF') {
