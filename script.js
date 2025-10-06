@@ -282,11 +282,20 @@ function showNotification(message, type = 'info') {
     const existingNotifications = document.querySelectorAll('.notification');
     existingNotifications.forEach(notification => notification.remove());
 
+    // Get user name from localStorage
+    let name = '';
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        name = user && (user.fullName || user.username) ? user.fullName || user.username : '';
+    } catch (e) {
+        name = '';
+    }
+
     // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
-        <span>${message}</span>
+        <span>${name ? `Hello, ${name}! ` : ''}${message}</span>
         <button class="notification-close">&times;</button>
     `;
 

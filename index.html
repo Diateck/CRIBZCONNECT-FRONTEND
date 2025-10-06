@@ -227,7 +227,7 @@
         <!-- Dashboard Page -->
         <div class="page active" id="dashboard-page">
             <div class="page-header">
-                <h1>Welcome back, Theophilus</h1>
+                <h1 id="dashboard-greeting">Welcome!</h1>
             </div>
 
             <div class="stats-grid">
@@ -238,7 +238,7 @@
                     <div class="stat-content">
                         <h3>0</h3>
                         <p>Active Listings</p>
-                        <a href="#add-listing" class="stat-link">+ Add new</a>
+                        <a href="#" class="stat-link" id="add-new-link">+ Add new</a>
                     </div>
                 </div>
 
@@ -249,7 +249,7 @@
                     <div class="stat-content">
                         <h3>0</h3>
                         <p>Reservation Counts</p>
-                        <a href="#bookings" class="stat-link">Manage</a>
+                        <a href="#" class="stat-link" id="manage-link">Manage</a>
                     </div>
                 </div>
 
@@ -260,12 +260,56 @@
                     <div class="stat-content">
                         <h3>0 XAF</h3>
                         <p>Earnings Balance</p>
-                        <a href="#earnings" class="stat-link">Earnings</a>
+                        <a href="#" class="stat-link" id="earnings-link">Earnings</a>
                     </div>
                 </div>
             </div>
 
             <div class="dashboard-sections">
+        <script>
+        // Personalized dashboard greeting
+        document.addEventListener('DOMContentLoaded', function() {
+            const greetingEl = document.getElementById('dashboard-greeting');
+            let user = localStorage.getItem('user');
+            if (user) {
+                user = JSON.parse(user);
+                let welcomeText = '';
+                if (localStorage.getItem('hasLoggedInBefore')) {
+                    welcomeText = `Welcome back, ${user.fullName || user.username}!`;
+                } else {
+                    welcomeText = `Welcome, ${user.fullName || user.username}!`;
+                    localStorage.setItem('hasLoggedInBefore', 'true');
+                }
+                greetingEl.textContent = welcomeText;
+            }
+
+            // Dashboard stat links navigation
+            const addNewLink = document.getElementById('add-new-link');
+            if (addNewLink) {
+                addNewLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.hash = 'add-listing';
+                    if (typeof showPage === 'function') showPage('add-listing');
+                });
+            }
+            const manageLink = document.getElementById('manage-link');
+            if (manageLink) {
+                manageLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.hash = 'bookings';
+                    if (typeof showPage === 'function') showPage('bookings');
+                });
+            }
+            const earningsLink = document.getElementById('earnings-link');
+            if (earningsLink) {
+                earningsLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.hash = 'earnings';
+                    if (typeof showPage === 'function') showPage('earnings');
+                });
+            }
+        });
+        </script>
                 <div class="section">
                     <div class="section-header">
                         <h2>Upcoming Reservations</h2>
