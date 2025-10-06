@@ -697,46 +697,36 @@ function setupEarningsPage() {
     }
 }
 
-// Setup Listings Page
-function setupListingsPage() {
-    const searchBtn = document.querySelector('.search-btn');
-    const searchInput = document.querySelector('.search-input');
-    const filterButtons = document.querySelectorAll('.btn-filter');
+// REMOVE: setupAddListingPage and listings rendering/fetching logic
 
-    // Search functionality
-    if (searchBtn && searchInput) {
-        searchBtn.addEventListener('click', () => {
-            const searchTerm = searchInput.value.trim();
-            if (searchTerm) {
-                showNotification(`Searching for: "${searchTerm}"`, 'info');
-                // Here you would implement actual search functionality
-            } else {
-                showNotification('Please enter a search term', 'error');
-            }
-        });
-
-        // Allow search on Enter key
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                searchBtn.click();
-            }
-        });
+// Helper to render listings from backend
+function renderListings(listings) {
+    const listingsContent = document.querySelector('.listings-content');
+    if (!listingsContent) return;
+    listingsContent.innerHTML = '';
+    if (!listings || listings.length === 0) {
+        listingsContent.innerHTML = `<div class="empty-state">
+            <i class="fas fa-home empty-icon"></i>
+            <p>You don't have any listing at this moment.</p>
+            <small class="info-update">Update info</small>
+        </div>`;
+        return;
     }
-
-    // Filter functionality
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            // Remove active class from all buttons
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            
-            // Add active class to clicked button
-            button.classList.add('active');
-            
-            const filter = button.getAttribute('data-filter');
-            showNotification(`Filtering by: ${filter.charAt(0).toUpperCase() + filter.slice(1)}`, 'info');
-            
-            // Here you would implement actual filtering functionality
-        });
+    listings.forEach(listing => {
+        listingsContent.innerHTML += `
+        <div class="listing-card">
+            <div class="listing-images">
+                ${(listing.images && listing.images.length) ? listing.images.map(url => `<img src="${url}" alt="Property image" class="listing-image">`).join('') : '<div class="no-image">No image</div>'}
+            </div>
+            <div class="listing-details">
+                <h3>${listing.title}</h3>
+                <p>${listing.description}</p>
+                <p><strong>Type:</strong> ${listing.propertyType}</p>
+                <p><strong>Price:</strong> ${listing.price}</p>
+                <p><strong>Address:</strong> ${listing.address}</p>
+            </div>
+        </div>
+        `;
     });
 }
 
@@ -1529,180 +1519,6 @@ function setupSettingsPage() {
     }
 }
 
-// Setup Add Listing Page
-function setupAddListingPage() {
-    const addListingForm = document.querySelector('.add-listing-form');
-    const editorContent = document.querySelector('.editor-content');
-    const hiddenTextarea = document.getElementById('property-description');
-    const editorButtons = document.querySelectorAll('.editor-btn');
-    const saveBtn = document.querySelector('.btn-save');
-    const draftBtn = document.querySelector('.btn-draft');
-
-    // Rich text editor functionality
-    if (editorContent && editorButtons.length > 0) {
-        // Setup editor buttons
-        editorButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-                const command = button.getAttribute('data-command');
-                
-                if (command === 'bold' || command === 'italic') {
-                    document.execCommand(command, false, null);
-                    button.classList.toggle('active');
-                } else if (command === 'insertParagraph') {
-                    document.execCommand('insertHTML', false, '<p><br></p>');
-                }
-                
-                editorContent.focus();
-                updateHiddenTextarea();
-            });
-        });
-
-        // Update hidden textarea when editor content changes
-        editorContent.addEventListener('input', updateHiddenTextarea);
-        editorContent.addEventListener('paste', () => {
-            setTimeout(updateHiddenTextarea, 10);
-        });
-
-        // Update button states based on selection
-        editorContent.addEventListener('selectionchange', updateButtonStates);
-        document.addEventListener('selectionchange', updateButtonStates);
-
-        function updateHiddenTextarea() {
-            if (hiddenTextarea) {
-                hiddenTextarea.value = editorContent.innerHTML;
-            }
-        }
-
-        function updateButtonStates() {
-            if (document.activeElement === editorContent) {
-                editorButtons.forEach(button => {
-                    const command = button.getAttribute('data-command');
-                    if (command === 'bold' || command === 'italic') {
-                        const isActive = document.queryCommandState(command);
-                        button.classList.toggle('active', isActive);
-                    }
-                });
-            }
-        }
-    }
-
-    // Form submission
-    if (addListingForm) {
-        addListingForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Update hidden textarea before validation
-            if (editorContent && hiddenTextarea) {
-                hiddenTextarea.value = editorContent.innerHTML;
-            }
-
-            // Get form data
-            const formData = new FormData(addListingForm);
-            const data = Object.fromEntries(formData);
-            
-            // Add description from editor
-            if (editorContent) {
-                data['property-description'] = editorContent.innerHTML;
-            }
-
-            // Validate required fields
-           const requiredFields = ['propertyType','title', 'listingType', 'bedrooms', 'guests', 'beds', 'bathrooms', 'rooms', 'size', 'unitMeasure', 'price',  'address',  'description' ];
-           const missingFields = requiredFields.filter(field => !data[field] || data[field].trim() === '');
-
-            if (missingFields.length > 0) {
-                showNotification('Please fill in all mandatory fields', 'error');
-                return;
-            }
-
-            // Validate description
-            if (!editorContent || editorContent.textContent.trim() === '') {
-                showNotification('Please enter a property description', 'error');
-                return;
-            }
-
-            // Simulate saving
-            const submitBtn = e.target.querySelector('.btn-save');
-            const originalText = submitBtn.innerHTML;
-            
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            
-            setTimeout(() => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-                
-                // Save listing data (in real app, this would be sent to backend)
-                const listingData = {
-                    id: Date.now(),
-                    ...data,
-                    status: 'published',
-                    createdDate: new Date().toISOString()
-                };
-                
-                // Store listing (in real app, this would be handled by backend)
-                const existingListings = JSON.parse(localStorage.getItem('userListings') || '[]');
-                existingListings.unshift(listingData);
-                localStorage.setItem('userListings', JSON.stringify(existingListings));
-                
-                showNotification('Listing published successfully!', 'success');
-                
-                // Optionally navigate to listings page
-                setTimeout(() => {
-                    showPage('listings');
-                }, 1500);
-            }, 2000);
-        });
-    }
-
-    // Save as draft functionality
-    if (draftBtn && addListingForm) {
-        draftBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // Update hidden textarea
-            if (editorContent && hiddenTextarea) {
-                hiddenTextarea.value = editorContent.innerHTML;
-            }
-
-            // Get form data
-            const formData = new FormData(addListingForm);
-            const data = Object.fromEntries(formData);
-            
-            // Add description from editor
-            if (editorContent) {
-                data['property-description'] = editorContent.innerHTML;
-            }
-
-            // Simulate saving as draft
-            const originalText = draftBtn.innerHTML;
-            
-            draftBtn.disabled = true;
-            draftBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            
-            setTimeout(() => {
-                draftBtn.disabled = false;
-                draftBtn.innerHTML = originalText;
-                
-                // Save as draft
-                const draftData = {
-                    id: Date.now(),
-                    ...data,
-                    status: 'draft',
-                    createdDate: new Date().toISOString()
-                };
-                
-                // Store draft
-                const existingDrafts = JSON.parse(localStorage.getItem('listingDrafts') || '[]');
-                existingDrafts.unshift(draftData);
-                localStorage.setItem('listingDrafts', JSON.stringify(existingDrafts));
-                
-                showNotification('Listing saved as draft!', 'success');
-            }, 1000);
-        });
-    }
-}
-
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initializePage();
@@ -1714,11 +1530,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupPayoutForm();
     setupWalletPage();
     setupEarningsPage();
-    setupListingsPage();
-    setupInvoicesPage();
-    setupMessagesPage();
-    setupSettingsPage();
-    setupAddListingPage();
+    // REMOVE: setupAddListingPage
     showNotification('Welcome back, Theophilus!', 'success');
 });
 
