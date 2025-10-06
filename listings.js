@@ -4,7 +4,10 @@
 function renderListings(listings) {
     const listingsContent = document.querySelector('.listings-content');
     if (!listingsContent) return;
-    listingsContent.innerHTML = '';
+    // Always clear container and remove any old markup
+    while (listingsContent.firstChild) {
+        listingsContent.removeChild(listingsContent.firstChild);
+    }
     if (!listings || listings.length === 0) {
         listingsContent.innerHTML = `<div class="empty-state">
             <i class="fas fa-home empty-icon"></i>
