@@ -1044,6 +1044,24 @@
                                     <span class="last-seen">2 hours ago</span>
                                 </div>
                             </div>
+                                <script>
+                                // Personalized dashboard greeting
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const greetingEl = document.getElementById('dashboard-greeting');
+                                    let user = localStorage.getItem('user');
+                                    if (user) {
+                                        user = JSON.parse(user);
+                                        let welcomeText = '';
+                                        if (localStorage.getItem('hasLoggedInBefore')) {
+                                            welcomeText = `Welcome back, ${user.fullName || user.username}!`;
+                                        } else {
+                                            welcomeText = `Welcome, ${user.fullName || user.username}!`;
+                                            localStorage.setItem('hasLoggedInBefore', 'true');
+                                        }
+                                        greetingEl.textContent = welcomeText;
+                                    }
+                                });
+                                </script>
 
                             <div class="user-item" data-user-id="3" data-category="host">
                                 <div class="user-avatar">

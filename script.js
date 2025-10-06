@@ -207,22 +207,73 @@ if (desktopNotificationBtn) {
 
 // Form Handling
 function setupForms() {
-    const forms = document.querySelectorAll('form');
-    forms.forEach(form => {
-        form.addEventListener('submit', (e) => {
+    // Login Form
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            // Get form data
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData);
-
-            // Simulate API call
-            console.log('Form submitted:', data);
-
-            // Show success message
-            showNotification('Information saved successfully!', 'success');
+            const emailOrUsername = loginForm.querySelector('input[type="text"]').value;
+            const password = loginForm.querySelector('input[type="password"]').value;
+            try {
+                const res = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ emailOrUsername, password })
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('user', JSON.stringify({
+                        token: result.token,
+                        fullName: result.fullName,
+                        username: result.username
+                    }));
+                    showNotification(`Welcome back, ${result.fullName || result.username}!`, 'success');
+                    setTimeout(() => {
+                        window.location.href = 'admin-dashboard.html';
+                    }, 1500);
+                } else {
+                    showNotification(result.message || 'Login failed.', 'error');
+                }
+            } catch (err) {
+                showNotification('Server error. Please try again.', 'error');
+            }
         });
-    });
+    }
+
+    // Registration Form
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fullName = registerForm.querySelector('input[placeholder="Enter your full name"]').value;
+            const email = registerForm.querySelector('input[placeholder="Enter your email address"]').value;
+            const username = registerForm.querySelector('input[placeholder="Choose a username"]').value;
+            const password = registerForm.querySelector('input[placeholder="Create a strong password"]').value;
+            const confirmPassword = registerForm.querySelector('input[placeholder="Confirm your password"]').value;
+            if (password !== confirmPassword) {
+                showNotification('Passwords do not match.', 'error');
+                return;
+            }
+            try {
+                const res = await fetch('http://localhost:5000/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, username, email, password })
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    showNotification('Registration successful! Please login.', 'success');
+                    setTimeout(() => {
+                        document.querySelector('.tab-button[data-tab="login"]').click();
+                    }, 1500);
+                } else {
+                    showNotification(result.message || 'Registration failed.', 'error');
+                }
+            } catch (err) {
+                showNotification('Server error. Please try again.', 'error');
+            }
+        });
+    }
 }
 
 // Notification System
