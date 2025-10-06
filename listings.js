@@ -97,10 +97,16 @@ document.addEventListener('click', async function(e) {
         const isHotel = card && card.querySelector('.listing-card-badge')?.textContent === 'Hotel';
         if (confirm('Are you sure you want to delete this item?')) {
             try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
                 const url = isHotel
                     ? `https://cribzconnect-backend.onrender.com/api/hotels/${listingId}`
                     : `https://cribzconnect-backend.onrender.com/api/listings/${listingId}`;
-                const res = await fetch(url, { method: 'DELETE' });
+                const res = await fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': user.token ? `Bearer ${user.token}` : ''
+                    }
+                });
                 if (!res.ok) throw new Error('Failed to delete item');
                 showNotification((isHotel ? 'Hotel' : 'Listing') + ' deleted!', 'success');
                 await loadListingsFromBackend();
@@ -133,30 +139,45 @@ document.addEventListener('click', async function(e) {
 
 // Show Edit Listing Modal (to be implemented)
 function showEditListingModal(listing, isHotel = false) {
-    // Show modal
-    const modal = document.getElementById('editListingModal');
-    modal.style.display = 'flex';
-    // Pre-fill form fields
-    document.getElementById('editListingId').value = listing._id || '';
-    document.getElementById('editTitle').value = isHotel ? (listing.name || '') : (listing.title || '');
-    document.getElementById('editDescription').value = listing.description || '';
-    document.getElementById('editPropertyType').value = listing.propertyType || '';
-    document.getElementById('editListingType').value = isHotel ? 'Hotel' : (listing.listingType || 'Sale');
-    document.getElementById('editBedrooms').value = isHotel ? (listing.rooms || '') : (listing.bedrooms || '');
-    document.getElementById('editBathrooms').value = listing.bathrooms || '';
-    document.getElementById('editBeds').value = listing.beds || '';
-    document.getElementById('editRooms').value = listing.rooms || '';
-    document.getElementById('editGuests').value = listing.guests || '';
-    document.getElementById('editSize').value = listing.size || '';
-    document.getElementById('editUnitMeasure').value = listing.unitMeasure || '';
-    document.getElementById('editPrice').value = listing.price || '';
-    document.getElementById('editAddress').value = listing.address || '';
-    // Store type for submit
-    modal.setAttribute('data-is-hotel', isHotel ? 'true' : 'false');
+    if (isHotel) {
+        // Show hotel modal
+        const hotelModal = document.getElementById('editHotelModal');
+        hotelModal.style.display = 'flex';
+        document.getElementById('editHotelId').value = listing._id || '';
+        document.getElementById('editHotelName').value = listing.name || '';
+        document.getElementById('editHotelAddress').value = listing.address || '';
+        document.getElementById('editHotelDescription').value = listing.description || '';
+        document.getElementById('editHotelRooms').value = listing.rooms || '';
+        document.getElementById('editHotelAmenities').value = Array.isArray(listing.amenities) ? listing.amenities.join(', ') : (listing.amenities || '');
+        document.getElementById('editHotelPrice').value = listing.price || '';
+        // Images not prefilled for now
+    } else {
+        // Show listing modal
+        const modal = document.getElementById('editListingModal');
+        modal.style.display = 'flex';
+        document.getElementById('editListingId').value = listing._id || '';
+        document.getElementById('editTitle').value = listing.title || '';
+        document.getElementById('editDescription').value = listing.description || '';
+        document.getElementById('editPropertyType').value = listing.propertyType || '';
+        document.getElementById('editListingType').value = listing.listingType || 'Sale';
+        document.getElementById('editBedrooms').value = listing.bedrooms || '';
+        document.getElementById('editBathrooms').value = listing.bathrooms || '';
+        document.getElementById('editBeds').value = listing.beds || '';
+        document.getElementById('editRooms').value = listing.rooms || '';
+        document.getElementById('editGuests').value = listing.guests || '';
+        document.getElementById('editSize').value = listing.size || '';
+        document.getElementById('editUnitMeasure').value = listing.unitMeasure || '';
+        document.getElementById('editPrice').value = listing.price || '';
+        document.getElementById('editAddress').value = listing.address || '';
+    }
 }
 
 // Close modal logic
 document.getElementById('closeEditModal').onclick = function() {
+// Close hotel modal logic
+document.getElementById('closeEditHotelModal').onclick = function() {
+    document.getElementById('editHotelModal').style.display = 'none';
+};
     document.getElementById('editListingModal').style.display = 'none';
 };
 
@@ -164,54 +185,54 @@ document.getElementById('closeEditModal').onclick = function() {
 document.getElementById('editListingForm').onsubmit = async function(e) {
     e.preventDefault();
     const id = document.getElementById('editListingId').value;
-    const modal = document.getElementById('editListingModal');
-    const isHotel = modal.getAttribute('data-is-hotel') === 'true';
-    let updatedItem;
-    if (isHotel) {
-        updatedItem = {
-            name: document.getElementById('editTitle').value,
-            description: document.getElementById('editDescription').value,
-            rooms: document.getElementById('editBedrooms').value,
-            bathrooms: document.getElementById('editBathrooms').value,
-            beds: document.getElementById('editBeds').value,
-            size: document.getElementById('editSize').value,
-            unitMeasure: document.getElementById('editUnitMeasure').value,
-            price: document.getElementById('editPrice').value,
-            address: document.getElementById('editAddress').value,
-        };
-    } else {
-        updatedItem = {
-            title: document.getElementById('editTitle').value,
-            description: document.getElementById('editDescription').value,
-            propertyType: document.getElementById('editPropertyType').value,
-            listingType: document.getElementById('editListingType').value,
-            bedrooms: document.getElementById('editBedrooms').value,
-            bathrooms: document.getElementById('editBathrooms').value,
-            beds: document.getElementById('editBeds').value,
-            rooms: document.getElementById('editRooms').value,
-            guests: document.getElementById('editGuests').value,
-            size: document.getElementById('editSize').value,
-            unitMeasure: document.getElementById('editUnitMeasure').value,
-            price: document.getElementById('editPrice').value,
-            address: document.getElementById('editAddress').value,
-        };
-    }
+    const updatedItem = {
+        title: document.getElementById('editTitle').value,
+        description: document.getElementById('editDescription').value,
+        propertyType: document.getElementById('editPropertyType').value,
+        listingType: document.getElementById('editListingType').value,
+        bedrooms: document.getElementById('editBedrooms').value,
+        bathrooms: document.getElementById('editBathrooms').value,
+        beds: document.getElementById('editBeds').value,
+        rooms: document.getElementById('editRooms').value,
+        guests: document.getElementById('editGuests').value,
+        size: document.getElementById('editSize').value,
+        unitMeasure: document.getElementById('editUnitMeasure').value,
+        price: document.getElementById('editPrice').value,
+        address: document.getElementById('editAddress').value,
+    };
     try {
-        const url = isHotel
-            ? `https://cribzconnect-backend.onrender.com/api/hotels/${id}`
-            : `https://cribzconnect-backend.onrender.com/api/listings/${id}`;
-        const res = await fetch(url, {
+        const res = await fetch(`https://cribzconnect-backend.onrender.com/api/listings/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(updatedItem),
         });
-        if (!res.ok) throw new Error('Failed to update item');
-        showNotification((isHotel ? 'Hotel' : 'Listing') + ' updated!', 'success');
+        if (!res.ok) throw new Error('Failed to update listing');
+        showNotification('Listing updated!', 'success');
         document.getElementById('editListingModal').style.display = 'none';
         await loadListingsFromBackend();
     } catch (err) {
-        showNotification('Could not update item: ' + err.message, 'error');
+        showNotification('Could not update listing: ' + err.message, 'error');
+    }
+};
+
+// Hotel edit form submit
+document.getElementById('editHotelForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const id = document.getElementById('editHotelId').value;
+    const form = document.getElementById('editHotelForm');
+    const formData = new FormData(form);
+    try {
+        const res = await fetch(`https://cribzconnect-backend.onrender.com/api/hotels/${id}`, {
+            method: 'PUT',
+            body: formData,
+        });
+        if (!res.ok) throw new Error('Failed to update hotel');
+        showNotification('Hotel updated!', 'success');
+        document.getElementById('editHotelModal').style.display = 'none';
+        await loadListingsFromBackend();
+    } catch (err) {
+        showNotification('Could not update hotel: ' + err.message, 'error');
     }
 };
