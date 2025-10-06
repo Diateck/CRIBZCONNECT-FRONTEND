@@ -1,3 +1,27 @@
+    // Fetch and update dashboard stats for logged-in user
+    async function updateDashboardStats() {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!user || !user.token) return;
+        try {
+            // Fetch user's listings
+            const res = await fetch('http://localhost:5000/api/listings/me', {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            });
+            if (!res.ok) throw new Error('Failed to fetch listings');
+            const listings = await res.json();
+            // Update Active Listings count
+            const activeListingsEl = document.querySelector('.stat-card .stat-content h3');
+            if (activeListingsEl) {
+                activeListingsEl.textContent = listings.length;
+            }
+        } catch (err) {
+            console.error('Dashboard stats error:', err);
+        }
+    }
+    // Call on dashboard load
+    updateDashboardStats();
 // DOM Elements
 const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.getElementById('sidebar');
