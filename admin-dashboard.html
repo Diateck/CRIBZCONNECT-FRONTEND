@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CribzConnect - Admin Dashboard</title>
+    <link rel="stylesheet" href="admin-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <button class="hamburger-menu" id="hamburgerMenu" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="navbar-brand">
+              <img src="logo.png" alt="CribzConnect Logo" class="navbar-logo">
+                <h2>CribzConnect Admin</h2>
+            </div>
+        </div>
+        <div class="navbar-search">
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search properties, users, transactions...">
+            </div>
+        </div>
+        <div class="navbar-actions">
+            <div class="notification-icon">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">5</span>
+            </div>
+            <div class="admin-profile">
+                <div class="profile-avatar" data-name="Super Admin">SA</div>
+                <span>Super Admin</span>
+                <i class="fas fa-chevron-down"></i>
+                <div class="profile-dropdown">
+                    <a href="#"><i class="fas fa-user"></i> Profile</a>
+                    <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-tab="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" data-tab="users">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                    <i class="fas fa-chevron-right submenu-arrow"></i>
+                    <div class="submenu">
+                        <div class="submenu-item" data-tab="agents">Agents</div>
+                        <div class="submenu-item" data-tab="clients">Clients</div>
+                        <div class="submenu-item" data-tab="roles">Roles & Permissions</div>
+                    </div>
+                </div>
+                <div class="menu-item" data-tab="properties">
+                    <i class="fas fa-building"></i>
+                    <span>Property Management</span>
+                    <i class="fas fa-chevron-right submenu-arrow"></i>
+                    <div class="submenu">
+                        <div class="submenu-item" data-tab="all-properties">All Properties</div>
+                        <div class="submenu-item" data-tab="pending-approvals">Pending Approvals</div>
+                        <div class="submenu-item" data-tab="featured-listings">Featured Listings</div>
+                    </div>
+                </div>
+                <div class="menu-item" data-tab="transactions">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Transactions</span>
+                    <i class="fas fa-chevron-right submenu-arrow"></i>
+                    <div class="submenu">
+                        <div class="submenu-item" data-tab="transaction-history">Transaction History</div>
+                        <div class="submenu-item" data-tab="revenue-reports">Revenue Reports</div>
+                        <div class="submenu-item" data-tab="refund-requests">Refund Requests</div>
+                        <div class="submenu-item" data-tab="payment-gateways">Payment Gateways</div>
+                    </div>
+                </div>
+                <div class="menu-item" data-tab="disputes">
+                    <i class="fas fa-gavel"></i>
+                    <span>Disputes & Support</span>
+                    <i class="fas fa-chevron-right submenu-arrow"></i>
+                    <div class="submenu">
+                        <div class="submenu-item" data-tab="open-disputes">Open Disputes</div>
+                        <div class="submenu-item" data-tab="resolved-disputes">Resolved Disputes</div>
+                        <div class="submenu-item" data-tab="support-tickets">Support Tickets</div>
+                    </div>
+                </div>
+                <div class="menu-item" data-tab="cms">
+                    <i class="fas fa-edit"></i>
+                    <span>Content Management</span>
+                    <i class="fas fa-chevron-right submenu-arrow"></i>
+                    <div class="submenu">
+                        <div class="submenu-item" data-tab="homepage-control">Homepage Control</div>
+                        <div class="submenu-item" data-tab="blog-articles">Blog & Articles</div>
+                        <div class="submenu-item" data-tab="faqs-policies">FAQs & Policies</div>
+                    </div>
+                </div>
+                <div class="menu-item" data-tab="subscriptions">
+                    <i class="fas fa-crown"></i>
+                    <span>Subscriptions</span>
+                    <i class="fas fa-chevron-right submenu-arrow"></i>
+                    <div class="submenu">
+                        <div class="submenu-item" data-tab="agent-plans">Agent Plans</div>
+                        <div class="submenu-item" data-tab="commission-rates">Commission Rates</div>
+                        <div class="submenu-item" data-tab="billing-history">Billing History</div>
+                    </div>
+                </div>
+                <div class="menu-item" data-tab="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics & Reports</span>
+                    <i class="fas fa-chevron-right submenu-arrow"></i>
+                    <div class="submenu">
+                        <div class="submenu-item" data-tab="user-growth">User Growth</div>
+                        <div class="submenu-item" data-tab="property-insights">Property Insights</div>
+                        <div class="submenu-item" data-tab="export-reports">Export Reports</div>
+                    </div>
+                </div>
+                <div class="menu-item" data-tab="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Security & Settings</span>
+                    <i class="fas fa-chevron-right submenu-arrow"></i>
+                    <div class="submenu">
+                        <div class="submenu-item" data-tab="admin-logs">Admin Logs</div>
+                        <div class="submenu-item" data-tab="system-settings">System Settings</div>
+                        <div class="submenu-item" data-tab="kyc-verification">KYC & Verification</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Overview -->
+            <div id="dashboard" class="tab-content active">
+                <div class="content-header">
+                    <h1>Dashboard Overview</h1>
+                    <p>Welcome back! Here's what's happening with your platform today.</p>
+                </div>
+
+                <!-- Top Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>2,847</h3>
+                            <p>Total Properties Listed</p>
+                            <span class="stat-change positive">+12% from last month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>8,452</h3>
+                            <p>Total Users</p>
+                            <span class="stat-change positive">+8% from last month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>$247,580</h3>
+                            <p>Total Revenue</p>
+                            <span class="stat-change positive">+18% from last month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>156</h3>
+                            <p>Verified Agents</p>
+                            <span class="stat-change positive">+5% from last month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Rentals per Month</h3>
+                        </div>
+                        <canvas id="rentalsChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Property Type Breakdown</h3>
+                        </div>
+                        <canvas id="propertyTypeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Performing Agents -->
+                <div class="agents-leaderboard">
+                    <h3>Top Performing Agents</h3>
+                    <div class="leaderboard-list">
+                        <div class="leaderboard-item">
+                            <div class="agent-info">
+                                <div class="profile-avatar" data-name="Sarah Johnson">SJ</div>
+                                <div>
+                                    <h4>Sarah Johnson</h4>
+                                    <p>Premium Agent</p>
+                                </div>
+                            </div>
+                            <div class="agent-stats">
+                                <span class="listings">24 Properties</span>
+                                <span class="revenue">$45,200</span>
+                            </div>
+                        </div>
+                        <!-- More agent items would be dynamically generated -->
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="switchTab('pending-approvals')">
+                            <i class="fas fa-check"></i>
+                            Approve Pending Listings
+                        </button>
+                        <button class="action-btn" onclick="switchTab('open-disputes')">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            View Disputes
+                        </button>
+                        <button class="action-btn" onclick="showAnnouncementModal()">
+                            <i class="fas fa-bullhorn"></i>
+                            Send Announcement
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agents Management -->
+            <div id="agents" class="tab-content">
+                <div class="content-header">
+                    <h1>Agents Management</h1>
+                    <button class="primary-btn" onclick="showAddAgentModal()">
+                        <i class="fas fa-plus"></i> Add New Agent
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Contact</th>
+                                <th>Verification Status</th>
+                                <th>Active Listings</th>
+                                <th>Join Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="agentsTableBody">
+                            <!-- Agent rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Clients Management -->
+            <div id="clients" class="tab-content">
+                <div class="content-header">
+                    <h1>Clients Management</h1>
+                    <div class="filter-controls">
+                        <select id="clientStatusFilter">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="suspended">Suspended</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>Email</th>
+                                <th>Booking History</th>
+                                <th>Disputes Filed</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientsTableBody">
+                            <!-- Client rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- All Properties -->
+            <div id="all-properties" class="tab-content">
+                <div class="content-header">
+                    <h1>All Properties</h1>
+                    <div class="filter-controls">
+                        <select id="propertyLocationFilter">
+                            <option value="all">All Locations</option>
+                            <option value="lagos">Lagos</option>
+                            <option value="abuja">Abuja</option>
+                            <option value="port-harcourt">Port Harcourt</option>
+                        </select>
+                        <select id="propertyTypeFilter">
+                            <option value="all">All Types</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="house">House</option>
+                            <option value="studio">Studio</option>
+                        </select>
+                        <select id="propertyStatusFilter">
+                            <option value="all">All Status</option>
+                            <option value="approved">Approved</option>
+                            <option value="pending">Pending</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Agent</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Date Listed</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="propertiesTableBody">
+                            <!-- Property rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pending Approvals -->
+            <div id="pending-approvals" class="tab-content">
+                <div class="content-header">
+                    <h1>Pending Approvals</h1>
+                    <p>Properties awaiting your review</p>
+                </div>
+
+                <div class="pending-grid" id="pendingPropertiesGrid">
+                    <!-- Pending property cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Transaction History -->
+            <div id="transaction-history" class="tab-content">
+                <div class="content-header">
+                    <h1>Transaction History</h1>
+                    <div class="filter-controls">
+                        <input type="date" id="transactionDateFrom" placeholder="From Date">
+                        <input type="date" id="transactionDateTo" placeholder="To Date">
+                        <select id="transactionStatusFilter">
+                            <option value="all">All Status</option>
+                            <option value="completed">Completed</option>
+                            <option value="pending">Pending</option>
+                            <option value="failed">Failed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Tenant</th>
+                                <th>Agent</th>
+                                <th>Property</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTableBody">
+                            <!-- Transaction rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Open Disputes -->
+            <div id="open-disputes" class="tab-content">
+                <div class="content-header">
+                    <h1>Open Disputes</h1>
+                    <p>Active tenant vs. agent cases requiring your attention</p>
+                </div>
+
+                <div class="disputes-container" id="disputesContainer">
+                    <!-- Dispute cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- System Settings -->
+            <div id="system-settings" class="tab-content">
+                <div class="content-header">
+                    <h1>System Settings</h1>
+                    <p>Configure platform-wide settings</p>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="setting-section">
+                        <h3>General Settings</h3>
+                        <div class="form-group">
+                            <label>Site Name</label>
+                            <input type="text" value="CribzConnect" id="siteName">
+                        </div>
+                        <div class="form-group">
+                            <label>Default Currency</label>
+                           <select id="defaultCurrency">
+                            <option value="XAF">Central African CFA franc (XAF)</option>
+                            <option value="USD">US Dollar ($)</option>
+                            <option value="EUR">Euro (€)</option>
+                        </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Timezone</label>
+                            <select id="timezone">
+                                <option value="Africa/Lagos">Africa/Lagos</option>
+                                <option value="UTC">UTC</option>
+                                <option value="WAT">FCFA</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="setting-section">
+                        <h3>Commission Settings</h3>
+                        <div class="form-group">
+                            <label>Platform Commission (%)</label>
+                            <input type="number" value="10" id="platformCommission" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label>Minimum Payout Amount</label>
+                            <input type="number" value="5000" id="minPayout">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="primary-btn" onclick="saveSettings()">
+                    <i class="fas fa-save"></i> Save Settings
+                </button>
+            </div>
+
+            <!-- Roles & Permissions -->
+            <div id="roles" class="tab-content">
+                <div class="content-header">
+                    <h1>Roles & Permissions</h1>
+                    <button class="primary-btn" onclick="showAddRoleModal()">
+                        <i class="fas fa-plus"></i> Add New Role
+                    </button>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="setting-section">
+                        <h3>Super Admin</h3>
+                        <div class="form-group">
+                            <label>Permissions</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" checked disabled> Full System Access</label>
+                                <label><input type="checkbox" checked disabled> User Management</label>
+                                <label><input type="checkbox" checked disabled> Property Management</label>
+                                <label><input type="checkbox" checked disabled> Financial Controls</label>
+                                <label><input type="checkbox" checked disabled> System Settings</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting-section">
+                        <h3>Moderator</h3>
+                        <div class="form-group">
+                            <label>Permissions</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" checked> Property Approval</label>
+                                <label><input type="checkbox" checked> Dispute Resolution</label>
+                                <label><input type="checkbox" checked> User Support</label>
+                                <label><input type="checkbox"> Financial Controls</label>
+                                <label><input type="checkbox"> System Settings</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting-section">
+                        <h3>Finance Admin</h3>
+                        <div class="form-group">
+                            <label>Permissions</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox"> Property Management</label>
+                                <label><input type="checkbox"> User Management</label>
+                                <label><input type="checkbox" checked> Transaction Management</label>
+                                <label><input type="checkbox" checked> Financial Reports</label>
+                                <label><input type="checkbox" checked> Payout Management</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Listings -->
+            <div id="featured-listings" class="tab-content">
+                <div class="content-header">
+                    <h1>Featured Listings</h1>
+                    <p>Manage highlighted properties on the homepage</p>
+                </div>
+
+                <div class="pending-grid" id="featuredListingsGrid">
+                    <!-- Featured property cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Revenue Reports -->
+            <div id="revenue-reports" class="tab-content">
+                <div class="content-header">
+                    <h1>Revenue Reports</h1>
+                    <div class="filter-controls">
+                        <select id="revenueTimeFilter">
+                            <option value="week">This Week</option>
+                            <option value="month" selected>This Month</option>
+                            <option value="quarter">This Quarter</option>
+                            <option value="year">This Year</option>
+                        </select>
+                        <button class="primary-btn" onclick="exportRevenue()">
+                            <i class="fas fa-download"></i> Export Report
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>XAF 2,847,500</h3>
+                            <p>Total Revenue</p>
+                            <span class="stat-change positive">+23% from last month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3> XAF 284,750</h3>
+                            <p>Platform Commission</p>
+                            <span class="stat-change positive">+18% from last month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3> XAF 456,200</h3>
+                            <p>Agent Earnings</p>
+                            <span class="stat-change positive">+15% from last month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3> XAF 142,300</h3>
+                            <p>Service Fees</p>
+                            <span class="stat-change positive">+12% from last month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Refund Requests -->
+            <div id="refund-requests" class="tab-content">
+                <div class="content-header">
+                    <h1>Refund Requests</h1>
+                    <p>Pending refund cases for admin review</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Client</th>
+                                <th>Property</th>
+                                <th>Amount</th>
+                                <th>Reason</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="refundRequestsBody">
+                            <tr>
+                                <td><strong>RF001</strong></td>
+                                <td>John Smith</td>
+                                <td>Executive Studio in Lekki</td>
+                                <td><strong>XAF 50,000</strong></td>
+                                <td>Property condition issues</td>
+                                <td>Aug 17, 2024</td>
+                                <td><span class="status-badge pending">Pending</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn-sm btn-approve">Approve</button>
+                                        <button class="action-btn-sm btn-reject">Reject</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Payment Gateways -->
+            <div id="payment-gateways" class="tab-content">
+                <div class="content-header">
+                    <h1>Payment Gateway Settings</h1>
+                    <p>Configure payment providers and settings</p>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="setting-section">
+                        <h3>Paystack Configuration</h3>
+                        <div class="form-group">
+                            <label>Public Key</label>
+                            <input type="text" placeholder="pk_test_..." value="pk_test_xxxxxxxxxxxxxxxx">
+                        </div>
+                        <div class="form-group">
+                            <label>Secret Key</label>
+                            <input type="password" placeholder="sk_test_..." value="••••••••••••••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" checked> Enable Paystack
+                            </label>
+                        </div>
+                    </div>
+                    <div class="setting-section">
+                        <h3>Flutterwave Configuration</h3>
+                        <div class="form-group">
+                            <label>Public Key</label>
+                            <input type="text" placeholder="FLWPUBK_TEST-..." value="FLWPUBK_TEST-xxxxxxxxxxxxxxxx">
+                        </div>
+                        <div class="form-group">
+                            <label>Secret Key</label>
+                            <input type="password" placeholder="FLWSECK_TEST-..." value="••••••••••••••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" checked> Enable Flutterwave
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="primary-btn" onclick="savePaymentSettings()">
+                    <i class="fas fa-save"></i> Save Payment Settings
+                </button>
+            </div>
+
+            <!-- Resolved Disputes -->
+            <div id="resolved-disputes" class="tab-content">
+                <div class="content-header">
+                    <h1>Resolved Disputes</h1>
+                    <p>Historical record of resolved cases</p>
+                </div>
+
+                <div class="disputes-container">
+                    <div class="dispute-card" style="border-left-color: var(--success-color); opacity: 0.8;">
+                        <div class="dispute-header">
+                            <div class="dispute-info">
+                                <h4>Security Deposit Delay ✅</h4>
+                                <p><strong>Tenant:</strong> Sarah Wilson vs <strong>Agent:</strong> Mike Johnson</p>
+                                <p><strong>Resolved:</strong> Aug 10, 2024</p>
+                            </div>
+                            <span class="dispute-priority priority-low">RESOLVED</span>
+                        </div>
+                        <div class="dispute-description">
+                            <strong>Resolution:</strong> Agent was instructed to process refund immediately. Client compensated with ₦5,000 for inconvenience.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Tickets -->
+            <div id="support-tickets" class="tab-content">
+                <div class="content-header">
+                    <h1>Support Tickets</h1>
+                    <p>Direct questions and issues from users</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>User</th>
+                                <th>Subject</th>
+                                <th>Priority</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>TK001</strong></td>
+                                <td>Emma Thompson</td>
+                                <td>Unable to upload property photos</td>
+                                <td><span class="status-badge pending">Medium</span></td>
+                                <td>Aug 18, 2024</td>
+                                <td><span class="status-badge pending">Open</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn-sm btn-edit">Respond</button>
+                                        <button class="action-btn-sm btn-approve">Close</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Homepage Control -->
+            <div id="homepage-control" class="tab-content">
+                <div class="content-header">
+                    <h1>Homepage Management</h1>
+                    <p>Control homepage content and featured sections</p>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="setting-section">
+                        <h3>Hero Section</h3>
+                        <div class="form-group">
+                            <label>Main Headline</label>
+                            <input type="text" value="Find Your Perfect Home Today" id="heroHeadline">
+                        </div>
+                        <div class="form-group">
+                            <label>Subheadline</label>
+                            <textarea rows="3" id="heroSubheadline">Discover amazing rental properties in prime locations across Nigeria. Your dream home is just a click away.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Background Image URL</label>
+                            <input type="url" placeholder="https://..." id="heroBackground">
+                        </div>
+                    </div>
+                    <div class="setting-section">
+                        <h3>Featured Categories</h3>
+                        <div class="form-group">
+                            <label>Show Categories</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" checked> Apartments</label>
+                                <label><input type="checkbox" checked> Houses</label>
+                                <label><input type="checkbox" checked> Studios</label>
+                                <label><input type="checkbox"> Condos</label>
+                                <label><input type="checkbox"> Commercial</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="primary-btn" onclick="saveHomepageSettings()">
+                    <i class="fas fa-save"></i> Save Homepage Settings
+                </button>
+            </div>
+
+            <!-- Blog & Articles -->
+            <div id="blog-articles" class="tab-content">
+                <div class="content-header">
+                    <h1>Blog & Articles Management</h1>
+                    <button class="primary-btn" onclick="showAddArticleModal()">
+                        <i class="fas fa-plus"></i> Add New Article
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Category</th>
+                                <th>Views</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Top 10 Rental Tips for 2024</strong></td>
+                                <td>Admin Team</td>
+                                <td>Tips & Guides</td>
+                                <td>2,847</td>
+                                <td>Aug 15, 2024</td>
+                                <td><span class="status-badge approved">Published</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn-sm btn-edit">Edit</button>
+                                        <button class="action-btn-sm btn-suspend">Unpublish</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FAQs & Policies -->
+            <div id="faqs-policies" class="tab-content">
+                <div class="content-header">
+                    <h1>FAQs & Policies</h1>
+                    <p>Manage help center content and platform policies</p>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="setting-section">
+                        <h3>Frequently Asked Questions</h3>
+                        <div class="form-group">
+                            <label>Add New FAQ</label>
+                            <input type="text" placeholder="Question" id="newFaqQuestion">
+                            <textarea rows="3" placeholder="Answer" id="newFaqAnswer"></textarea>
+                            <button class="secondary-btn" style="margin-top: 0.5rem;" onclick="addFaq()">
+                                <i class="fas fa-plus"></i> Add FAQ
+                            </button>
+                        </div>
+                    </div>
+                    <div class="setting-section">
+                        <h3>Platform Policies</h3>
+                        <div class="form-group">
+                            <label>Terms of Service</label>
+                            <textarea rows="10" placeholder="Terms of service content...">By using CribzConnect, you agree to these terms...</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Privacy Policy</label>
+                            <textarea rows="10" placeholder="Privacy policy content...">We value your privacy and are committed to protecting...</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="primary-btn" onclick="savePolicies()">
+                    <i class="fas fa-save"></i> Save Policies
+                </button>
+            </div>
+
+            <!-- Admin Logs -->
+            <div id="admin-logs" class="tab-content">
+                <div class="content-header">
+                    <h1>Admin Activity Logs</h1>
+                    <div class="filter-controls">
+                        <input type="date" id="logDateFrom" placeholder="From Date">
+                        <input type="date" id="logDateTo" placeholder="To Date">
+                        <select id="logActionFilter">
+                            <option value="all">All Actions</option>
+                            <option value="login">Login</option>
+                            <option value="property">Property Actions</option>
+                            <option value="user">User Actions</option>
+                            <option value="settings">Settings Changes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Admin</th>
+                                <th>Action</th>
+                                <th>Target</th>
+                                <th>IP Address</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Aug 19, 2024 10:15 AM</td>
+                                <td>Super Admin</td>
+                                <td><span class="status-badge approved">Property Approved</span></td>
+                                <td>Executive Studio in Lekki</td>
+                                <td>192.168.1.100</td>
+                                <td>Property ID: #2847 approved for listing</td>
+                            </tr>
+                            <tr>
+                                <td>Aug 19, 2024 09:30 AM</td>
+                                <td>Super Admin</td>
+                                <td><span class="status-badge pending">User Suspended</span></td>
+                                <td>Michael Chen</td>
+                                <td>192.168.1.100</td>
+                                <td>Agent suspended due to policy violation</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- KYC Verification -->
+            <div id="kyc-verification" class="tab-content">
+                <div class="content-header">
+                    <h1>KYC & Verification Management</h1>
+                    <p>Review and approve agent verification documents</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Documents</th>
+                                <th>Submission Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <div class="profile-avatar" data-name="Michael Chen" style="width: 35px; height: 35px; font-size: 0.8rem;">MC</div>
+                                        <div>
+                                            <strong>Michael Chen</strong>
+                                            <br><small style="color: var(--gray-500);">Agent ID: #2</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.85rem;">
+                                        ✅ National ID<br>
+                                        ✅ Business License<br>
+                                        ⏳ Bank Statement
+                                    </div>
+                                </td>
+                                <td>Aug 15, 2024</td>
+                                <td><span class="status-badge pending">Pending Review</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn-sm btn-edit">Review</button>
+                                        <button class="action-btn-sm btn-approve">Approve</button>
+                                        <button class="action-btn-sm btn-reject">Reject</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="announcementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Send Announcement</h3>
+                <span class="close" onclick="closeModal('announcementModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" id="announcementSubject" placeholder="Enter announcement subject">
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="announcementMessage" rows="5" placeholder="Enter your announcement message"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Recipients</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" value="agents"> All Agents</label>
+                        <label><input type="checkbox" value="clients"> All Clients</label>
+                        <label><input type="checkbox" value="all"> All Users</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn" onclick="closeModal('announcementModal')">Cancel</button>
+                <button class="primary-btn" onclick="sendAnnouncement()">Send Announcement</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-script.js"></script>
+</body>
+</html>
+
+
+
+
+

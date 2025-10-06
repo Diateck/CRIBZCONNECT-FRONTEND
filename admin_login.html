@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - CribzConnect</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+        }
+
+        .login-header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .login-header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .logo-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-logo {
+            height: 150px;
+            width: auto;
+            max-width: 250px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+            opacity: 0.9;
+        }
+
+        .login-form {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .input-container i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 1rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background-color: #f9fafb;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .remember-me label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 1.125rem;
+            height: 1.125rem;
+            accent-color: #3b82f6;
+        }
+
+        .forgot-password {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .forgot-password:hover {
+            color: #1e40af;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn.loading {
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .demo-credentials {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f0f9ff;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .demo-credentials h3 {
+            color: #1e40af;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .demo-credentials .credential-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e0f2fe;
+        }
+
+        .demo-credentials .credential-item:last-child {
+            border-bottom: none;
+        }
+
+        .credential-item span {
+            font-size: 0.9rem;
+            color: #374151;
+        }
+
+        .credential-item strong {
+            color: #1e40af;
+            font-family: monospace;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 0.875rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #fecaca;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #059669;
+            padding: 0.875rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #a7f3d0;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 1rem;
+            }
+            
+            .login-header {
+                padding: 2rem 1.5rem 1.5rem;
+            }
+            
+            .login-form {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo-container">
+                 <img src="logo.png" alt="CribzConnect Logo" class="admin-logo">
+            </div>
+            <h1>
+                <i class="fas fa-shield-alt"></i>
+                Admin Panel
+            </h1>
+            <p>CribzConnect Administration</p>
+        </div>
+
+        <form class="login-form" id="loginForm">
+            <div class="error-message" id="errorMessage">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="errorText"></span>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i>
+                <span id="successText"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-container">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" class="form-input" placeholder="Enter your username" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-container">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+            </div>
+
+            <div class="remember-me">
+                <label>
+                    <input type="checkbox" id="rememberMe">
+                    Remember me
+                </label>
+                <a href="#" class="forgot-password">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                <div class="spinner" id="spinner"></div>
+                <i class="fas fa-sign-in-alt" id="loginIcon"></i>
+                <span id="loginText">Sign In</span>
+            </button>
+        </form>
+
+        <div class="demo-credentials">
+            <h3><i class="fas fa-info-circle"></i> Demo Credentials</h3>
+            <div class="credential-item">
+                <span>Super Admin:</span>
+                <strong>admin / admin123</strong>
+            </div>
+            <div class="credential-item">
+                <span>Admin:</span>
+                <strong>superadmin / super123</strong>
+            </div>
+            <div class="credential-item">
+                <span>Main Admin:</span>
+                <strong>cribzadmin / cribz2024</strong>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class AdminLogin {
+            constructor() {
+                this.form = document.getElementById('loginForm');
+                this.usernameField = document.getElementById('username');
+                this.passwordField = document.getElementById('password');
+                this.rememberMe = document.getElementById('rememberMe');
+                this.loginBtn = document.getElementById('loginBtn');
+                this.spinner = document.getElementById('spinner');
+                this.loginIcon = document.getElementById('loginIcon');
+                this.loginText = document.getElementById('loginText');
+                
+                this.validCredentials = [
+                    { username: 'admin', password: 'admin123', role: 'Super Admin' },
+                    { username: 'superadmin', password: 'super123', role: 'Super Admin' },
+                    { username: 'cribzadmin', password: 'cribz2024', role: 'Super Admin' }
+                ];
+                
+                this.init();
+            }
+
+            init() {
+                this.form.addEventListener('submit', (e) => this.handleLogin(e));
+                
+                // Check if user is already logged in
+                const adminUser = localStorage.getItem('adminUser');
+                if (adminUser) {
+                    this.redirectToDashboard();
+                }
+                
+                // Load remembered username if exists
+                const rememberedUser = localStorage.getItem('rememberedAdmin');
+                if (rememberedUser) {
+                    this.usernameField.value = rememberedUser;
+                    this.rememberMe.checked = true;
+                }
+            }
+
+            async handleLogin(e) {
+                e.preventDefault();
+                
+                const username = this.usernameField.value.trim();
+                const password = this.passwordField.value.trim();
+                
+                if (!username || !password) {
+                    this.showError('Please enter both username and password.');
+                    return;
+                }
+                
+                this.setLoading(true);
+                
+                // Simulate API call delay
+                setTimeout(() => {
+                    this.authenticateUser(username, password);
+                }, 1500);
+            }
+
+            authenticateUser(username, password) {
+                const user = this.validCredentials.find(
+                    cred => cred.username === username && cred.password === password
+                );
+                
+                if (user) {
+                    this.handleSuccessfulLogin(user);
+                } else {
+                    this.handleFailedLogin();
+                }
+            }
+
+            handleSuccessfulLogin(user) {
+                this.showSuccess('Login successful! Redirecting to dashboard...');
+                
+                // Store user session
+                const adminUser = {
+                    username: user.username,
+                    role: user.role,
+                    loginTime: new Date().toISOString()
+                };
+                
+                localStorage.setItem('adminUser', JSON.stringify(adminUser));
+                
+                // Handle remember me
+                if (this.rememberMe.checked) {
+                    localStorage.setItem('rememberedAdmin', user.username);
+                } else {
+                    localStorage.removeItem('rememberedAdmin');
+                }
+                
+                // Redirect after short delay
+                setTimeout(() => {
+                    this.redirectToDashboard();
+                }, 2000);
+            }
+
+            handleFailedLogin() {
+                this.setLoading(false);
+                this.showError('Invalid username or password. Please try again.');
+                this.passwordField.value = '';
+                this.passwordField.focus();
+            }
+
+            setLoading(loading) {
+                if (loading) {
+                    this.loginBtn.classList.add('loading');
+                    this.spinner.style.display = 'block';
+                    this.loginIcon.style.display = 'none';
+                    this.loginText.textContent = 'Signing in...';
+                    this.loginBtn.disabled = true;
+                } else {
+                    this.loginBtn.classList.remove('loading');
+                    this.spinner.style.display = 'none';
+                    this.loginIcon.style.display = 'block';
+                    this.loginText.textContent = 'Sign In';
+                    this.loginBtn.disabled = false;
+                }
+            }
+
+            showError(message) {
+                const errorMessage = document.getElementById('errorMessage');
+                const errorText = document.getElementById('errorText');
+                const successMessage = document.getElementById('successMessage');
+                
+                successMessage.style.display = 'none';
+                errorText.textContent = message;
+                errorMessage.style.display = 'flex';
+                
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+
+            showSuccess(message) {
+                const successMessage = document.getElementById('successMessage');
+                const successText = document.getElementById('successText');
+                const errorMessage = document.getElementById('errorMessage');
+                
+                errorMessage.style.display = 'none';
+                successText.textContent = message;
+                successMessage.style.display = 'flex';
+                
+                this.setLoading(false);
+            }
+
+            redirectToDashboard() {
+                window.location.href = 'admin-dashboard.html';
+            }
+        }
+
+        // Initialize login when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            new AdminLogin();
+        });
+
+        // Auto-fill demo credentials when clicked
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.credential-item')) {
+                const credentialText = e.target.closest('.credential-item').querySelector('strong').textContent;
+                const [username, password] = credentialText.split(' / ');
+                
+                document.getElementById('username').value = username;
+                document.getElementById('password').value = password;
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+

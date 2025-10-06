@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CribzConnect - Login & Register</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); /* Blue gradient to match logo */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            flex-wrap: wrap; /* Allow content to wrap */
+        }
+
+        .login-container {
+            background: rgba(0, 123, 255, 0.95); /* Blue background to match logo */
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px; /* Fixed width for positioning */
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            margin: 0;
+        }
+
+        .image-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 20px;
+            padding-right: 440px; /* Make room for the positioned form */
+            box-sizing: border-box;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .login-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.05) 10px,
+                rgba(255,255,255,0.05) 20px
+            );
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .logo {
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-logo-image {
+            height: 120px;
+            width: auto;
+            object-fit: contain;
+            margin-bottom: 0.5rem;
+            display: block;
+            max-width: 100%;
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: white; /* Keep text white */
+        }
+
+        .logo p {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .form-container {
+            padding: 2rem;
+            position: relative;
+            background: rgba(240, 248, 255, 0.8); /* Very light blue background */
+        }
+
+        .form-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: rgba(220, 240, 255, 0.9); /* Light blue tabs background */
+            border-radius: 10px;
+            padding: 0.25rem;
+        }
+
+        .tab-button {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 0.875rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .tab-button.active {
+            background: #007bff; /* Blue for active tab */
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+        }
+
+        .form-content {
+            position: relative;
+        }
+
+        .form-section {
+            display: none;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0056b3, #004085);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+        }
+
+        .btn-google {
+            background: #fff;
+            color: #333;
+            border: 2px solid #e9ecef;
+            margin-bottom: 0.75rem;
+        }
+
+        .btn-google:hover {
+            background: #f8f9fa;
+            border-color: #dee2e6;
+            transform: translateY(-1px);
+        }
+
+        .btn-facebook {
+            background: #4267B2;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .btn-facebook:hover {
+            background: #365899;
+            transform: translateY(-1px);
+        }
+
+        .divider {
+            position: relative;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e9ecef;
+        }
+
+        .divider span {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0 1rem;
+            position: relative;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .forgot-password a {
+            color: #007bff; /* Updated to blue */
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .terms-text {
+            font-size: 0.85rem;
+            color: #666;
+            text-align: center;
+            margin-top: 1rem;
+            line-height: 1.4;
+        }
+
+        .terms-text a {
+            color: #007bff; /* Updated to blue */
+            text-decoration: none;
+        }
+
+        .terms-text a:hover {
+            text-decoration: underline;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            margin-top: 0.25rem;
+            accent-color: #007bff;
+            transform: scale(1.2);
+        }
+
+        .checkbox-wrapper label {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #555;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #c3e6cb;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #f5c6cb;
+            display: none;
+        }
+
+        .loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .login-container {
+                position: relative;
+                top: auto;
+                right: auto;
+                max-width: 100%;
+                margin: 10px auto;
+            }
+            .image-container {
+                padding-right: 20px;
+                max-width: 100%;
+                margin: 10px auto;
+            }
+        }
+
+        /* Back to Dashboard Link */
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .back-link {
+                position: static;
+                margin-bottom: 1rem;
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+    </a>
+
+    <!-- City landscape image -->
+    <div class="image-container">
+        <img src="city-landscape.jpg?v=1" alt="Modern apartment complex with green landscaping" 
+             onerror="console.log('Image failed to load:', this.src); this.style.display='none';"
+             onload="console.log('Image loaded successfully:', this.src);">
+    </div>
+
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">
+                <img src="logo.png?v=2" alt="CribzConnect" class="login-logo-image" 
+                     onerror="console.log('Logo failed to load:', this.src); this.style.display='none';"
+                     onload="console.log('Logo loaded successfully:', this.src);">
+            </div>
+        </div>
+
+        <div class="form-container">
+            <!-- Tab Navigation -->
+            <div class="form-tabs">
+                <button class="tab-button active" data-tab="login">Login</button>
+                <button class="tab-button" data-tab="register">Register</button>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div class="success-message" id="success-message"></div>
+            <div class="error-message" id="error-message"></div>
+
+            <div class="form-content">
+                <!-- Login Form -->
+                <div class="form-section active" id="login-section">
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label>Email or Username</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" class="form-control" placeholder="Enter your email or username" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock input-icon"></i>
+                                <input type="password" class="form-control" placeholder="Enter your password" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Login to CribzConnect
+                        </button>
+
+                        <div class="divider">
+                            <span>or continue with</span>
+                        </div>
+
+                        <button type="button" class="btn btn-google" onclick="socialLogin('google')">
+                            <i class="fab fa-google"></i> Continue with Google
+                        </button>
+
+                        <button type="button" class="btn btn-facebook" onclick="socialLogin('facebook')">
+                            <i class="fab fa-facebook-f"></i> Continue with Facebook
+                        </button>
+
+                        <div class="forgot-password">
+                            <a href="#" onclick="showForgotPassword()">Forgot your password?</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Registration Form -->
+                <div class="form-section" id="register-section">
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" class="form-control" placeholder="Enter your full name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope input-icon"></i>
+                                <input type="email" class="form-control" placeholder="Enter your email address" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Username</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-at input-icon"></i>
+                                <input type="text" class="form-control" placeholder="Choose a username" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock input-icon"></i>
+                                <input type="password" class="form-control" placeholder="Create a strong password" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Confirm Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock input-icon"></i>
+                                <input type="password" class="form-control" placeholder="Confirm your password" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="agree-terms" required>
+                            <label for="agree-terms">
+                                I agree to the <a href="#" onclick="showTerms()">Terms of Service</a> 
+                                and <a href="#" onclick="showPrivacy()">Privacy Policy</a>
+                            </label>
+                        </div>
+
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="marketing-emails">
+                            <label for="marketing-emails">
+                                I'd like to receive marketing emails about CribzConnect features and updates
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Create Account
+                        </button>
+
+                        <div class="divider">
+                            <span>or sign up with</span>
+                        </div>
+
+                        <button type="button" class="btn btn-google" onclick="socialLogin('google')">
+                            <i class="fab fa-google"></i> Sign up with Google
+                        </button>
+
+                        <button type="button" class="btn btn-facebook" onclick="socialLogin('facebook')">
+                            <i class="fab fa-facebook-f"></i> Sign up with Facebook
+                        </button>
+
+                        <div class="terms-text">
+                            By creating an account, you agree to our 
+                            <a href="#" onclick="showTerms()">Terms of Service</a> and 
+                            <a href="#" onclick="showPrivacy()">Privacy Policy</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.dataset.tab;
+
+                // Update active tab button
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // Update active form section
+                document.querySelectorAll('.form-section').forEach(section => section.classList.remove('active'));
+                document.getElementById(tab + '-section').classList.add('active');
+
+                // Clear messages
+                hideMessages();
+            });
+        });
+
+        // Password toggle functionality
+        function togglePassword(button) {
+            const input = button.previousElementSibling;
+            const icon = button.querySelector('i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Show/hide messages
+        function showMessage(message, type) {
+            hideMessages();
+            const messageEl = document.getElementById(type + '-message');
+            messageEl.textContent = message;
+            messageEl.style.display = 'block';
+        }
+
+        function hideMessages() {
+            document.getElementById('success-message').style.display = 'none';
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        // Login form submission
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const button = e.target.querySelector('.btn-primary');
+            const originalText = button.innerHTML;
+
+            // Show loading state
+            button.classList.add('loading');
+            button.innerHTML = 'Signing in...';
+
+            // Simulate API call
+            setTimeout(() => {
+                button.classList.remove('loading');
+                button.innerHTML = originalText;
+
+                // Simulate successful login
+                showMessage('Login successful! Redirecting to dashboard...', 'success');
+
+                // Redirect to dashboard after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+            }, 1500);
+        });
+
+        // Registration form submission
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Password validation
+            const password = e.target.querySelector('input[placeholder="Create a strong password"]').value;
+            const confirmPassword = e.target.querySelector('input[placeholder="Confirm your password"]').value;
+
+            if (password !== confirmPassword) {
+                showMessage('Passwords do not match. Please try again.', 'error');
+                return;
+            }
+
+            if (password.length < 8) {
+                showMessage('Password must be at least 8 characters long.', 'error');
+                return;
+            }
+
+            const button = e.target.querySelector('.btn-primary');
+            const originalText = button.innerHTML;
+
+            // Show loading state
+            button.classList.add('loading');
+            button.innerHTML = 'Creating account...';
+
+            // Simulate API call
+            setTimeout(() => {
+                button.classList.remove('loading');
+                button.innerHTML = originalText;
+
+                // Simulate successful registration
+                showMessage('Account created successfully! Please check your email to verify your account.', 'success');
+
+                // Switch to login tab after 3 seconds
+                setTimeout(() => {
+                    document.querySelector('[data-tab="login"]').click();
+                    showMessage('Account verified! You can now log in.', 'success');
+                }, 3000);
+            }, 2000);
+        });
+
+        // Social login
+        function socialLogin(provider) {
+            showMessage(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login is coming soon!`, 'success');
+        }
+
+        // Modal functions (these would show actual modals in a real app)
+        function showForgotPassword() {
+            const email = prompt('Please enter your email address:');
+            if (email) {
+                showMessage('Password reset link sent to your email!', 'success');
+            }
+        }
+
+        function showTerms() {
+            alert('Terms of Service would be displayed here in a modal or separate page.');
+        }
+
+        function showPrivacy() {
+            alert('Privacy Policy would be displayed here in a modal or separate page.');
+        }
+
+        // Input validation and enhancement
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+
+        // Email validation
+        document.querySelectorAll('input[type="email"]').forEach(input => {
+            input.addEventListener('blur', function() {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (this.value && !emailRegex.test(this.value)) {
+                    showMessage('Please enter a valid email address.', 'error');
+                    this.focus();
+                }
+            });
+        });
+
+        // Username validation
+        document.querySelectorAll('input[placeholder*="username"]').forEach(input => {
+            input.addEventListener('blur', function() {
+                const username = this.value;
+                if (username && (username.length < 3 || !/^[a-zA-Z0-9_]+$/.test(username))) {
+                    showMessage('Username must be at least 3 characters long and contain only letters, numbers, and underscores.', 'error');
+                    this.focus();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

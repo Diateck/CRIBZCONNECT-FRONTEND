@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CribzConnect</title>
+    <link href="style.css?v=6" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="logo">
+            <img src="logo.png?v=2" alt="CribzConnect" class="logo-image-mobile" 
+                 onerror="console.log('Mobile logo failed to load:', this.src); this.style.display='none';"
+                 onload="console.log('Mobile logo loaded successfully:', this.src);">
+        </div>
+        <div class="header-actions">
+            <button class="notification-btn">
+                <i class="fas fa-bell"></i>
+            </button>
+            <div class="user-menu">
+                <button class="user-toggle">
+                    <i class="fas fa-user-circle"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="#dashboard" data-page="dashboard">Home</a>
+                    <a href="#profile-status" data-page="profile-status">View Profile</a>
+                    <a href="#about">About</a>
+                    <a href="#legal">Legal</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="#" data-page="logout">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout Container -->
+    <div class="main-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-header-left">
+                <div class="sidebar-header-actions">
+                    <button class="notification-btn desktop-notification">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="user-menu desktop-user-menu">
+                        <button class="user-toggle desktop-user-toggle">
+                            <i class="fas fa-user-circle"></i>
+                        </button>
+                        <div class="dropdown-menu desktop-dropdown">
+                            <a href="#dashboard" data-page="dashboard">Home</a>
+                            <a href="#profile-status" data-page="profile-status">View Profile</a>
+                            <a href="#about">About</a>
+                            <a href="#legal">Legal</a>
+                            <a href="#faq">FAQ</a>
+                            <a href="#" data-page="logout">Logout</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="logo">
+                    <img src="logo.png?v=2" alt="CribzConnect" class="logo-image"
+                         onerror="console.log('Sidebar logo failed to load:', this.src); this.style.display='none';"
+                         onload="console.log('Sidebar logo loaded successfully:', this.src);">
+                </div>
+            </div>
+            <button class="close-sidebar" id="closeSidebar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="#dashboard" class="nav-link active" data-page="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="has-submenu">
+                    <a href="#profile" class="nav-link" data-page="profile">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                        <i class="fas fa-chevron-down submenu-toggle"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="#verifications" data-page="verifications">Verifications</a></li>
+                        <li><a href="#password" data-page="password">Password</a></li>
+                        <li><a href="#payout-method" data-page="payout-method">Payout Method</a></li>
+                    </ul>
+                </li>
+                <li class="has-submenu">
+                    <a href="#wallet" class="nav-link" data-page="wallet">
+                        <i class="fas fa-wallet"></i>
+                        <span>Wallet</span>
+                        <i class="fas fa-chevron-down submenu-toggle"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="#earnings" data-page="earnings">Earnings</a></li>
+                        <li><a href="#payouts" data-page="payouts">Payouts</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#listings" class="nav-link" data-page="listings">
+                        <i class="fas fa-home"></i>
+                        <span>My Listings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#add-listing" class="nav-link" data-page="add-listing">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Listing</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#bookings" class="nav-link" data-page="bookings">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>My Bookings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#favorites" class="nav-link" data-page="favorites">
+                        <i class="fas fa-heart"></i>
+                        <span>Favorites</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#invoices" class="nav-link" data-page="invoices">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>Invoices</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#messages" class="nav-link" data-page="messages">
+                        <i class="fas fa-envelope"></i>
+                        <span>Messages</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#settings" class="nav-link" data-page="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-page="logout" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="mainContent">
+        <!-- Dashboard Page -->
+        <div class="page active" id="dashboard-page">
+            <div class="page-header">
+                <h1>Welcome back, Theophilus</h1>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>0</h3>
+                        <p>Active Listings</p>
+                        <a href="#add-listing" class="stat-link">+ Add new</a>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>0</h3>
+                        <p>Reservation Counts</p>
+                        <a href="#bookings" class="stat-link">Manage</a>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>0 XAF</h3>
+                        <p>Earnings Balance</p>
+                        <a href="#earnings" class="stat-link">Earnings</a>
+                    </div>
+                </div>
+</old_str>
+            </div>
+
+            <div class="dashboard-sections">
+                <div class="section">
+                    <div class="section-header">
+                        <h2>Upcoming Reservations</h2>
+                        <a href="#bookings" class="view-all">View all</a>
+                    </div>
+                    <div class="empty-state">
+                        <p>You don't have any upcoming reservations at this moment.</p>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <h2>Recent Messages</h2>
+                        <a href="#messages" class="view-all">View all</a>
+                    </div>
+                    <div class="empty-state">
+                        <p>You don't have any messages at this moment.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Page -->
+        <div class="page" id="profile-page">
+            <div class="page-header">
+                <h1>Profile</h1>
+            </div>
+
+            <div class="profile-completion">
+                <div class="completion-header">
+                    <h3>Profile Completed 30%</h3>
+                    <a href="#profile-status" class="view-profile" data-page="profile-status">View Profile</a>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 30%"></div>
+                </div>
+
+                <div class="completion-items">
+                    <div class="completion-item incomplete">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Profile Picture</span>
+                        <i class="fas fa-times status-icon"></i>
+                    </div>
+                    <div class="completion-item complete">
+                        <i class="fas fa-envelope"></i>
+                        <span>Email Address</span>
+                        <i class="fas fa-check status-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-form">
+                <div class="form-section">
+                    <h3>Photo</h3>
+                    <div class="photo-upload">
+                        <div class="photo-placeholder">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="upload-controls">
+                            <p>Choose an image from your computer</p>
+                            <p class="size-note">Minimum size 100 x 100 px</p>
+                            <div class="upload-buttons">
+                                <button class="btn btn-primary">Browse</button>
+                                <button class="btn btn-secondary">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Information</h3>
+                    <form class="info-form">
+                        <div class="form-group">
+                            <label>Select Role</label>
+                            <select class="form-control">
+                                <option>Host</option>
+                                <option>Renter</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" class="form-control" placeholder="Enter your name">
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" class="form-control" placeholder="Enter your last name">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" class="form-control" value="Theophilus" readonly>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Native Language</label>
+                                <input type="text" class="form-control" placeholder="Native Language">
+                            </div>
+                            <div class="form-group">
+                                <label>Other Language</label>
+                                <input type="text" class="form-control" placeholder="Other Language">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Display name publicly as</label>
+                            <input type="text" class="form-control">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+
+                <div class="form-section">
+                    <h3>Bio</h3>
+                    <form>
+                        <div class="form-group">
+                            <textarea class="form-control" rows="4" placeholder="Bio"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+
+                <div class="form-section">
+                    <h3>Address</h3>
+                    <form class="address-form">
+                        <div class="form-group">
+                            <label>Street Address</label>
+                            <input type="text" class="form-control" placeholder="Enter street address">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Apt, Suite</label>
+                            <input type="text" class="form-control" placeholder="Ex. #123">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>City</label>
+                                <input type="text" class="form-control" placeholder="Enter your city">
+                            </div>
+                            <div class="form-group">
+                                <label>State</label>
+                                <input type="text" class="form-control" placeholder="Enter your state">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Zip Code</label>
+                                <input type="text" class="form-control" placeholder="Enter zip code">
+                            </div>
+                            <div class="form-group">
+                                <label>Neighborhood</label>
+                                <input type="text" class="form-control" placeholder="Neighborhood">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Country</label>
+                            <input type="text" class="form-control" placeholder="Country">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+
+                <div class="form-section">
+                    <h3>Emergency Contact</h3>
+                    <form class="emergency-form">
+                        <div class="form-group">
+                            <label>Contact Name</label>
+                            <input type="text" class="form-control" placeholder="Enter Name">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Relationship</label>
+                            <input type="text" class="form-control" placeholder="Enter Relationship">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" class="form-control" placeholder="Enter contact email address">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" class="form-control" placeholder="Enter the phone number">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+
+                <div class="form-section">
+                    <h3>Social Media</h3>
+                    <form class="social-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Facebook URL</label>
+                                <input type="url" class="form-control" placeholder="URL">
+                            </div>
+                            <div class="form-group">
+                                <label>Twitter URL</label>
+                                <input type="url" class="form-control" placeholder="URL">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>LinkedIn URL</label>
+                                <input type="url" class="form-control" placeholder="URL">
+                            </div>
+                            <div class="form-group">
+                                <label>Google Plus URL</label>
+                                <input type="url" class="form-control" placeholder="URL">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Instagram URL</label>
+                                <input type="url" class="form-control" placeholder="URL">
+                            </div>
+                            <div class="form-group">
+                                <label>Pinterest URL</label>
+                                <input type="url" class="form-control" placeholder="URL">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>YouTube URL</label>
+                                <input type="url" class="form-control" placeholder="URL">
+                            </div>
+                            <div class="form-group">
+                                <label>Vimeo URL</label>
+                                <input type="url" class="form-control" placeholder="URL">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Airbnb URL</label>
+                                <input type="url" class="form-control" placeholder="URL">
+                            </div>
+                            <div class="form-group">
+                                <label>Trip Advisor URL</label>
+                                <input type="url" class="form-control" placeholder="URL">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </div>
+
+                <div class="form-section danger-zone">
+                    <h3>Delete Account</h3>
+                    <p>Your account and all posts will be deleted permanently!</p>
+                    <button class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verifications Page -->
+        <div class="page" id="verifications-page">
+            <div class="page-header">
+                <h1>Profile</h1>
+            </div>
+
+            <div class="verification-container">
+                <div class="form-section">
+                    <h3>Verify Your Information</h3>
+
+                    <div class="verification-item">
+                        <h4>Email Address</h4>
+                        <div class="email-verification">
+                            <span class="email-address">Isrealgabriel5@gmail.com</span>
+                            <button class="btn btn-success verified-btn" disabled>
+                                <i class="fas fa-check"></i>
+                                Confirmed
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="verification-item">
+                        <h4>Identity Verification</h4>
+                        <div class="id-upload">
+                            <div class="upload-area">
+                                <i class="fas fa-id-card"></i>
+                                <p>Upload your ID</p>
+                                <p class="upload-note">Please upload a clear photo of your government-issued ID</p>
+                                <button class="btn btn-secondary">Upload Pictures</button>
+                            </div>
+                            <button class="btn btn-primary verify-btn">Verify ID</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Password Page -->
+        <div class="page" id="password-page">
+            <div class="page-header">
+                <h1>Profile</h1>
+            </div>
+
+            <div class="password-container">
+                <div class="form-section">
+                    <h3>Change Password</h3>
+
+                    <form class="password-form">
+                        <div class="form-group">
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password" class="form-control" placeholder="Enter new password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm-password">Confirm Password</label>
+                            <input type="password" id="confirm-password" class="form-control" placeholder="Confirm new password" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payout Method Page -->
+        <div class="page" id="payout-method-page">
+            <div class="page-header">
+                <h1>Profile</h1>
+            </div>
+
+            <div class="payout-method-container">
+                <div class="form-section">
+
+
+                    <div class="beneficiary-section">
+                        <h3>Beneficiary Information</h3>
+
+                        <form class="payout-method-form">
+                            <div class="form-group">
+                                <label for="payout-amount-method">Payout Amount</label>
+                                <input type="number" id="payout-amount-method" class="form-control" placeholder="Enter the payout amount. Only numbers" min="50000" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="first-name-method">First Name</label>
+                                    <input type="text" id="first-name-method" class="form-control" placeholder="Enter your name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="last-name-method">Last Name</label>
+                                    <input type="text" id="last-name-method" class="form-control" placeholder="Enter last name" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="company-name-method">Company Name</label>
+                                <input type="text" id="company-name-method" class="form-control" placeholder="Enter the company name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tax-id-method">Tax Identification Number</label>
+                                <input type="text" id="tax-id-method" class="form-control" placeholder="Enter tax identification number">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="street-address-method">Street Address</label>
+                                <input type="text" id="street-address-method" class="form-control" placeholder="Enter street address" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="apt-suite-method">Apt, Suite</label>
+                                <input type="text" id="apt-suite-method" class="form-control" placeholder="Ex. #123">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="city-method">City</label>
+                                    <input type="text" id="city-method" class="form-control" placeholder="Enter your city" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="state-method">State</label>
+                                    <input type="text" id="state-method" class="form-control" placeholder="Enter your state/country" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="zip-code-method">Zip/Post Code</label>
+                                <input type="text" id="zip-code-method" class="form-control" placeholder="Enter zip/post code" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="payout-method-select">Select Your Payout Method</label>
+                                <select id="payout-method-select" class="form-control" required>
+                                    <option value="">Choose payout method</option>
+                                    <option value="paypal">PayPal</option>
+                                    <option value="skrill">Skrill</option>
+                                    <option value="wire-transfer">Wire Transfer</option>
+                                </select>
+                            </div>
+
+                            <div class="payout-method-buttons">
+                                <button type="submit" class="btn btn-primary set-method-btn">
+                                    <i class="fas fa-save"></i>
+                                    Set Payout Method
+                                </button>
+                                <button type="button" class="btn btn-secondary request-payout-btn" onclick="CribzConnect.showPage('payouts')">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    Request Payout
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payout Page -->
+        <div class="page" id="payouts-page">
+            <div class="page-header">
+                <h1>Wallet</h1>
+            </div>
+
+            <div class="payout-container">
+                <div class="balance-card">
+                    <div class="balance-info">
+                        <h3>Available Balance</h3>
+                        <div class="balance-amount">0 XAF</div>
+                        <p class="balance-note">Note: the minimum amount for a payout is 50,000 XAF</p>
+                    </div>
+                </div>
+
+                <div class="payout-actions">
+                    <button type="button" class="btn btn-secondary setup-payout-method-btn" onclick="CribzConnect.showPage('payout-method')">
+                        <i class="fas fa-cog"></i>
+                        Setup Payout Method
+                    </button>
+                </div>
+
+                <div class="form-section">
+                    <form class="payout-form">
+                        <div class="form-group">
+                            <label for="payout-amount">Payout Amount</label>
+                            <input type="number" id="payout-amount" class="form-control" placeholder="Enter the payout amount. Only numbers" min="50000" required>
+                        </div>
+
+                        <div class="payout-button-container">
+                            <button type="submit" class="btn btn-primary request-payout-submit-btn">
+                                <i class="fas fa-paper-plane"></i>
+                                Request Payout
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wallet Page -->
+        <div class="page" id="wallet-page">
+            <div class="page-header">
+                <h1>Wallet</h1>
+            </div>
+
+            <div class="wallet-container">
+                <!-- Total Earnings Section -->
+                <div class="earnings-overview">
+                    <div class="earnings-card">
+                        <div class="earnings-amount">0 XAF</div>
+                        <div class="earnings-details">
+                            <h3>Total Earnings</h3>
+                            <p>Host Fee: 10%</p>
+                            <p>Excluding the service fee, the host fee and the security deposit</p>
+                            <button class="btn btn-outline details-btn">
+                                <i class="fas fa-info-circle"></i>
+                                Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="wallet-stats-grid">
+                    <div class="wallet-stat-card">
+                        <div class="stat-amount">0 XAF</div>
+                        <h4>Available Balance</h4>
+                        <p>Represents the available amount you can currently withdraw to your account.</p>
+                    </div>
+
+                    <div class="wallet-stat-card">
+                        <div class="stat-amount">0</div>
+                        <h4>Total Reservations</h4>
+                        <p>Represents the total number of paid reservations you have received</p>
+                        <button class="btn btn-outline manage-btn">
+                            <i class="fas fa-cog"></i>
+                            Manage
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Earnings Section -->
+                <div class="wallet-section">
+                    <div class="section-header">
+                        <h2>Earnings</h2>
+                    </div>
+                    <div class="empty-state">
+                        <i class="fas fa-chart-line empty-icon"></i>
+                        <p>At the moment there are no earnings.</p>
+                    </div>
+                </div>
+
+                <!-- Payouts Section -->
+                <div class="wallet-section">
+                    <div class="section-header">
+                        <h2>Payouts</h2>
+                        <button class="btn btn-primary setup-payout-btn" onclick="CribzConnect.showPage('payout-method')">
+                            <i class="fas fa-plus"></i>
+                            Setup Payout
+                        </button>
+                    </div>
+                    <div class="empty-state">
+                        <i class="fas fa-money-bill-wave empty-icon"></i>
+                        <p>At the moment there are no payouts.</p>
+                        <small class="info-update">Info update</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings Page -->
+        <div class="page" id="earnings-page">
+            <div class="page-header">
+                <h1>Wallet</h1>
+            </div>
+
+            <div class="earnings-container">
+                <!-- Fee Section -->
+                <div class="fee-section">
+                    <button class="btn btn-info fee-btn">
+                        <i class="fas fa-percentage"></i>
+                        Fee: 10%
+                    </button>
+                </div>
+
+                <!-- History Section -->
+                <div class="earnings-history-section">
+                    <div class="section-header">
+                        <h2>History</h2>
+                    </div>
+                    <div class="empty-state">
+                        <i class="fas fa-chart-line empty-icon"></i>
+                        <p>At the moment there are no earnings.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Listings Page -->
+        <div class="page" id="listings-page">
+            <div class="page-header">
+                <h1>My Listings</h1>
+            </div>
+
+            <div class="listings-container">
+                <!-- Manage Section -->
+                <div class="listings-manage-section">
+                    <h2>Manage</h2>
+
+                    <!-- Search Section -->
+                    <div class="listings-search">
+                        <div class="search-input-group">
+                            <input type="text" class="form-control search-input" placeholder="Search listing">
+                            <button class="btn btn-primary search-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Buttons -->
+                    <div class="listings-filters">
+                        <button class="btn btn-filter active" data-filter="all">All</button>
+                        <button class="btn btn-filter" data-filter="published">Published</button>
+                        <button class="btn btn-filter" data-filter="draft">Draft</button>
+                        <button class="btn btn-filter" data-filter="pending">Pending</button>
+                    </div>
+                </div>
+
+                <!-- Listings Content -->
+                <div class="listings-content">
+                    <div class="empty-state">
+                        <i class="fas fa-home empty-icon"></i>
+                        <p>You don't have any listing at this moment.</p>
+                        <small class="info-update">Update info</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Bookings Page -->
+        <div class="page" id="bookings-page">
+            <div class="page-header">
+                <h1>My Bookings</h1>
+            </div>
+
+            <div class="bookings-container">
+                <!-- Reservations Section -->
+                <div class="reservations-section">
+                    <div class="bookings-header">
+                        <h2 class="manage-header">Manage</h2>
+                        <h2 class="reservations-header">Reservations</h2>
+                    </div>
+
+                    <!-- Bookings Content -->
+                    <div class="bookings-content">
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-check empty-icon"></i>
+                            <p>You don't have any reservation at this moment.</p>
+                            <small class="info-update">Update info</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Favorites Page -->
+        <div class="page" id="favorites-page">
+            <div class="page-header">
+                <h1>Favorites</h1>
+            </div>
+
+            <div class="favorites-container">
+                <!-- Manage Section -->
+                <div class="favorites-manage-section">
+                    <h2>Manage</h2>
+
+                    <!-- Favorites Content -->
+                    <div class="favorites-content">
+                        <div class="empty-state">
+                            <i class="fas fa-heart empty-icon"></i>
+                            <p>You don't have any favorite at this moment.</p>
+                            <small class="info-update">Current update info</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoices Page -->
+        <div class="page" id="invoices-page">
+            <div class="page-header">
+                <h1>Invoices</h1>
+            </div>
+
+            <div class="invoices-container">
+                <!-- Invoices Section -->
+                <div class="invoices-section">
+                    <div class="invoices-header">
+                        <h2 class="manage-header">Manage</h2>
+                        <h2 class="invoices-main-header">Invoices</h2>
+                    </div>
+
+                    <!-- Filter Controls -->
+                    <div class="invoices-filters">
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="start-date">Start Date</label>
+                                <input type="date" id="start-date" class="form-control date-input" placeholder="DD-MM-YY">
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="end-date">End Date</label>
+                                <input type="date" id="end-date" class="form-control date-input" placeholder="DD-MM-YY">
+                            </div>
+                        </div>
+
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label for="type-filter">Type</label>
+                                <div class="dropdown-container">
+                                    <select id="type-filter" class="form-control dropdown-select">
+                                        <option value="">Any</option>
+                                        <option value="reservation">Reservation</option>
+                                        <option value="fee">Fee</option>
+                                        <option value="upgrade">Upgrade to Features</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="status-filter">Status</label>
+                                <div class="dropdown-container">
+                                    <select id="status-filter" class="form-control dropdown-select">
+                                        <option value="">Any</option>
+                                        <option value="reservation">Reservation</option>
+                                        <option value="fee">Fee</option>
+                                        <option value="upgrade">Upgrade to Features</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Invoices Content -->
+                    <div class="invoices-content">
+                        <div class="empty-state">
+                            <i class="fas fa-file-invoice empty-icon"></i>
+                            <p>You don't have any invoices at this moment.</p>
+                            <small class="info-update">Update info</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Page -->
+        <div class="page" id="messages-page">
+            <div class="page-header">
+                <h1>Messages</h1>
+            </div>
+
+            <div class="messages-container">
+                <!-- Chat Layout -->
+                <div class="chat-layout">
+                    <!-- Users List Sidebar -->
+                    <div class="users-sidebar">
+                        <div class="users-header">
+                            <h3>Available Users</h3>
+                            <button class="btn btn-primary new-chat-btn" id="new-chat-btn">
+                                <i class="fas fa-plus"></i>
+                                New Chat
+                            </button>
+                        </div>
+
+                        <!-- Search Users -->
+                        <div class="users-search">
+                            <div class="search-input-group">
+                                <input type="text" class="form-control user-search-input" placeholder="Search users..." id="user-search">
+                                <button class="btn search-btn" type="button">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- User Categories -->
+                        <div class="user-categories">
+                            <button class="btn btn-category active" data-category="all">All Users</button>
+                            <button class="btn btn-category" data-category="hosts">Hosts</button>
+                            <button class="btn btn-category" data-category="renters">Renters</button>
+                        </div>
+
+                        <!-- Users List -->
+                        <div class="users-list" id="users-list">
+                            <!-- Sample Users -->
+                            <div class="user-item" data-user-id="1" data-category="host">
+                                <div class="user-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span class="status-indicator online"></span>
+                                </div>
+                                <div class="user-info">
+                                    <h4>Sarah Johnson</h4>
+                                    <p class="user-type">Host • 5 listings</p>
+                                    <span class="last-seen">Online</span>
+                                </div>
+                                <div class="message-count">2</div>
+                            </div>
+
+                            <div class="user-item" data-user-id="2" data-category="renter">
+                                <div class="user-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span class="status-indicator offline"></span>
+                                </div>
+                                <div class="user-info">
+                                    <h4>Mike Chen</h4>
+                                    <p class="user-type">Renter • Looking for apartment</p>
+                                    <span class="last-seen">2 hours ago</span>
+                                </div>
+                            </div>
+
+                            <div class="user-item" data-user-id="3" data-category="host">
+                                <div class="user-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span class="status-indicator online"></span>
+                                </div>
+                                <div class="user-info">
+                                    <h4>Emma Davis</h4>
+                                    <p class="user-type">Host • 3 listings</p>
+                                    <span class="last-seen">Online</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Area -->
+                    <div class="chat-area">
+                        <!-- Chat Header -->
+                        <div class="chat-header" id="chat-header">
+                            <div class="chat-user-info">
+                                <div class="chat-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <div class="chat-user-details">
+                                    <h3 id="chat-user-name">Select a user to start chatting</h3>
+                                    <p id="chat-user-status"></p>
+                                </div>
+                            </div>
+                            <div class="chat-actions">
+                                <button class="btn btn-secondary" id="view-profile-btn" title="View Profile">
+                                    <i class="fas fa-user"></i>
+                                </button>
+                                <button class="btn btn-secondary" id="call-btn" title="Video Call">
+                                    <i class="fas fa-video"></i>
+                                </button>
+                                <button class="btn btn-secondary" id="more-options-btn" title="More Options">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Messages Display -->
+                        <div class="messages-display" id="messages-display">
+                            <!-- Welcome State -->
+                            <div class="chat-welcome" id="chat-welcome">
+                                <i class="fas fa-comments welcome-icon"></i>
+                                <h3>Welcome to CribzConnect Chat</h3>
+                                <p>Connect with hosts and renters to discuss properties, negotiate deals, and arrange viewings.</p>
+                                <ul class="chat-features">
+                                    <li><i class="fas fa-check"></i> Real-time messaging</li>
+                                    <li><i class="fas fa-check"></i> Share property details</li>
+                                    <li><i class="fas fa-check"></i> Schedule viewings</li>
+                                    <li><i class="fas fa-check"></i> Negotiate terms</li>
+                                </ul>
+                                <button class="btn btn-primary start-chat-btn" id="start-chat-btn">
+                                    <i class="fas fa-comment"></i>
+                                    Start Your First Chat
+                                </button>
+                            </div>
+
+                            <!-- Chat Messages (Hidden initially) -->
+                            <div class="chat-messages" id="chat-messages" style="display: none;">
+                                <!-- Sample messages will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Message Input -->
+                        <div class="message-input-area" id="message-input-area" style="display: none;">
+                            <div class="message-input-container">
+                                <button class="btn attachment-btn" id="attachment-btn" title="Attach File">
+                                    <i class="fas fa-paperclip"></i>
+                                </button>
+                                <div class="input-wrapper">
+                                    <textarea class="message-input" id="message-input" placeholder="Type your message..." rows="1"></textarea>
+                                    <button class="btn emoji-btn" id="emoji-btn" title="Add Emoji">
+                                        <i class="fas fa-smile"></i>
+                                    </button>
+                                </div>
+                                <button class="btn btn-primary send-btn" id="send-btn" title="Send Message">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+
+                            <!-- Quick Actions -->
+                            <div class="quick-actions" id="quick-actions">
+                                <button class="btn btn-quick" data-action="schedule-viewing">
+                                    <i class="fas fa-calendar"></i>
+                                    Schedule Viewing
+                                </button>
+                                <button class="btn btn-quick" data-action="share-listing">
+                                    <i class="fas fa-home"></i>
+                                    Share Listing
+                                </button>
+                                <button class="btn btn-quick" data-action="make-offer">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    Make Offer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div class="page" id="settings-page">
+            <div class="page-header">
+                <h1>Settings</h1>
+            </div>
+
+            <div class="settings-container">
+                <!-- Currency & Regional Settings -->
+                <div class="settings-section">
+                    <div class="settings-header">
+                        <i class="fas fa-globe"></i>
+                        <h3>Currency & Regional Settings</h3>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <label for="currency-select" class="setting-label">
+                                <span class="label-text">Default Currency</span>
+                                <small class="label-description">Choose your preferred currency for displaying prices and earnings</small>
+                            </label>
+                            <select id="currency-select" class="form-control setting-control">
+                                <option value="XAF" selected>Central African CFA Franc (XAF)</option>
+                                <option value="FCFA">West African CFA Franc (FCFA)</option>
+                                <option value="USD">US Dollar (USD)</option>
+                                <option value="EUR">Euro (EUR)</option>
+                                <option value="GBP">British Pound (GBP)</option>
+                                <option value="NGN">Nigerian Naira (NGN)</option>
+                                <option value="GHS">Ghanaian Cedi (GHS)</option>
+                                <option value="ZAR">South African Rand (ZAR)</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="language-select" class="setting-label">
+                                <span class="label-text">Language</span>
+                                <small class="label-description">Select your preferred language</small>
+                            </label>
+                            <select id="language-select" class="form-control setting-control">
+                                <option value="en" selected>English</option>
+                                <option value="fr">Français</option>
+                                <option value="es">Español</option>
+                                <option value="pt">Português</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="timezone-select" class="setting-label">
+                                <span class="label-text">Timezone</span>
+                                <small class="label-description">Your current timezone for scheduling and notifications</small>
+                            </label>
+                            <select id="timezone-select" class="form-control setting-control">
+                                <option value="GMT" selected>GMT (Greenwich Mean Time)</option>
+                                <option value="WAT">WAT (West Africa Time)</option>
+                                <option value="EST">EST (Eastern Standard Time)</option>
+                                <option value="PST">PST (Pacific Standard Time)</option>
+                                <option value="CET">CET (Central European Time)</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="date-format-select" class="setting-label">
+                                <span class="label-text">Date Format</span>
+                                <small class="label-description">Choose how dates are displayed</small>
+                            </label>
+                            <select id="date-format-select" class="form-control setting-control">
+                                <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                <option value="DD-MM-YYYY">DD-MM-YYYY</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification Preferences -->
+                <div class="settings-section">
+                    <div class="settings-header">
+                        <i class="fas fa-bell"></i>
+                        <h3>Notification Preferences</h3>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-item toggle-item">
+                            <div class="setting-label">
+                                <span class="label-text">Email Notifications</span>
+                                <small class="label-description">Receive important updates via email</small>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="email-notifications" checked>
+                                <label for="email-notifications" class="toggle-label"></label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item toggle-item">
+                            <div class="setting-label">
+                                <span class="label-text">Push Notifications</span>
+                                <small class="label-description">Get instant notifications in your browser</small>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="push-notifications" checked>
+                                <label for="push-notifications" class="toggle-label"></label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item toggle-item">
+                            <div class="setting-label">
+                                <span class="label-text">SMS Notifications</span>
+                                <small class="label-description">Receive SMS for urgent matters</small>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="sms-notifications">
+                                <label for="sms-notifications" class="toggle-label"></label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item toggle-item">
+                            <div class="setting-label">
+                                <span class="label-text">Marketing Updates</span>
+                                <small class="label-description">Receive newsletters and promotional content</small>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="marketing-notifications">
+                                <label for="marketing-notifications" class="toggle-label"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacy & Security -->
+                <div class="settings-section">
+                    <div class="settings-header">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Privacy & Security</h3>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-item toggle-item">
+                            <div class="setting-label">
+                                <span class="label-text">Profile Visibility</span>
+                                <small class="label-description">Make your profile visible to other users</small>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="profile-visibility" checked>
+                                <label for="profile-visibility" class="toggle-label"></label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item toggle-item">
+                            <div class="setting-label">
+                                <span class="label-text">Show Online Status</span>
+                                <small class="label-description">Let others see when you're online</small>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="online-status" checked>
+                                <label for="online-status" class="toggle-label"></label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item toggle-item">
+                            <div class="setting-label">
+                                <span class="label-text">Two-Factor Authentication</span>
+                                <small class="label-description">Add an extra layer of security to your account</small>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="two-factor-auth">
+                                <label for="two-factor-auth" class="toggle-label"></label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="data-retention" class="setting-label">
+                                <span class="label-text">Data Retention</span>
+                                <small class="label-description">How long to keep your data</small>
+                            </label>
+                            <select id="data-retention" class="form-control setting-control">
+                                <option value="1year" selected>1 Year</option>
+                                <option value="2years">2 Years</option>
+                                <option value="3years">3 Years</option>
+                                <option value="indefinite">Indefinite</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Preferences -->
+                <div class="settings-section">
+                    <div class="settings-header">
+                        <i class="fas fa-user-cog"></i>
+                        <h3>Account Preferences</h3>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-item">
+                            <label for="theme-select" class="setting-label">
+                                <span class="label-text">Theme</span>
+                                <small class="label-description">Choose your preferred theme</small>
+                            </label>
+                            <select id="theme-select" class="form-control setting-control">
+                                <option value="light" selected>Light</option>
+                                <option value="dark">Dark</option>
+                                <option value="auto">Auto (System)</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item toggle-item">
+                            <div class="setting-label">
+                                <span class="label-text">Auto-Save Drafts</span>
+                                <small class="label-description">Automatically save your work as drafts</small>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="auto-save" checked>
+                                <label for="auto-save" class="toggle-label"></label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item toggle-item">
+                            <div class="setting-label">
+                                <span class="label-text">Advanced Features</span>
+                                <small class="label-description">Enable beta features and advanced tools</small>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="advanced-features">
+                                <label for="advanced-features" class="toggle-label"></label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="items-per-page" class="setting-label">
+                                <span class="label-text">Items Per Page</span>
+                                <small class="label-description">Number of items to show per page</small>
+                            </label>
+                            <select id="items-per-page" class="form-control setting-control">
+                                <option value="10">10</option>
+                                <option value="20" selected>20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Communication Settings -->
+                <div class="settings-section">
+                    <div class="settings-header">
+                        <i class="fas fa-comments"></i>
+                        <h3>Communication Settings</h3>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-item toggle-item">
+                            <div class="setting-label">
+                                <span class="label-text">Allow Direct Messages</span>
+                                <small class="label-description">Let other users send you direct messages</small>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="allow-messages" checked>
+                                <label for="allow-messages" class="toggle-label"></label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item toggle-item">
+                            <div class="setting-label">
+                                <span class="label-text">Message Read Receipts</span>
+                                <small class="label-description">Show when you've read messages</small>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="read-receipts" checked>
+                                <label for="read-receipts" class="toggle-label"></label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="response-time" class="setting-label">
+                                <span class="label-text">Expected Response Time</span>
+                                <small class="label-description">How quickly others can expect a response</small>
+                            </label>
+                            <select id="response-time" class="form-control setting-control">
+                                <option value="1hour">Within 1 hour</option>
+                                <option value="24hours" selected>Within 24 hours</option>
+                                <option value="3days">Within 3 days</option>
+                                <option value="1week">Within 1 week</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business Settings (for hosts) -->
+                <div class="settings-section">
+                    <div class="settings-header">
+                        <i class="fas fa-briefcase"></i>
+                        <h3>Business Settings</h3>
+                    </div>
+                    <div class="settings-content">
+                        <div class="setting-item toggle-item">
+                            <div class="setting-label">
+                                <span class="label-text">Instant Booking</span>
+                                <small class="label-description">Allow guests to book without approval</small>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="instant-booking">
+                                <label for="instant-booking" class="toggle-label"></label>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="default-cancellation" class="setting-label">
+                                <span class="label-text">Default Cancellation Policy</span>
+                                <small class="label-description">Your standard cancellation policy</small>
+                            </label>
+                            <select id="default-cancellation" class="form-control setting-control">
+                                <option value="flexible">Flexible</option>
+                                <option value="moderate" selected>Moderate</option>
+                                <option value="strict">Strict</option>
+                                <option value="super-strict">Super Strict</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="minimum-stay" class="setting-label">
+                                <span class="label-text">Default Minimum Stay</span>
+                                <small class="label-description">Minimum nights for new listings</small>
+                            </label>
+                            <select id="minimum-stay" class="form-control setting-control">
+                                <option value="1">1 night</option>
+                                <option value="2">2 nights</option>
+                                <option value="3" selected>3 nights</option>
+                                <option value="7">1 week</option>
+                                <option value="30">1 month</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item toggle-item">
+                            <div class="setting-label">
+                                <span class="label-text">Professional Host Mode</span>
+                                <small class="label-description">Enable advanced host features and analytics</small>
+                            </div>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="professional-mode">
+                                <label for="professional-mode" class="toggle-label"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Settings Button -->
+                <div class="settings-actions">
+                    <button type="button" class="btn btn-primary save-settings-btn">
+                        <i class="fas fa-save"></i>
+                        Save All Settings
+                    </button>
+                    <button type="button" class="btn btn-secondary reset-settings-btn">
+                        <i class="fas fa-undo"></i>
+                        Reset to Default
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Listing Page -->
+             <div class="page" id="add-listing-page">
+            <div class="page-header">
+                <h1>Add Listing</h1>
+            </div>
+
+            <div class="add-listing-container">
+                <div class="form-section">
+                    <div class="form-header">
+                        <h3>Information</h3>
+                        <p class="form-subtitle">Fill all the mandatory fields</p>
+                    </div>
+    <form class="add-listing-form" 
+      action="https://real-estate-backend-d9es.onrender.com/api/listings" 
+      method="POST" 
+      enctype="multipart/form-data">
+
+    <!-- Images -->
+    <div class="form-group">
+        <label for="property-images" class="form-label">Upload Property Images</label>
+        <input type="file" id="property-images" name="images" class="form-control" accept="image/*" multiple required>
+        <p class="form-subtitle">You can upload multiple images</p>
+    </div>
+
+    <!-- Property Type -->
+    <div class="form-group">
+        <label class="form-label">What kind of place do you want to list?</label>
+        <div class="property-type-options">
+            <div class="radio-option">
+                <input type="radio" id="entire-place" name="propertyType" value="entire-place" required>
+                <label for="entire-place" class="radio-label">Entire Place</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="private-room" name="propertyType" value="private-room" required>
+                <label for="private-room" class="radio-label">Private Room</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="shared-room" name="propertyType" value="shared-room" required>
+                <label for="shared-room" class="radio-label">Shared Room</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Title -->
+    <div class="form-group">
+        <label for="property-title" class="form-label">Title</label>
+        <input type="text" id="property-title" name="title" class="form-control" placeholder="Enter the Property name" required>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+        <label class="form-label">Enter your property Description</label>
+        <div class="description-editor">
+            <div class="editor-toolbar">
+                <button type="button" class="editor-btn" data-command="bold" title="Bold">
+                    <i class="fas fa-bold"></i>
+                </button>
+                <button type="button" class="editor-btn" data-command="italic" title="Italic">
+                    <i class="fas fa-italic"></i>
+                </button>
+                <button type="button" class="editor-btn" data-command="insertParagraph" title="Paragraph">
+                    <i class="fas fa-paragraph"></i>
+                </button>
+            </div>
+            <div class="editor-content" contenteditable="true" data-placeholder="Enter your property description here..."></div>
+            <textarea id="property-description" name="description" style="display: none;" required></textarea>
+        </div>
+    </div>
+
+    <!-- Type of listing -->
+    <div class="form-group">
+        <label for="listing-type" class="form-label">Type of listing</label>
+        <select id="listing-type" name="listingType" class="form-control" required>
+            <option value="">Select listing type</option>
+            <option value="Rent">RENT</option>
+            <option value="Sale">FOR SALE</option>
+        </select>
+    </div>
+
+    <!-- Property Details -->
+    <div class="property-details-grid">
+        <div class="form-group">
+            <label for="bedrooms" class="form-label">Number of bedrooms</label>
+            <input type="number" id="bedrooms" name="bedrooms" class="form-control" placeholder="Enter number of bedrooms" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label for="property-address" class="form-label">Property Address</label>
+            <input type="text" id="property-address" name="address" class="form-control" placeholder="Enter the property address" required>
+        </div>
+
+        <div class="form-group">
+            <label for="beds" class="form-label">Number of beds</label>
+            <input type="number" id="beds" name="beds" class="form-control" placeholder="Enter number of beds" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label for="bathrooms" class="form-label">Number of bathrooms</label>
+            <input type="number" id="bathrooms" name="bathrooms" class="form-control" placeholder="Enter number of bathrooms" min="0" step="0.5" required>
+        </div>
+
+        <div class="form-group">
+            <label for="rooms" class="form-label">Number of Room</label>
+            <input type="number" id="rooms" name="rooms" class="form-control" placeholder="Enter number of rooms" min="1" required>
+        </div>
+        <div class="form-group">
+      <label for="guests" class="form-label">Number of Guests</label>
+      <input type="number" id="guests" name="guests" class="form-control" min="1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="property-price" class="form-label">Price</label>
+            <input type="number" id="property-price" name="price" class="form-control" placeholder="Enter the property price" min="0" required>
+        </div>
+
+        <div class="form-group">
+            <label for="size" class="form-label">Size</label>
+            <input type="number" id="size" name="size" class="form-control" placeholder="Enter the size. Only numbers" min="0" required>
+        </div>
+    </div>
+
+    <!-- Unit of measure -->
+    <div class="form-group">
+        <label for="unit-measure" class="form-label">Unit of measure</label>
+        <input type="text" id="unit-measure" name="unitMeasure" class="form-control" placeholder="Enter the unit of measure. Ex. SqFt" required>
+    </div>
+
+    <!-- Affiliate Booking Link -->
+    <div class="form-group">
+        <label for="affiliate-link" class="form-label">Affiliate Booking Link</label>
+        <input type="url" id="affiliate-link" name="affiliateLink" class="form-control" placeholder="Enter Affiliate Booking Link">
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+        <button type="button" class="btn btn-draft">Save as draft</button>
+        <button type="submit" class="btn btn-save">Save</button>
+    </div>
+</form>
+
+        <!-- Profile Status Page -->
+        <div class="page" id="profile-status-page">
+            <div class="page-header">
+                <h1>Profile Status</h1>
+            </div>
+
+            <div class="profile-status-container">
+                <!-- User Introduction -->
+                <div class="profile-intro-section">
+                    <div class="user-greeting">
+                        <h2>Hi, I'm Theophilus</h2>
+                        <div class="verification-status">
+                            <span class="languages-label">Languages</span>
+                            <div class="profile-status-indicator">
+                                <span class="status-text">Profile Status</span>
+                                <span class="verification-badge not-verified">
+                                    <i class="fas fa-times"></i>
+                                    Not Verified
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Navigation Slides -->
+                <div class="profile-nav-slides">
+                    <div class="slide-item" onclick="showProfileSection('listings')">
+                        <i class="fas fa-home"></i>
+                        <h3>Listings</h3>
+                        <p>Click to see listings items</p>
+                    </div>
+                    <div class="slide-item" onclick="showProfileSection('experiences')">
+                        <i class="fas fa-star"></i>
+                        <h3>Experiences</h3>
+                        <p>Click to see user experiences</p>
+                    </div>
+                    <div class="slide-item" onclick="showProfileSection('reviews')">
+                        <i class="fas fa-comment-alt"></i>
+                        <h3>Reviews</h3>
+                        <p>Click to see user or host reviews</p>
+                    </div>
+                </div>
+
+                <!-- About Section -->
+                <div class="about-section">
+                    <h3>About CribzConnect</h3>
+                    <p>CribzConnect is a commercial real estate platform that connects renters and hosts. We offer a wide variety of properties to choose from, including apartments, houses, offices, and retail spaces.</p>
+                </div>
+
+                <!-- Explore Section -->
+                <div class="explore-section">
+                    <h3>Explore</h3>
+                    <div class="explore-links">
+                        <a href="#apartments" class="explore-link" onclick="navigateToHome('apartments')">
+                            <i class="fas fa-building"></i>
+                            <span>Apartments</span>
+                        </a>
+                        <a href="#single-rooms" class="explore-link" onclick="navigateToHome('single-rooms')">
+                            <i class="fas fa-bed"></i>
+                            <span>Single Rooms</span>
+                        </a>
+                        <a href="#studios" class="explore-link" onclick="navigateToHome('studios')">
+                            <i class="fas fa-home"></i>
+                            <span>Studios</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Company Section -->
+                <div class="company-section">
+                    <h3>Company</h3>
+                    <div class="company-links">
+                        <a href="#blog" class="company-link" onclick="navigateToHome('blog')">
+                            <i class="fas fa-blog"></i>
+                            <span>Blog & News</span>
+                        </a>
+                        <a href="#listings" class="company-link" onclick="showPage('listings')">
+                            <i class="fas fa-list"></i>
+                            <span>Listings</span>
+                        </a>
+                        <a href="#contact" class="company-link" onclick="showContactInfo()">
+                            <i class="fas fa-envelope"></i>
+                            <span>Contact Us</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="contact-info-section" id="contact-info" style="display: none;">
+                    <h3>Contact Information</h3>
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Mile 2 Limbe, South West, Cameroon</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+237 681 101 063</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>info@roomfinder237.com</span>
+                        </div>
+                        <button class="btn btn-primary contact-btn" onclick="openContactForm()">
+                            Contact Us
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </main>
+    </div>
+
+    <!-- Overlay for mobile -->
+    <div class="overlay" id="overlay"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
