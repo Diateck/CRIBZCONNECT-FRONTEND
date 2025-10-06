@@ -4244,34 +4244,42 @@ textarea.form-control {
     }
 }
 
-/* Mobile: square image cards and full-width layout */
+/* Mobile: tighter square listing cards for small phones */
 @media (max-width: 768px) {
-    /* make cards noticeably smaller and centered so they fit narrow phones */
-    .listings-content { padding: 10px !important; box-shadow: none !important; background: transparent !important; }
+    .listings-content { padding: 8px !important; box-shadow: none !important; background: transparent !important; }
     .enhanced-listing-card {
-        width: 92% !important;
-        max-width: 340px !important;
-        margin: 10px auto !important;
-        border-radius: 12px !important;
+        width: 86% !important;
+        max-width: 320px !important;
+        min-width: 0 !important;
+        margin: 8px auto !important;
+        border-radius: 10px !important;
         overflow: hidden !important;
         display: flex !important;
         flex-direction: column !important;
-        box-shadow: 0 6px 14px rgba(0,0,0,0.06) !important;
-        transition: transform 0.12s ease, box-shadow 0.12s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.06) !important;
     }
-    .enhanced-listing-card:hover { transform: none !important; }
-    .listing-card-image-section { width: 100% !important; aspect-ratio: 1 / 1 !important; height: auto !important; border-radius: 12px 12px 0 0 !important; overflow: hidden !important; background: #f4f4f4 !important; }
+    .listing-card-image-section { width: 100% !important; aspect-ratio: 1 / 1 !important; height: auto !important; border-radius: 10px 10px 0 0 !important; overflow: hidden !important; background: #f8f8f8 !important; }
     .listing-card-image { width: 100% !important; height: 100% !important; object-fit: cover !important; object-position: center !important; display: block !important; }
-    .listing-card-content-section { padding: 10px !important; }
-    .listing-card-title { font-size: 14px !important; line-height: 1.15 !important; margin-bottom: 6px !important; display: -webkit-box !important; -webkit-line-clamp: 2 !important; line-clamp: 2 !important; -webkit-box-orient: vertical !important; overflow: hidden !important; text-overflow: ellipsis !important; }
-    .listing-card-price { font-size: 15px !important; }
-    .listing-card-actions { margin-top: 8px !important; display: flex !important; gap: 8px !important; flex-wrap: wrap; }
-    .edit-listing-btn, .delete-listing-btn { padding: 7px 12px !important; font-size: 13px !important; }
+    .listing-card-content-section { padding: 8px !important; }
+    .listing-card-title { font-size: 13px !important; line-height: 1.12 !important; margin-bottom: 6px !important; display: -webkit-box !important; -webkit-line-clamp: 2 !important; line-clamp: 2 !important; -webkit-box-orient: vertical !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+    .listing-card-price { font-size: 14px !important; }
+    .listing-card-specs { font-size: 12px !important; }
+    .listing-card-actions { margin-top: 6px !important; display: flex !important; gap: 6px !important; flex-wrap: wrap; }
+    .edit-listing-btn, .delete-listing-btn { padding: 6px 10px !important; font-size: 12px !important; }
 }
+
 @media (max-width: 420px) {
-    /* slightly smaller card on very small screens */
-    .enhanced-listing-card { width: calc(100% - 24px) !important; max-width: 360px !important; margin: 10px auto !important; }
-    .listing-card-image-section { aspect-ratio: 1 / 1 !important; }
-    .listing-card-title { font-size: 14px !important; }
-    .listing-card-price { font-size: 15px !important; }
+    .enhanced-listing-card { width: 90% !important; max-width: 300px !important; min-width: 0 !important; margin: 8px auto !important; }
+    .listing-card-title { font-size: 13px !important; }
+    .listing-card-price { font-size: 13px !important; }
+    .listing-card-specs { font-size: 11px !important; }
+    .edit-listing-btn, .delete-listing-btn { padding: 6px 10px !important; font-size: 12px !important; }
+}
+
+@media (max-width: 375px) {
+    .enhanced-listing-card { width: 92% !important; max-width: 280px !important; min-width: 0 !important; margin: 6px auto !important; }
+    .listing-card-title { font-size: 12px !important; }
+    .listing-card-price { font-size: 12px !important; }
+    .listing-card-specs { font-size: 10px !important; }
+    .edit-listing-btn, .delete-listing-btn { padding: 5px 8px !important; font-size: 11px !important; }
 }
