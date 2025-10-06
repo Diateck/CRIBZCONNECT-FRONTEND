@@ -208,6 +208,56 @@ body {
 .close-sidebar {
     display: none;
     background: none;
+            .enhanced-listing-card {
+                width: 100%;
+                min-width: 0;
+                max-width: 100%;
+                margin: 12px 0;
+                border-radius: 12px;
+            }
+            .listing-card-image-section {
+                height: 160px;
+                border-top-left-radius: 12px;
+                border-top-right-radius: 12px;
+            }
+            .listing-card-content-section {
+                padding: 12px;
+                gap: 8px;
+            }
+            .listing-card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                margin-bottom: 6px;
+            }
+            .listing-card-price {
+                font-size: 16px;
+            }
+            .listing-card-badge {
+                font-size: 11px;
+                padding: 5px 12px;
+            }
+            .listing-card-title {
+                font-size: 15px;
+            }
+            .listing-card-specs span {
+                font-size: 13px;
+            }
+            .listing-card-actions {
+                flex-direction: row;
+                gap: 10px;
+            }
+            .edit-listing-btn, .delete-listing-btn {
+                font-size: 15px;
+                padding: 8px 18px;
+                border-radius: 8px;
+            }
+            .listings-content {
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+                padding: 0.5rem;
+            }
     border: none;
     font-size: 1.2rem;
     color: #666;
@@ -244,6 +294,56 @@ body {
 
 .desktop-user-menu {
     position: relative;
+            .enhanced-listing-card {
+                width: 100%;
+                min-width: 0;
+                max-width: 100%;
+                margin: 10px 0;
+                border-radius: 10px;
+            }
+            .listing-card-image-section {
+                height: 120px;
+                border-top-left-radius: 10px;
+                border-top-right-radius: 10px;
+            }
+            .listing-card-content-section {
+                padding: 8px;
+                gap: 6px;
+            }
+            .listing-card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                margin-bottom: 4px;
+            }
+            .listing-card-price {
+                font-size: 14px;
+            }
+            .listing-card-badge {
+                font-size: 10px;
+                padding: 4px 10px;
+            }
+            .listing-card-title {
+                font-size: 13px;
+            }
+            .listing-card-specs span {
+                font-size: 12px;
+            }
+            .listing-card-actions {
+                flex-direction: row;
+                gap: 8px;
+            }
+            .edit-listing-btn, .delete-listing-btn {
+                font-size: 14px;
+                padding: 7px 14px;
+                border-radius: 7px;
+            }
+            .listings-content {
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+                padding: 0.25rem;
+            }
 }
 
 .desktop-dropdown {
