@@ -394,7 +394,7 @@ body {
 }
 
 .page.active {
-    display: block;
+    display: block !important;
 }
 
 .page-header {
@@ -923,6 +923,7 @@ textarea.form-control {
 }
 
 .page.active {
+    display: block !important;
     animation: fadeIn 0.3s ease;
 }
 
