@@ -41,6 +41,8 @@ function renderListings(listings) {
         </div>
         `;
     });
+        // Store the last rendered listings for lookup
+        window.lastRenderedListings = listings;
 }
 
 async function loadListingsFromBackend() {
@@ -94,7 +96,13 @@ document.addEventListener('click', async function(e) {
         const listingId = btn.getAttribute('data-id');
         // Find the card and check if it's a hotel
         const card = btn.closest('.listing-card');
-        const isHotel = card && card.querySelector('.listing-card-badge')?.textContent === 'Hotel';
+        let isHotel = false;
+        if (card) {
+            const id = card.getAttribute('data-id');
+            const listingsArr = window.lastRenderedListings || [];
+            const found = listingsArr.find(l => l._id === id);
+            isHotel = found && found.listingType === 'Hotel';
+        }
         if (confirm('Are you sure you want to delete this item?')) {
             try {
                 const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -121,7 +129,13 @@ document.addEventListener('click', async function(e) {
         const btn = e.target.closest('.edit-listing-btn');
         const listingId = btn.getAttribute('data-id');
         const card = btn.closest('.listing-card');
-        const isHotel = card && card.querySelector('.listing-card-badge')?.textContent === 'Hotel';
+        let isHotel = false;
+        if (card) {
+            const id = card.getAttribute('data-id');
+            const listingsArr = window.lastRenderedListings || [];
+            const found = listingsArr.find(l => l._id === id);
+            isHotel = found && found.listingType === 'Hotel';
+        }
         // Fetch details and show edit modal
         try {
             const url = isHotel
