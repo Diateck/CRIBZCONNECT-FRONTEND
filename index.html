@@ -8,7 +8,73 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Mobile Header -->
+        <!-- Mobile Header -->
+        <!-- Edit Listing Modal -->
+        <div id="editListingModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close-modal" id="closeEditModal">&times;</span>
+                <h2>Edit Listing</h2>
+                <form id="editListingForm">
+                    <input type="hidden" name="_id" id="editListingId" />
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" name="title" id="editTitle" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="description" id="editDescription" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <input type="text" name="propertyType" id="editPropertyType" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Listing Type</label>
+                        <select name="listingType" id="editListingType" required>
+                            <option value="Sale">Sale</option>
+                            <option value="Rent">Rent</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Bedrooms</label>
+                        <input type="number" name="bedrooms" id="editBedrooms" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Bathrooms</label>
+                        <input type="number" name="bathrooms" id="editBathrooms" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Beds</label>
+                        <input type="number" name="beds" id="editBeds" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Rooms</label>
+                        <input type="number" name="rooms" id="editRooms" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Guests</label>
+                        <input type="number" name="guests" id="editGuests" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Size (sq. ft.)</label>
+                        <input type="number" name="size" id="editSize" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Unit Measure</label>
+                        <input type="text" name="unitMeasure" id="editUnitMeasure" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Price</label>
+                        <input type="number" name="price" id="editPrice" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" name="address" id="editAddress" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
     <header class="mobile-header">
         <button class="menu-toggle" id="menuToggle">
             <i class="fas fa-bars"></i>
