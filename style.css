@@ -4246,24 +4246,27 @@ textarea.form-control {
 
 /* Mobile: square image cards and full-width layout */
 @media (max-width: 768px) {
-    /* make cards a little narrower than full width and centered so they look like tidy boxes */
-    .listings-content { padding: 12px !important; box-shadow: none !important; background: transparent !important; }
+    /* make cards noticeably smaller and centered so they fit narrow phones */
+    .listings-content { padding: 10px !important; box-shadow: none !important; background: transparent !important; }
     .enhanced-listing-card {
-        width: calc(100% - 32px) !important;
-        max-width: 420px !important;
-        margin: 12px auto !important;
+        width: 92% !important;
+        max-width: 340px !important;
+        margin: 10px auto !important;
         border-radius: 12px !important;
         overflow: hidden !important;
         display: flex !important;
         flex-direction: column !important;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.08) !important;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.06) !important;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
     }
-    .enhanced-listing-card:hover { transform: translateY(-4px); }
+    .enhanced-listing-card:hover { transform: none !important; }
     .listing-card-image-section { width: 100% !important; aspect-ratio: 1 / 1 !important; height: auto !important; border-radius: 12px 12px 0 0 !important; overflow: hidden !important; background: #f4f4f4 !important; }
-    .listing-card-image { width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; }
-    .listing-card-content-section { padding: 12px !important; }
-    .listing-card-actions { margin-top: 10px !important; display: flex !important; gap: 10px !important; flex-wrap: wrap; }
+    .listing-card-image { width: 100% !important; height: 100% !important; object-fit: cover !important; object-position: center !important; display: block !important; }
+    .listing-card-content-section { padding: 10px !important; }
+    .listing-card-title { font-size: 14px !important; line-height: 1.15 !important; margin-bottom: 6px !important; display: -webkit-box !important; -webkit-line-clamp: 2 !important; line-clamp: 2 !important; -webkit-box-orient: vertical !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+    .listing-card-price { font-size: 15px !important; }
+    .listing-card-actions { margin-top: 8px !important; display: flex !important; gap: 8px !important; flex-wrap: wrap; }
+    .edit-listing-btn, .delete-listing-btn { padding: 7px 12px !important; font-size: 13px !important; }
 }
 @media (max-width: 420px) {
     /* slightly smaller card on very small screens */
