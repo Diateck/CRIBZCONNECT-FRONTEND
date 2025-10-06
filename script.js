@@ -1,10 +1,11 @@
     // Fetch and update dashboard stats for logged-in user
     async function updateDashboardStats() {
+        const API_BASE_URL = 'https://cribzconnect-backend.onrender.com'; // <-- use your actual backend URL
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         if (!user || !user.token) return;
         try {
             // Fetch user's listings
-            const res = await fetch('http://localhost:5000/api/listings/me', {
+            const res = await fetch(`${API_BASE_URL}/api/listings/me`, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
