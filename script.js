@@ -4,18 +4,23 @@
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         if (!user || !user.token) return;
         try {
-            // Fetch user's listings
-            const res = await fetch(`${API_BASE_URL}/api/listings/me`, {
-                headers: {
-                    'Authorization': `Bearer ${user.token}`
-                }
-            });
-            if (!res.ok) throw new Error('Failed to fetch listings');
-            const listings = await res.json();
-            // Update Active Listings count
+            // Fetch user's listings and hotels
+            const [listingsRes, hotelsRes] = await Promise.all([
+                fetch(`${API_BASE_URL}/api/listings/me`, {
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                }),
+                fetch(`${API_BASE_URL}/api/hotels/me`, {
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                })
+            ]);
+            if (!listingsRes.ok) throw new Error('Failed to fetch listings');
+            if (!hotelsRes.ok) throw new Error('Failed to fetch hotels');
+            const listings = await listingsRes.json();
+            const hotels = await hotelsRes.json();
+            // Update Active Listings count (listings + hotels)
             const activeListingsEl = document.querySelector('.stat-card .stat-content h3');
             if (activeListingsEl) {
-                activeListingsEl.textContent = listings.length;
+                activeListingsEl.textContent = listings.length + hotels.length;
             }
         } catch (err) {
             console.error('Dashboard stats error:', err);

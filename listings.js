@@ -50,14 +50,36 @@ async function loadListingsFromBackend() {
             renderListings([]);
             return;
         }
-        const response = await fetch('https://cribzconnect-backend.onrender.com/api/listings/me', {
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
-        });
-        if (!response.ok) throw new Error('Failed to fetch listings');
-        const listings = await response.json();
-        renderListings(listings);
+        // Fetch both listings and hotels
+        const [listingsRes, hotelsRes] = await Promise.all([
+            fetch('https://cribzconnect-backend.onrender.com/api/listings/me', {
+                headers: { 'Authorization': `Bearer ${user.token}` }
+            }),
+            fetch('https://cribzconnect-backend.onrender.com/api/hotels/me', {
+                headers: { 'Authorization': `Bearer ${user.token}` }
+            })
+        ]);
+        if (!listingsRes.ok) throw new Error('Failed to fetch listings');
+        if (!hotelsRes.ok) throw new Error('Failed to fetch hotels');
+        const listings = await listingsRes.json();
+        const hotels = await hotelsRes.json();
+        // Normalize hotel objects to match listing card rendering
+        const normalizedHotels = hotels.map(hotel => ({
+            ...hotel,
+            title: hotel.name,
+            listingType: 'Hotel',
+            bedrooms: hotel.rooms,
+            bathrooms: hotel.bathrooms || 1,
+            beds: hotel.beds || 1,
+            size: hotel.size || '',
+            unitMeasure: hotel.unitMeasure || '',
+            images: hotel.images || [],
+            price: hotel.price,
+            address: hotel.address
+        }));
+        // Merge listings and hotels
+        const allListings = [...listings, ...normalizedHotels];
+        renderListings(allListings);
     } catch (err) {
         showNotification('Could not load listings: ' + err.message, 'error');
     }
