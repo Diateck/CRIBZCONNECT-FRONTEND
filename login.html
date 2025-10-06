@@ -14,46 +14,50 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); /* Blue gradient to match logo */
+            background: url('login-background.jpg') no-repeat center center fixed;
+            background-size: cover;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            flex-wrap: wrap; /* Allow content to wrap */
+            flex-wrap: wrap;
         }
 
         .login-container {
-            background: rgba(0, 123, 255, 0.95); /* Blue background to match logo */
+            background: rgba(255,255,255,0.97);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             width: 100%;
-            max-width: 400px; /* Fixed width for positioning */
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            max-width: 400px;
+            position: relative;
             z-index: 10;
-            margin: 0;
+            margin: 0 40px;
         }
 
-        .image-container {
-            flex: 1;
+        .main-content {
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
-            padding: 20px;
-            padding-right: 440px; /* Make room for the positioned form */
-            box-sizing: border-box;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .image-container img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        .welcome-message {
+            flex: 1;
+            margin-right: 40px;
+            color: #fff;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 40px;
+            box-sizing: border-box;
+            max-width: 500px;
         }
 
         .login-header {
@@ -455,14 +459,12 @@
         Back to Home
     </a>
 
-    <!-- City landscape image -->
-    <div class="image-container">
-    <img src="login-background.jpg" alt="User login background" 
-             onerror="console.log('Image failed to load:', this.src); this.style.display='none';"
-             onload="console.log('Image loaded successfully:', this.src);">
-    </div>
-
-    <div class="login-container">
+    <div class="main-content">
+        <div class="welcome-message">
+            Welcome to Cribzconnect<br>
+            <span style="font-size:1.3rem;font-weight:400;display:block;margin-top:20px;">Get your dream properties</span>
+        </div>
+        <div class="login-container">
         <div class="login-header">
             <div class="logo">
                 <img src="logo.png?v=2" alt="CribzConnect" class="login-logo-image" 
