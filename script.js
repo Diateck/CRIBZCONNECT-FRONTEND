@@ -1728,7 +1728,53 @@ document.addEventListener('DOMContentLoaded', () => {
     setupLiveVerificationForm();
     setupLivePaymentForm();
     setupLivePasswordForm();
+    setupProfileViewEditToggle();
 });
+
+function setupProfileViewEditToggle() {
+    const infoForm = document.querySelector('.info-form');
+    if (!infoForm) return;
+    const saveBtn = infoForm.querySelector('button[type="submit"]');
+    let editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'btn btn-secondary profile-edit-btn';
+    editBtn.textContent = 'Edit';
+    saveBtn.insertAdjacentElement('afterend', editBtn);
+
+    function showDetails() {
+        let user = JSON.parse(localStorage.getItem('user')) || {};
+        infoForm.querySelectorAll('input, select').forEach(input => {
+            input.setAttribute('readonly', true);
+            input.classList.add('profile-view');
+        });
+        saveBtn.style.display = 'none';
+        editBtn.style.display = 'inline-block';
+    }
+
+    function enableEdit() {
+        infoForm.querySelectorAll('input, select').forEach(input => {
+            input.removeAttribute('readonly');
+            input.classList.remove('profile-view');
+        });
+        saveBtn.style.display = 'inline-block';
+        editBtn.style.display = 'none';
+    }
+
+    // On save, show details
+    infoForm.addEventListener('submit', function(e) {
+        setTimeout(showDetails, 500); // Wait for backend update
+    });
+    // On edit, enable editing
+    editBtn.addEventListener('click', enableEdit);
+
+    // Initial state: show details if user data exists
+    let user = JSON.parse(localStorage.getItem('user')) || {};
+    if (user && user.username) {
+        showDetails();
+    } else {
+        enableEdit();
+    }
+}
 
 function setupLiveVerificationForm() {
     const idUploadBtn = document.querySelector('.verify-btn');
