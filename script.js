@@ -1729,7 +1729,155 @@ document.addEventListener('DOMContentLoaded', () => {
     setupLivePaymentForm();
     setupLivePasswordForm();
     setupProfileViewEditToggle();
+    setupLiveBioForm();
+    setupLiveAddressForm();
+    setupLiveEmergencyForm();
+    setupLiveSocialForm();
 });
+
+function setupLiveBioForm() {
+    const bioForm = document.querySelector('.form-section form');
+    if (!bioForm) return;
+    bioForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        let user = JSON.parse(localStorage.getItem('user')) || {};
+        user.bio = bioForm.querySelector('textarea').value;
+        try {
+            const res = await fetch('http://localhost:5000/api/user/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: JSON.stringify({ bio: user.bio })
+            });
+            const result = await res.json();
+            if (res.ok) {
+                user = { ...user, ...result };
+                localStorage.setItem('user', JSON.stringify(user));
+                showNotification('Bio updated successfully!', 'success');
+            } else {
+                showNotification(result.message || 'Bio update failed.', 'error');
+            }
+        } catch (err) {
+            showNotification('Server error. Please try again.', 'error');
+        }
+    });
+}
+
+function setupLiveAddressForm() {
+    const addressForm = document.querySelector('.address-form');
+    if (!addressForm) return;
+    addressForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        let user = JSON.parse(localStorage.getItem('user')) || {};
+        user.address = {
+            street: addressForm.querySelector('input[placeholder="Enter street address"]').value,
+            apt: addressForm.querySelector('input[placeholder="Ex. #123"]').value,
+            city: addressForm.querySelector('input[placeholder="Enter your city"]').value,
+            state: addressForm.querySelector('input[placeholder="Enter your state"]').value,
+            zip: addressForm.querySelector('input[placeholder="Enter zip code"]').value,
+            neighborhood: addressForm.querySelector('input[placeholder="Neighborhood"]').value,
+            country: addressForm.querySelector('input[placeholder="Country"]').value
+        };
+        try {
+            const res = await fetch('http://localhost:5000/api/user/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: JSON.stringify({ address: user.address })
+            });
+            const result = await res.json();
+            if (res.ok) {
+                user = { ...user, ...result };
+                localStorage.setItem('user', JSON.stringify(user));
+                showNotification('Address updated successfully!', 'success');
+            } else {
+                showNotification(result.message || 'Address update failed.', 'error');
+            }
+        } catch (err) {
+            showNotification('Server error. Please try again.', 'error');
+        }
+    });
+}
+
+function setupLiveEmergencyForm() {
+    const emergencyForm = document.querySelector('.emergency-form');
+    if (!emergencyForm) return;
+    emergencyForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        let user = JSON.parse(localStorage.getItem('user')) || {};
+        user.emergency = {
+            name: emergencyForm.querySelector('input[placeholder="Enter Name"]').value,
+            relationship: emergencyForm.querySelector('input[placeholder="Enter Relationship"]').value,
+            email: emergencyForm.querySelector('input[placeholder="Enter contact email address"]').value,
+            phone: emergencyForm.querySelector('input[placeholder="Enter the phone number"]').value
+        };
+        try {
+            const res = await fetch('http://localhost:5000/api/user/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: JSON.stringify({ emergency: user.emergency })
+            });
+            const result = await res.json();
+            if (res.ok) {
+                user = { ...user, ...result };
+                localStorage.setItem('user', JSON.stringify(user));
+                showNotification('Emergency contact updated!', 'success');
+            } else {
+                showNotification(result.message || 'Emergency contact update failed.', 'error');
+            }
+        } catch (err) {
+            showNotification('Server error. Please try again.', 'error');
+        }
+    });
+}
+
+function setupLiveSocialForm() {
+    const socialForm = document.querySelector('.social-form');
+    if (!socialForm) return;
+    socialForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        let user = JSON.parse(localStorage.getItem('user')) || {};
+        user.social = {
+            facebook: socialForm.querySelector('input[placeholder="URL"]:nth-of-type(1)').value,
+            twitter: socialForm.querySelector('input[placeholder="URL"]:nth-of-type(2)').value,
+            linkedin: socialForm.querySelector('input[placeholder="URL"]:nth-of-type(3)').value,
+            googleplus: socialForm.querySelector('input[placeholder="URL"]:nth-of-type(4)').value,
+            instagram: socialForm.querySelector('input[placeholder="URL"]:nth-of-type(5)').value,
+            pinterest: socialForm.querySelector('input[placeholder="URL"]:nth-of-type(6)').value,
+            youtube: socialForm.querySelector('input[placeholder="URL"]:nth-of-type(7)').value,
+            vimeo: socialForm.querySelector('input[placeholder="URL"]:nth-of-type(8)').value,
+            airbnb: socialForm.querySelector('input[placeholder="URL"]:nth-of-type(9)').value,
+            tripadvisor: socialForm.querySelector('input[placeholder="URL"]:nth-of-type(10)').value
+        };
+        try {
+            const res = await fetch('http://localhost:5000/api/user/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: JSON.stringify({ social: user.social })
+            });
+            const result = await res.json();
+            if (res.ok) {
+                user = { ...user, ...result };
+                localStorage.setItem('user', JSON.stringify(user));
+                showNotification('Social media links updated!', 'success');
+            } else {
+                showNotification(result.message || 'Social media update failed.', 'error');
+            }
+        } catch (err) {
+            showNotification('Server error. Please try again.', 'error');
+        }
+    });
+}
 
 function setupProfileViewEditToggle() {
     const infoForm = document.querySelector('.info-form');
@@ -1739,7 +1887,7 @@ function setupProfileViewEditToggle() {
     editBtn.type = 'button';
     editBtn.className = 'btn btn-secondary profile-edit-btn';
     editBtn.textContent = 'Edit';
-    saveBtn.insertAdjacentElement('afterend', editBtn);
+    infoForm.appendChild(editBtn);
 
     function showDetails() {
         let user = JSON.parse(localStorage.getItem('user')) || {};
@@ -1895,7 +2043,9 @@ function setupLiveProfileForm() {
     infoForm.querySelector('input[placeholder="Display name publicly as"]').value = user.displayName || '';
     // Username is editable
     const usernameInput = document.getElementById('profile-username');
-    if (usernameInput) usernameInput.value = user.username || '';
+    if (usernameInput) {
+        usernameInput.value = user.username || '';
+    }
 
     // Save handler
     infoForm.addEventListener('submit', async function(e) {
