@@ -78,14 +78,21 @@ function showPage(pageId) {
 
     // Show selected page
     const targetPage = document.getElementById(pageId + '-page');
+    console.debug('showPage called for:', pageId, 'targetPageExists:', !!targetPage);
     if (targetPage) {
         targetPage.classList.add('active');
-        targetPage.style.display = '';
+        // Force visible layout to override any inline styles left in HTML
+        targetPage.style.display = 'block';
+        // Ensure there's visible spacing/background so empty pages are noticeable
+        targetPage.style.backgroundColor = targetPage.style.backgroundColor || '#ffffff';
+        targetPage.style.padding = targetPage.style.padding || '24px 0';
+        targetPage.style.minHeight = targetPage.style.minHeight || '300px';
     }
 
     // Hide all other .page elements (for legacy inline style)
     pages.forEach(page => {
         if (page !== targetPage) {
+            page.classList.remove('active');
             page.style.display = 'none';
         }
     });
