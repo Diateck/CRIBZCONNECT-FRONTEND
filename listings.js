@@ -45,7 +45,16 @@ function renderListings(listings) {
 
 async function loadListingsFromBackend() {
     try {
-        const response = await fetch('https://cribzconnect-backend.onrender.com/api/listings');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!user || !user.token) {
+            renderListings([]);
+            return;
+        }
+        const response = await fetch('https://cribzconnect-backend.onrender.com/api/listings/me', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        });
         if (!response.ok) throw new Error('Failed to fetch listings');
         const listings = await response.json();
         renderListings(listings);
