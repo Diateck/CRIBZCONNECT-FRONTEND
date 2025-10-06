@@ -2249,20 +2249,6 @@ textarea.form-control {
     .listings-manage-section h2 {
         font-size: 1.25rem;
     }
-
-    .listing-card-image-section {
-        height: 120px !important;
-        border-radius: 12px !important;
-        overflow: hidden !important;
-    }
-    .listing-card-image {
-        height: 120px !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        border-radius: 12px !important;
-        object-fit: cover !important;
-        display: block !important;
-    }
 }
 
 @media (max-width: 480px) {
@@ -4256,4 +4242,19 @@ textarea.form-control {
     .main-content {
         margin-left: 0;
     }
+}
+
+/* Mobile: square image cards and full-width layout */
+@media (max-width: 768px) {
+    .listings-content { padding: 12px !important; box-shadow: none !important; background: transparent !important; }
+    .enhanced-listing-card { width: 100% !important; max-width: 100% !important; margin: 10px 0 !important; border-radius: 12px !important; overflow: hidden !important; display: flex !important; flex-direction: column !important; }
+    .listing-card-image-section { width: 100% !important; aspect-ratio: 1 / 1 !important; height: auto !important; border-radius: 12px 12px 0 0 !important; overflow: hidden !important; background: #f4f4f4 !important; }
+    .listing-card-image { width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; }
+    .listing-card-content-section { padding: 12px !important; }
+    .listing-card-actions { margin-top: 10px !important; display: flex !important; gap: 10px !important; }
+}
+@media (max-width: 420px) {
+    .listing-card-image-section { aspect-ratio: 1 / 1 !important; }
+    .listing-card-title { font-size: 14px !important; }
+    .listing-card-price { font-size: 15px !important; }
 }
