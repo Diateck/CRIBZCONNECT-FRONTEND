@@ -71,16 +71,10 @@ submenuToggles.forEach(submenu => {
 
 // Page Navigation
 function showPage(pageId) {
-    // Re-query pages and nav links to avoid stale NodeLists (helps when DOM changes)
-    const pages = document.querySelectorAll('.page');
-    const navLinks = document.querySelectorAll('.nav-link');
-
-    // Hide all pages first
-    pages.forEach(p => p.classList.remove('active'));
-
-    // Close any open sidebar/overlay that might be covering the content
-    try { closeSidebarMenu(); } catch (e) { /* ignore if not defined yet */ }
-    if (typeof overlay !== 'undefined' && overlay) overlay.style.display = 'none';
+    // Hide all pages
+    pages.forEach(page => {
+        page.classList.remove('active');
+    });
 
     // Show selected page
     const targetPage = document.getElementById(pageId + '-page');
@@ -89,33 +83,34 @@ function showPage(pageId) {
         targetPage.classList.add('active');
         // Force visible layout to override any inline styles left in HTML
         targetPage.style.display = 'block';
-        targetPage.style.visibility = 'visible';
-        targetPage.style.opacity = '1';
-        // Bring page above overlays for debugging
-        targetPage.style.zIndex = '2';
-        // Temporary visual marker to confirm the page is active (can be removed later)
-        targetPage.style.outline = '2px dashed rgba(255,0,0,0.9)';
         // Ensure there's visible spacing/background so empty pages are noticeable
         targetPage.style.backgroundColor = targetPage.style.backgroundColor || '#ffffff';
         targetPage.style.padding = targetPage.style.padding || '24px 0';
         targetPage.style.minHeight = targetPage.style.minHeight || '300px';
-        // scroll to top of the page area
-        if (targetPage.scrollIntoView) targetPage.scrollIntoView({ behavior: 'auto', block: 'start' });
     }
 
-    // Hide all other .page elements (legacy inline style handling)
+    // Hide all other .page elements (for legacy inline style)
     pages.forEach(page => {
         if (page !== targetPage) {
             page.classList.remove('active');
             page.style.display = 'none';
-            page.style.outline = 'none';
         }
     });
 
     // Update active nav link
-    navLinks.forEach(link => link.classList.remove('active'));
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+    });
+
     const activeLink = document.querySelector(`[data-page="${pageId}"]`);
-    if (activeLink) activeLink.classList.add('active');
+    if (activeLink) {
+        activeLink.classList.add('active');
+    }
+
+    // Close sidebar on mobile after navigation
+    if (window.innerWidth <= 768) {
+        closeSidebarMenu();
+    }
 
     // Update URL hash
     window.location.hash = pageId;
