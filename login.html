@@ -406,17 +406,25 @@
             body {
                 flex-direction: column;
             }
+            .main-content {
+                flex-direction: column;
+                max-width: 100%;
+                margin: 0;
+                align-items: stretch;
+            }
+            .welcome-message {
+                margin: 0 0 20px 0;
+                padding: 20px;
+                font-size: 1.5rem;
+                max-width: 100%;
+                border-radius: 12px;
+            }
             .login-container {
                 position: relative;
                 top: auto;
                 right: auto;
                 max-width: 100%;
-                margin: 10px auto;
-            }
-            .image-container {
-                padding-right: 20px;
-                max-width: 100%;
-                margin: 10px auto;
+                margin: 0 auto 20px auto;
             }
         }
 
@@ -777,11 +785,17 @@
             });
         });
 
-        // Username validation
+        // Username/email validation
         document.querySelectorAll('input[placeholder*="username"]').forEach(input => {
             input.addEventListener('blur', function() {
-                const username = this.value;
-                if (username && (username.length < 3 || !/^[a-zA-Z0-9_]+$/.test(username))) {
+                const value = this.value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                // If it's a valid email, skip username validation
+                if (value && emailRegex.test(value)) {
+                    return;
+                }
+                // Otherwise, validate as username
+                if (value && (value.length < 3 || !/^[a-zA-Z0-9_]+$/.test(value))) {
                     showMessage('Username must be at least 3 characters long and contain only letters, numbers, and underscores.', 'error');
                     this.focus();
                 }
