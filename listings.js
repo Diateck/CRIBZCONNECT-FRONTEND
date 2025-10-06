@@ -19,8 +19,8 @@ function renderListings(listings) {
     listings.forEach(listing => {
         listingsContent.innerHTML += `
         <div class="listing-card enhanced-listing-card" data-id="${listing._id}">
-            <div class="listing-card-image-section">
-                <img src="${(listing.images && listing.images.length) ? listing.images[0] : '/api/placeholder/350/240'}" alt="${listing.title || 'Property Image'}" class="listing-card-image" />
+            <div class="listing-card-image-section" style="height:180px;">
+                <img src="${(listing.images && listing.images.length) ? listing.images[0] : '/api/placeholder/350/180'}" alt="${listing.title || 'Property Image'}" class="listing-card-image" style="height:180px; object-fit:cover;" />
             </div>
             <div class="listing-card-content-section">
                 <div class="listing-card-header">
@@ -28,11 +28,10 @@ function renderListings(listings) {
                     <span class="listing-card-badge">${listing.listingType === 'Sale' ? 'FOR SALE' : (listing.listingType === 'Rent' ? 'FOR RENT' : 'FOR SALE')}</span>
                 </div>
                 <h3 class="listing-card-title">${listing.title || 'Property Title'}</h3>
-                <p class="listing-card-location">${listing.address || 'Location'}</p>
                 <div class="listing-card-specs">
-                    <span><i class="fas fa-ruler-combined"></i> ${(listing.size || 700).toLocaleString()} sq. ft.</span>
-                    <span><i class="fas fa-bed"></i> ${listing.bedrooms || 2} Bed</span>
-                    <span><i class="fas fa-bath"></i> ${listing.bathrooms || 1} Bath</span>
+                    <span><i class="fas fa-bed"></i> ${listing.bedrooms || 2} bed</span>
+                    <span><i class="fas fa-bath"></i> ${listing.bathrooms || 1} bath</span>
+                    <span><i class="fas fa-ruler-combined"></i> ${listing.size || ''} ${listing.unitMeasure || ''}</span>
                 </div>
                 <div class="listing-card-actions">
                     <button class="edit-listing-btn" data-id="${listing._id}"><i class="fas fa-edit"></i> Edit</button>
