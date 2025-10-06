@@ -121,19 +121,6 @@ navLinks.forEach(link => {
         }
     });
 });
-// Add Hotel navigation
-const addHotelNav = document.createElement('li');
-addHotelNav.innerHTML = `<a href="#add-hotel" class="nav-link" data-page="add-hotel"><i class="fas fa-hotel"></i><span>Add Hotel</span></a>`;
-const sidebarNav = document.querySelector('.sidebar-nav ul');
-if (sidebarNav) {
-    sidebarNav.insertBefore(addHotelNav, sidebarNav.querySelector('li[data-page="bookings"]'));
-}
-document.querySelectorAll('.nav-link[data-page="add-hotel"]').forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        showPage('add-hotel');
-    });
-});
 
 // Handle submenu link clicks
 document.querySelectorAll('.submenu a').forEach(link => {
