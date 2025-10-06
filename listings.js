@@ -34,8 +34,8 @@ function renderListings(listings) {
             imageUrl = listing.images[0];
         }
 
-        listingsContent.innerHTML += `
-        <div class="listing-card enhanced-listing-card" data-id="${listing._id}">
+    listingsContent.innerHTML += `
+    <div class="listing-card enhanced-listing-card" data-id="${listing._id}" data-listing-type="${listing.listingType || ''}">
             <div class="listing-card-image-section" style="height:180px;">
                 <img src="${imageUrl}" alt="${listing.title || 'Property Image'}" class="listing-card-image" style="height:180px; object-fit:cover;" />
             </div>
@@ -149,10 +149,17 @@ document.addEventListener('click', async function(e) {
         let isHotel = false;
         let found = null;
         if (card) {
+            // Prefer explicit data attribute on DOM for reliability
+            const cardType = card.getAttribute('data-listing-type') || '';
+            isHotel = cardType === 'Hotel';
             const id = card.getAttribute('data-id');
             const listingsArr = window.lastRenderedListings || [];
-            found = listingsArr.find(l => l._id === id);
-            isHotel = found && found.listingType === 'Hotel';
+            // Ensure we can still find rendered data
+            found = listingsArr.find(l => String(l._id) === String(id));
+            // If DOM attribute wasn't present, fallback to found
+            if (!isHotel && found && found.listingType === 'Hotel') {
+                isHotel = true;
+            }
         }
         // Fetch details and show edit modal
         try {
@@ -178,7 +185,16 @@ function showEditListingModal(listing, isHotel = false) {
     if (isHotel) {
         // Show hotel modal
         const hotelModal = document.getElementById('editHotelModal');
+        if (!hotelModal) {
+            console.error('editHotelModal not found in DOM');
+            return;
+        }
+        // Force modal visible and above other UI
         hotelModal.style.display = 'flex';
+        hotelModal.style.zIndex = 2000;
+        // Prevent background scroll while modal open
+        try { document.body.style.overflow = 'hidden'; } catch (e) {}
+        // Fill fields
         document.getElementById('editHotelId').value = listing._id || '';
         document.getElementById('editHotelName').value = listing.name || '';
         document.getElementById('editHotelAddress').value = listing.address || '';
@@ -187,10 +203,22 @@ function showEditListingModal(listing, isHotel = false) {
         document.getElementById('editHotelAmenities').value = Array.isArray(listing.amenities) ? listing.amenities.join(', ') : (listing.amenities || '');
         document.getElementById('editHotelPrice').value = listing.price || '';
         // Images not prefilled for now
+        console.log('Opening hotel edit modal for:', listing._id);
+        // Focus first field to ensure modal is visible
+        const firstHotelField = document.getElementById('editHotelName');
+        if (firstHotelField) {
+            firstHotelField.focus();
+        }
     } else {
         // Show listing modal
         const modal = document.getElementById('editListingModal');
-        modal.style.display = 'flex';
+        if (modal) {
+            modal.style.display = 'flex';
+            modal.style.zIndex = 2000;
+            try { document.body.style.overflow = 'hidden'; } catch (e) {}
+            const firstField = document.getElementById('editTitle');
+            if (firstField) firstField.focus();
+        }
         document.getElementById('editListingId').value = listing._id || '';
         document.getElementById('editTitle').value = listing.title || '';
         document.getElementById('editDescription').value = listing.description || '';
