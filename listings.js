@@ -17,15 +17,32 @@ function renderListings(listings) {
         return;
     }
     listings.forEach(listing => {
+        // Determine badge text
+        let badgeText = 'FOR SALE';
+        if (listing.listingType === 'Hotel') {
+            badgeText = 'HOTEL';
+        } else if (listing.listingType === 'Rent') {
+            badgeText = 'FOR RENT';
+        } else if (listing.listingType === 'Sale') {
+            badgeText = 'FOR SALE';
+        }
+
+        // Determine image URL
+        let imageUrl = (listing.images && listing.images.length) ? listing.images[0] : '/api/placeholder/350/180';
+        // Fallback for hotel images if needed (Cloudinary or backend URL)
+        if (listing.listingType === 'Hotel' && listing.images && listing.images.length) {
+            imageUrl = listing.images[0];
+        }
+
         listingsContent.innerHTML += `
         <div class="listing-card enhanced-listing-card" data-id="${listing._id}">
             <div class="listing-card-image-section" style="height:180px;">
-                <img src="${(listing.images && listing.images.length) ? listing.images[0] : '/api/placeholder/350/180'}" alt="${listing.title || 'Property Image'}" class="listing-card-image" style="height:180px; object-fit:cover;" />
+                <img src="${imageUrl}" alt="${listing.title || 'Property Image'}" class="listing-card-image" style="height:180px; object-fit:cover;" />
             </div>
             <div class="listing-card-content-section">
                 <div class="listing-card-header">
                     <span class="listing-card-price">$${listing.price ? Number(listing.price).toLocaleString() : '0'}</span>
-                    <span class="listing-card-badge">${listing.listingType === 'Sale' ? 'FOR SALE' : (listing.listingType === 'Rent' ? 'FOR RENT' : 'FOR SALE')}</span>
+                    <span class="listing-card-badge">${badgeText}</span>
                 </div>
                 <h3 class="listing-card-title">${listing.title || 'Property Title'}</h3>
                 <div class="listing-card-specs">
@@ -130,10 +147,11 @@ document.addEventListener('click', async function(e) {
         const listingId = btn.getAttribute('data-id');
         const card = btn.closest('.listing-card');
         let isHotel = false;
+        let found = null;
         if (card) {
             const id = card.getAttribute('data-id');
             const listingsArr = window.lastRenderedListings || [];
-            const found = listingsArr.find(l => l._id === id);
+            found = listingsArr.find(l => l._id === id);
             isHotel = found && found.listingType === 'Hotel';
         }
         // Fetch details and show edit modal
@@ -146,6 +164,10 @@ document.addEventListener('click', async function(e) {
             const listing = await res.json();
             showEditListingModal(listing, isHotel);
         } catch (err) {
+            // Fallback: show modal with last rendered data if available
+            if (isHotel && found) {
+                showEditListingModal(found, true);
+            }
             showNotification('Could not load item for edit: ' + err.message, 'error');
         }
     }

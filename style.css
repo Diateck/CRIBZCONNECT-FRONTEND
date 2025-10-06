@@ -2249,6 +2249,20 @@ textarea.form-control {
     .listings-manage-section h2 {
         font-size: 1.25rem;
     }
+
+    .listing-card-image-section {
+        height: 120px !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+    }
+    .listing-card-image {
+        height: 120px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 12px !important;
+        object-fit: cover !important;
+        display: block !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -2279,6 +2293,20 @@ textarea.form-control {
 
     .listings-content .empty-state {
         padding: 1.5rem 1rem;
+    }
+
+    .listing-card-image-section {
+        height: 90px !important;
+        border-radius: 10px !important;
+        overflow: hidden !important;
+    }
+    .listing-card-image {
+        height: 90px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 10px !important;
+        object-fit: cover !important;
+        display: block !important;
     }
 }
 
