@@ -4246,14 +4246,28 @@ textarea.form-control {
 
 /* Mobile: square image cards and full-width layout */
 @media (max-width: 768px) {
+    /* make cards a little narrower than full width and centered so they look like tidy boxes */
     .listings-content { padding: 12px !important; box-shadow: none !important; background: transparent !important; }
-    .enhanced-listing-card { width: 100% !important; max-width: 100% !important; margin: 10px 0 !important; border-radius: 12px !important; overflow: hidden !important; display: flex !important; flex-direction: column !important; }
+    .enhanced-listing-card {
+        width: calc(100% - 32px) !important;
+        max-width: 420px !important;
+        margin: 12px auto !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08) !important;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .enhanced-listing-card:hover { transform: translateY(-4px); }
     .listing-card-image-section { width: 100% !important; aspect-ratio: 1 / 1 !important; height: auto !important; border-radius: 12px 12px 0 0 !important; overflow: hidden !important; background: #f4f4f4 !important; }
     .listing-card-image { width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; }
     .listing-card-content-section { padding: 12px !important; }
-    .listing-card-actions { margin-top: 10px !important; display: flex !important; gap: 10px !important; }
+    .listing-card-actions { margin-top: 10px !important; display: flex !important; gap: 10px !important; flex-wrap: wrap; }
 }
 @media (max-width: 420px) {
+    /* slightly smaller card on very small screens */
+    .enhanced-listing-card { width: calc(100% - 24px) !important; max-width: 360px !important; margin: 10px auto !important; }
     .listing-card-image-section { aspect-ratio: 1 / 1 !important; }
     .listing-card-title { font-size: 14px !important; }
     .listing-card-price { font-size: 15px !important; }
