@@ -49,6 +49,13 @@ function setupAddListingPage() {
                     return;
                 }
             }
+            // Convert number fields to numbers
+            const numberFields = ['bedrooms', 'guests', 'beds', 'bathrooms', 'rooms', 'size', 'price'];
+            numberFields.forEach(field => {
+                if (formData.has(field)) {
+                    formData.set(field, Number(formData.get(field)));
+                }
+            });
             if (!editorContent || editorContent.textContent.trim() === '') {
                 showNotification('Please enter a property description', 'error');
                 return;
@@ -58,12 +65,29 @@ function setupAddListingPage() {
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                // Build headers only when token exists to avoid sending 'undefined'
+                const headers = {};
+                if (user && user.token) {
+                    headers['Authorization'] = `Bearer ${user.token}`;
+                }
+                console.log('add-listing: sending POST /api/listings with headers:', headers);
                 const response = await fetch('https://cribzconnect-backend.onrender.com/api/listings', {
                     method: 'POST',
+                    headers,
                     body: formData
                 });
                 if (!response.ok) {
-                    throw new Error('Failed to save listing.');
+                    // try to get body for debugging
+                    let errText;
+                    try {
+                        const ct = response.headers.get('content-type') || '';
+                        errText = ct.includes('application/json') ? JSON.stringify(await response.json()) : await response.text();
+                    } catch (e) {
+                        errText = 'unable to read response body';
+                    }
+                    console.error('add-listing: server returned', response.status, errText);
+                    throw new Error(`Failed to save listing (status ${response.status}): ${errText}`);
                 }
                 showNotification('Listing published successfully!', 'success');
                 await loadListingsFromBackend();
