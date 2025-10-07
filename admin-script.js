@@ -810,8 +810,10 @@ class AdminDashboard {
         // Insert at top of main content
         const mainContent = document.querySelector('.main-content');
         const contentHeader = document.querySelector('.content-header');
-        if (mainContent && contentHeader) {
+        if (mainContent && contentHeader && contentHeader.parentNode === mainContent) {
             mainContent.insertBefore(messageDiv, contentHeader.nextSibling);
+        } else if (mainContent) {
+            mainContent.appendChild(messageDiv);
         }
 
         // Remove after 5 seconds
