@@ -376,27 +376,25 @@
                 </div>
                 <!-- Credit Agent Modal -->
                 <div id="creditAgentModal" class="modal" style="display:none;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Credit Agent Balance</h3>
-                            <span class="close" onclick="closeModal('creditAgentModal')">&times;</span>
+                    <div class="modal-content" style="max-width: 420px; margin: auto; top: 50%; left: 50%; transform: translate(-50%, -50%); position: fixed; box-shadow: 0 8px 32px rgba(0,0,0,0.18); border-radius: 16px; background: #fff; padding: 2rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="margin: 0; font-size: 1.35rem;">Credit Agent Balance</h3>
+                            <button type="button" id="closeCreditModal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
                         </div>
-                        <div class="modal-body">
-                            <form id="creditAgentForm">
-                                <div class="form-group">
-                                    <label for="agentSelect">Select Agent</label>
-                                    <select id="agentSelect" required></select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="creditAmount">Amount (XAF)</label>
-                                    <input type="number" id="creditAmount" min="1" required />
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="secondary-btn" onclick="closeModal('creditAgentModal')">Cancel</button>
-                                    <button type="submit" class="primary-btn">Credit Balance</button>
-                                </div>
-                            </form>
-                        </div>
+                        <form id="creditAgentForm">
+                            <div class="form-group">
+                                <label for="agentSelect">Select Agent</label>
+                                <select id="agentSelect" required style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc;"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="creditAmount">Amount (XAF)</label>
+                                <input type="number" id="creditAmount" min="1" required style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc;" />
+                            </div>
+                            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                                <button type="button" class="secondary-btn" id="cancelCreditModal">Cancel</button>
+                                <button type="submit" class="primary-btn">Credit Balance</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -550,9 +548,9 @@
                             <i class="fas fa-dollar-sign"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>XAF 2,847,500</h3>
+                            <h3 id="totalRevenue">Loading...</h3>
                             <p>Total Revenue</p>
-                            <span class="stat-change positive">+23% from last month</span>
+                            <span class="stat-change positive" id="totalRevenueChange"></span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -560,9 +558,9 @@
                             <i class="fas fa-percentage"></i>
                         </div>
                         <div class="stat-info">
-                            <h3> XAF 284,750</h3>
+                            <h3 id="platformCommission">Loading...</h3>
                             <p>Platform Commission</p>
-                            <span class="stat-change positive">+18% from last month</span>
+                            <span class="stat-change positive" id="platformCommissionChange"></span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -570,9 +568,9 @@
                             <i class="fas fa-chart-line"></i>
                         </div>
                         <div class="stat-info">
-                            <h3> XAF 456,200</h3>
+                            <h3 id="agentEarnings">Loading...</h3>
                             <p>Agent Earnings</p>
-                            <span class="stat-change positive">+15% from last month</span>
+                            <span class="stat-change positive" id="agentEarningsChange"></span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -580,9 +578,9 @@
                             <i class="fas fa-coins"></i>
                         </div>
                         <div class="stat-info">
-                            <h3> XAF 142,300</h3>
+                            <h3 id="serviceFees">Loading...</h3>
                             <p>Service Fees</p>
-                            <span class="stat-change positive">+12% from last month</span>
+                            <span class="stat-change positive" id="serviceFeesChange"></span>
                         </div>
                     </div>
                 </div>
@@ -614,7 +612,7 @@
                                 <td><strong>RF001</strong></td>
                                 <td>John Smith</td>
                                 <td>Executive Studio in Lekki</td>
-                                <td><strong>XAF 50,000</strong></td>
+                                <td id="refundAmount"><strong>Loading...</strong></td>
                                 <td>Property condition issues</td>
                                 <td>Aug 17, 2024</td>
                                 <td><span class="status-badge pending">Pending</span></td>

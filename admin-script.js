@@ -14,19 +14,37 @@ class AdminDashboard {
         }
     }
 
-    openCreditAgentModal() {
+    async openCreditAgentModal() {
         const modal = document.getElementById('creditAgentModal');
-        if (modal) {
-            // Populate agent dropdown
-            const agentSelect = document.getElementById('agentSelect');
-            if (agentSelect) {
-                agentSelect.innerHTML = this.data.agents
-                    .filter(a => a.status === 'verified')
-                    .map(a => `<option value="${a.id}">${a.name} (${a.email})</option>`)
-                    .join('');
+        const agentSelect = document.getElementById('agentSelect');
+        if (modal && agentSelect) {
+            // Fetch agents from backend
+            agentSelect.innerHTML = '<option value="">Loading...</option>';
+            try {
+                const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
+                const res = await fetch(`${API_BASE_URL}/api/users?role=agent`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+                });
+                const agents = res.ok ? await res.json() : [];
+                if (agents.length) {
+                    agentSelect.innerHTML = '<option value="">Select an agent</option>' + agents.map(a => `<option value="${a._id}">${a.fullName || a.username || a.email}</option>`).join('');
+                } else {
+                    agentSelect.innerHTML = '<option value="">No agents found</option>';
+                }
+            } catch {
+                agentSelect.innerHTML = '<option value="">Error loading agents</option>';
             }
             modal.style.display = 'block';
-            modal.classList.add('show');
+            modal.style.zIndex = 1002;
+        }
+        // Setup close and cancel buttons
+        const closeBtn = document.getElementById('closeCreditModal');
+        const cancelBtn = document.getElementById('cancelCreditModal');
+        if (closeBtn && modal) {
+            closeBtn.onclick = () => { modal.style.display = 'none'; };
+        }
+        if (cancelBtn && modal) {
+            cancelBtn.onclick = () => { modal.style.display = 'none'; };
         }
     }
 
@@ -416,14 +434,29 @@ class AdminDashboard {
         this.updateLeaderboard();
     }
 
-    updateDashboardStats() {
-        // Update stat cards with current data
-        const statCards = document.querySelectorAll('.stat-info h3');
-        if (statCards.length >= 4) {
-            statCards[0].textContent = this.formatNumber(this.data.stats.totalProperties);
-            statCards[1].textContent = this.formatNumber(this.data.stats.totalUsers);
-            statCards[2].textContent = '$' + this.formatNumber(this.data.stats.totalRevenue);
-            statCards[3].textContent = this.formatNumber(this.data.stats.verifiedAgents);
+    async updateDashboardStats() {
+        // Fetch stats from backend
+        const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/admin/stats`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+            });
+            if (!res.ok) throw new Error('Failed to fetch stats');
+            const stats = await res.json();
+            // Update stat cards
+            document.getElementById('totalRevenue').textContent = `XAF ${stats.totalRevenue.toLocaleString()}`;
+            document.getElementById('platformCommission').textContent = `XAF ${stats.platformCommission.toLocaleString()}`;
+            document.getElementById('agentEarnings').textContent = `XAF ${stats.agentEarnings.toLocaleString()}`;
+            document.getElementById('serviceFees').textContent = `XAF ${stats.serviceFees.toLocaleString()}`;
+            if (stats.totalRevenueChange) document.getElementById('totalRevenueChange').textContent = stats.totalRevenueChange;
+            if (stats.platformCommissionChange) document.getElementById('platformCommissionChange').textContent = stats.platformCommissionChange;
+            if (stats.agentEarningsChange) document.getElementById('agentEarningsChange').textContent = stats.agentEarningsChange;
+            if (stats.serviceFeesChange) document.getElementById('serviceFeesChange').textContent = stats.serviceFeesChange;
+        } catch (err) {
+            document.getElementById('totalRevenue').textContent = 'Error';
+            document.getElementById('platformCommission').textContent = 'Error';
+            document.getElementById('agentEarnings').textContent = 'Error';
+            document.getElementById('serviceFees').textContent = 'Error';
         }
     }
 
@@ -619,32 +652,42 @@ class AdminDashboard {
         }
     }
 
-    populateTransactionsTable() {
+    async populateTransactionsTable() {
         const tbody = document.getElementById('transactionsTableBody');
         if (!tbody) return;
-
-        tbody.innerHTML = this.data.transactions.map(transaction => `
-            <tr>
-                <td><strong>${transaction.id}</strong></td>
-                <td>${transaction.tenant}</td>
-                <td>${transaction.agent}</td>
-                <td>${transaction.property}</td>
-                <td><strong>XAF ${transaction.amount.toLocaleString()}</strong></td>
-                <td>${this.formatDate(transaction.date)}</td>
-                <td>
-                    <span class="status-badge ${transaction.status}">
-                        ${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
-                    </span>
-                </td>
-                <td>
-                    <div class="table-actions">
-                        <button class="action-btn-sm btn-edit" onclick="adminDashboard.viewTransaction('${transaction.id}')">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `).join('');
+        // Fetch transactions from backend
+        try {
+            const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
+            const res = await fetch(`${API_BASE_URL}/api/admin/transactions`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+            });
+            if (!res.ok) throw new Error('Failed to fetch transactions');
+            const transactions = await res.json();
+            tbody.innerHTML = transactions.map(transaction => `
+                <tr>
+                    <td><strong>${transaction.id}</strong></td>
+                    <td>${transaction.tenant}</td>
+                    <td>${transaction.agent}</td>
+                    <td>${transaction.property}</td>
+                    <td><strong>XAF ${transaction.amount.toLocaleString()}</strong></td>
+                    <td>${this.formatDate(transaction.date)}</td>
+                    <td>
+                        <span class="status-badge ${transaction.status}">
+                            ${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="action-btn-sm btn-edit" onclick="adminDashboard.viewTransaction('${transaction.id}')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (err) {
+            tbody.innerHTML = '<tr><td colspan="8">Error loading transactions</td></tr>';
+        }
     }
 
     populateDisputes() {
