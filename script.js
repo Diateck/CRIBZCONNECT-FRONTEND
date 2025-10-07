@@ -279,7 +279,8 @@ function setupForms() {
                     localStorage.setItem('user', JSON.stringify({
                         token: result.token,
                         fullName: result.fullName,
-                        username: result.username
+                        username: result.username,
+                        email: result.email // Store email for dynamic display
                     }));
                     showNotification(`Welcome back, ${result.fullName || result.username}!`, 'success');
                     setTimeout(() => {
