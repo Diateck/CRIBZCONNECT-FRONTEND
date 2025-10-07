@@ -63,7 +63,6 @@
                     <i class="fas fa-chevron-right submenu-arrow"></i>
                     <div class="submenu">
                         <div class="submenu-item" data-tab="agents">Agents</div>
-                        <div class="submenu-item" data-tab="clients">Clients</div>
                         <div class="submenu-item" data-tab="roles">Roles & Permissions</div>
                     </div>
                 </div>
@@ -279,37 +278,7 @@
                 </div>
             </div>
 
-            <!-- Clients Management -->
-            <div id="clients" class="tab-content">
-                <div class="content-header">
-                    <h1>Clients Management</h1>
-                    <div class="filter-controls">
-                        <select id="clientStatusFilter">
-                            <option value="all">All Status</option>
-                            <option value="active">Active</option>
-                            <option value="suspended">Suspended</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Client</th>
-                                <th>Email</th>
-                                <th>Booking History</th>
-                                <th>Disputes Filed</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="clientsTableBody">
-                            <!-- Client rows will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <!-- Removed Clients Management section: all users are agents -->
 
             <!-- All Properties -->
             <div id="all-properties" class="tab-content">
