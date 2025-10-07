@@ -22,7 +22,7 @@ class AdminDashboard {
             agentSelect.innerHTML = '<option value="">Loading...</option>';
             try {
                 const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
-                const res = await fetch(`${API_BASE_URL}/api/users?role=agent`, {
+                const res = await fetch(`${API_BASE_URL}/api/users/agents`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
                 });
                 const agents = res.ok ? await res.json() : [];
