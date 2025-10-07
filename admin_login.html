@@ -393,15 +393,32 @@
             }
 
             authenticateUser(username, password) {
-                const user = this.validCredentials.find(
-                    cred => cred.username === username && cred.password === password
-                );
-                
-                if (user) {
-                    this.handleSuccessfulLogin(user);
-                } else {
-                    this.handleFailedLogin();
-                }
+                // Only use backend API authentication
+                fetch('https://cribzconnect-backend.onrender.com/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: username, password })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.token && data.user && data.user.role === 'admin') {
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('adminUser', JSON.stringify(data.user));
+                        if (this.rememberMe.checked) {
+                            localStorage.setItem('rememberedAdmin', username);
+                        } else {
+                            localStorage.removeItem('rememberedAdmin');
+                        }
+                        this.redirectToDashboard();
+                    } else {
+                        this.setLoading(false);
+                        this.showError('Invalid username or password. Please try again.');
+                    }
+                })
+                .catch(() => {
+                    this.setLoading(false);
+                    this.showError('Login failed. Please try again.');
+                });
             }
 
             handleSuccessfulLogin(user) {
