@@ -15,7 +15,7 @@ class AdminDashboard {
             title: property.title,
             agentName: property.agent,
             price: typeof property.price === 'string' ? Number(property.price.replace(/[^\d.]/g, '')) : property.price,
-            status: property.status || 'published',
+        status: property.status,
             createdAt: property.dateList,
             isHotel: property.type === 'hotel' || property.type === 'Hotel'
         }));
@@ -112,7 +112,7 @@ class AdminDashboard {
                 title: p.title,
                 agent: users.find(u => u._id === p.userId)?.fullName || 'Unknown',
                 price: p.price,
-                status: p.status || 'pending',
+                status: p.status,
                 dateList: p.createdAt,
                 location: p.location || '',
                 type: p.type || 'listing'
@@ -122,7 +122,7 @@ class AdminDashboard {
                 title: h.name,
                 agent: users.find(u => u._id === h.userId)?.fullName || 'Unknown',
                 price: h.price,
-                status: h.status || 'pending',
+                status: h.status,
                 dateList: h.createdAt,
                 location: h.address || '',
                 type: 'hotel'
@@ -670,11 +670,15 @@ class AdminDashboard {
                 headers: { 'Content-Type': 'application/json' }
             });
             if (!res.ok) throw new Error('Failed to approve property');
-            property.status = 'published';
-            this.showMessage('success', `Property "${property.title}" has been approved and published.`);
+            // Refetch all properties and hotels to update status everywhere
             await this.fetchDashboardData();
             this.populatePropertiesTable();
             this.populatePendingApprovals();
+            // Optionally, trigger a refresh in My Listings and public pages if needed
+            if (window.listingsPage && typeof window.listingsPage.refreshListings === 'function') {
+                window.listingsPage.refreshListings();
+            }
+            this.showMessage('success', `Property "${property.title}" has been approved and published.`);
         } catch (err) {
             this.showMessage('error', 'Could not approve property: ' + err.message);
         }
