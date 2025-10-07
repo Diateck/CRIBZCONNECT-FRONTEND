@@ -1,5 +1,91 @@
 // Admin Dashboard JavaScript
 class AdminDashboard {
+    async fetchAllPropertiesAndUsers() {
+        const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
+        try {
+            // Fetch all listings, hotels, and users
+            const [listingsRes, hotelsRes, usersRes] = await Promise.all([
+                fetch(`${API_BASE_URL}/api/listings`),
+                fetch(`${API_BASE_URL}/api/hotels`),
+                fetch(`${API_BASE_URL}/api/users`)
+            ]);
+            const listings = await listingsRes.json();
+            const hotels = await hotelsRes.json();
+            const users = await usersRes.json();
+
+            // Normalize hotel objects to match listing format
+            const normalizedHotels = hotels.map(hotel => ({
+                _id: hotel._id,
+                title: hotel.name,
+                agentId: hotel.userId,
+                price: hotel.price,
+                status: 'published', // You can update this if you add status to hotel schema
+                createdAt: hotel.createdAt,
+                isHotel: true
+            }));
+
+            // Normalize listings
+            const normalizedListings = listings.map(listing => ({
+                _id: listing._id,
+                title: listing.title,
+                agentId: listing.userId,
+                price: listing.price,
+                status: 'published', // You can update this if you add status to listing schema
+                createdAt: listing.createdAt,
+                isHotel: false
+            }));
+
+            // Merge all properties
+            const allProperties = [...normalizedListings, ...normalizedHotels];
+
+            // Attach agent name
+            allProperties.forEach(prop => {
+                const agent = users.find(u => String(u._id) === String(prop.agentId));
+                prop.agentName = agent ? agent.fullName : 'Unknown';
+            });
+
+            this.data.allProperties = allProperties;
+        } catch (err) {
+            console.error('Error fetching all properties:', err);
+            this.data.allProperties = [];
+        }
+    }
+    async populatePropertiesTable() {
+        const tbody = document.getElementById('propertiesTableBody');
+        if (!tbody) return;
+
+        // Fetch latest properties and users
+        await this.fetchAllPropertiesAndUsers();
+        const properties = this.data.allProperties || [];
+
+        tbody.innerHTML = properties.map(property => `
+            <tr>
+                <td><strong>${property.title}</strong></td>
+                <td>${property.agentName}</td>
+                <td><strong>XAF${property.price ? Number(property.price).toLocaleString() : '0'}</strong></td>
+                <td><span class="status-badge published">${property.status.charAt(0).toUpperCase() + property.status.slice(1)}</span></td>
+                <td>${this.formatDate(property.createdAt)}</td>
+                <td>
+                    <button class="action-btn-sm btn-delete" onclick="adminDashboard.deleteProperty('${property._id}', ${property.isHotel})">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+    async deleteProperty(propertyId, isHotel) {
+        const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
+        if (!confirm('Are you sure you want to delete this property?')) return;
+        try {
+            const url = isHotel
+                ? `${API_BASE_URL}/api/hotels/${propertyId}`
+                : `${API_BASE_URL}/api/listings/${propertyId}`;
+            const res = await fetch(url, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Failed to delete property');
+            this.showMessage('success', 'Property deleted successfully!');
+            await this.populatePropertiesTable();
+        } catch (err) {
+            this.showMessage('error', 'Could not delete property: ' + err.message);
+        }
+    }
     constructor() {
         this.currentTab = 'dashboard';
         this.currentUser = JSON.parse(localStorage.getItem('adminUser')) || null;
@@ -166,9 +252,6 @@ class AdminDashboard {
                 break;
             case 'agents':
                 this.populateAgentsTable();
-                break;
-            case 'clients':
-                this.populateClientsTable();
                 break;
             case 'all-properties':
                 this.populatePropertiesTable();
