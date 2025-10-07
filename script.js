@@ -4,24 +4,36 @@
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         if (!user || !user.token) return;
         try {
-            // Fetch user's listings and hotels
-            const [listingsRes, hotelsRes] = await Promise.all([
+            // Fetch user's listings, hotels, and profile (for balance)
+            const [listingsRes, hotelsRes, profileRes] = await Promise.all([
                 fetch(`${API_BASE_URL}/api/listings/me`, {
                     headers: { 'Authorization': `Bearer ${user.token}` }
                 }),
                 fetch(`${API_BASE_URL}/api/hotels/me`, {
                     headers: { 'Authorization': `Bearer ${user.token}` }
+                }),
+                fetch(`${API_BASE_URL}/api/user/profile`, {
+                    headers: { 'Authorization': `Bearer ${user.token}` }
                 })
             ]);
             if (!listingsRes.ok) throw new Error('Failed to fetch listings');
             if (!hotelsRes.ok) throw new Error('Failed to fetch hotels');
+            if (!profileRes.ok) throw new Error('Failed to fetch profile');
             const listings = await listingsRes.json();
             const hotels = await hotelsRes.json();
+            const profile = await profileRes.json();
             // Update Active Listings count (listings + hotels)
             const activeListingsEl = document.querySelector('.stat-card .stat-content h3');
             if (activeListingsEl) {
                 activeListingsEl.textContent = listings.length + hotels.length;
             }
+            // Update balance everywhere
+            const balance = profile.balance || 0;
+            // Dashboard Earnings Balance
+            const earningsBalanceEls = document.querySelectorAll('.balance-amount, .earnings-amount, .wallet-stat-card .stat-amount');
+            earningsBalanceEls.forEach(el => {
+                el.textContent = `${balance} XAF`;
+            });
         } catch (err) {
             console.error('Dashboard stats error:', err);
         }

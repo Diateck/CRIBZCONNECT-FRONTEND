@@ -350,6 +350,9 @@
                             <option value="failed">Failed</option>
                         </select>
                     </div>
+                    <button class="primary-btn" id="creditAgentBtn" style="margin-top:1rem;">
+                        <i class="fas fa-plus"></i> Credit Agent Balance
+                    </button>
                 </div>
 
                 <div class="table-container">
@@ -370,6 +373,31 @@
                             <!-- Transaction rows will be populated by JavaScript -->
                         </tbody>
                     </table>
+                </div>
+                <!-- Credit Agent Modal -->
+                <div id="creditAgentModal" class="modal" style="display:none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Credit Agent Balance</h3>
+                            <span class="close" onclick="closeModal('creditAgentModal')">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <form id="creditAgentForm">
+                                <div class="form-group">
+                                    <label for="agentSelect">Select Agent</label>
+                                    <select id="agentSelect" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="creditAmount">Amount (XAF)</label>
+                                    <input type="number" id="creditAmount" min="1" required />
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="secondary-btn" onclick="closeModal('creditAgentModal')">Cancel</button>
+                                    <button type="submit" class="primary-btn">Credit Balance</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
 

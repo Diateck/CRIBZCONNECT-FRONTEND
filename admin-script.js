@@ -1,5 +1,65 @@
 // Admin Dashboard JavaScript
 class AdminDashboard {
+    // Credit Agent Modal Logic
+    setupCreditAgentModal() {
+        const creditBtn = document.getElementById('creditAgentBtn');
+        if (creditBtn) {
+            creditBtn.addEventListener('click', () => {
+                this.openCreditAgentModal();
+            });
+        }
+        const creditForm = document.getElementById('creditAgentForm');
+        if (creditForm) {
+            creditForm.addEventListener('submit', (e) => this.handleCreditAgent(e));
+        }
+    }
+
+    openCreditAgentModal() {
+        const modal = document.getElementById('creditAgentModal');
+        if (modal) {
+            // Populate agent dropdown
+            const agentSelect = document.getElementById('agentSelect');
+            if (agentSelect) {
+                agentSelect.innerHTML = this.data.agents
+                    .filter(a => a.status === 'verified')
+                    .map(a => `<option value="${a.id}">${a.name} (${a.email})</option>`)
+                    .join('');
+            }
+            modal.style.display = 'block';
+            modal.classList.add('show');
+        }
+    }
+
+    async handleCreditAgent(e) {
+        e.preventDefault();
+        const agentId = document.getElementById('agentSelect').value;
+        const amount = Number(document.getElementById('creditAmount').value);
+        if (!agentId || !amount || amount <= 0) {
+            this.showMessage('error', 'Please select an agent and enter a valid amount.');
+            return;
+        }
+        const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
+        try {
+            const token = localStorage.getItem('authToken');
+            const res = await fetch(`${API_BASE_URL}/api/users/credit`, {
+                method: 'POST',
+                headers: {
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ agentId, amount })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Failed to credit agent');
+            this.showMessage('success', `Agent credited successfully! New balance: ${data.newBalance} XAF`);
+            this.closeModal('creditAgentModal');
+            // Optionally refresh agent data
+            await this.fetchDashboardData();
+            this.populateAgentsTable();
+        } catch (err) {
+            this.showMessage('error', 'Could not credit agent: ' + err.message);
+        }
+    }
     // Removed fetchAllPropertiesAndUsers. Use dashboard data instead.
     async populatePropertiesTable() {
         const tbody = document.getElementById('propertiesTableBody');
@@ -94,6 +154,7 @@ class AdminDashboard {
         this.initializeCharts();
         this.populateInitialData();
         this.startRealTimeUpdates();
+    this.setupCreditAgentModal();
     }
 
     // Fetch live dashboard data from backend
