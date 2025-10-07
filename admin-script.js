@@ -127,8 +127,7 @@ class AdminDashboard {
                 location: h.address || '',
                 type: 'hotel'
             }));
-            // Force all properties to published in the admin UI (frontend-only)
-            this.data.properties = [...normalizedListings, ...normalizedHotels].map(p => ({ ...p, status: 'published' }));
+                this.data.properties = [...normalizedListings, ...normalizedHotels];
 
             // Transactions & Disputes: You can fetch and process these if you have endpoints
             this.data.transactions = [];
@@ -481,8 +480,56 @@ class AdminDashboard {
                 fetch(`${API_BASE_URL}/api/listings/status/pending`),
                 fetch(`${API_BASE_URL}/api/hotels/status/pending`)
             ]);
-            // For this request: show no pending items in UI (treat pending as already published)
-            container.innerHTML = `<div class="empty-state"><p>No pending items at the moment.</p></div>`;
+                const pendingListings = pendingListingsRes.ok ? await pendingListingsRes.json() : [];
+                const pendingHotels = pendingHotelsRes.ok ? await pendingHotelsRes.json() : [];
+
+                const pendingNormalized = [
+                    ...pendingListings.map(p => ({
+                        id: p._id,
+                        title: p.title,
+                        price: p.price,
+                        agentId: p.userId,
+                        agent: (this.data.agents.find(a => String(a.id) === String(p.userId))?.name) || p.userId,
+                        type: 'listing',
+                        image: (p.images && p.images.length) ? p.images[0] : 'https://via.placeholder.com/350x200'
+                    })),
+                    ...pendingHotels.map(h => ({
+                        id: h._id,
+                        title: h.name,
+                        price: h.price,
+                        agentId: h.userId,
+                        agent: (this.data.agents.find(a => String(a.id) === String(h.userId))?.name) || h.userId,
+                        type: 'hotel',
+                        image: (h.images && h.images.length) ? h.images[0] : 'https://via.placeholder.com/350x200'
+                    }))
+                ];
+
+                container.innerHTML = pendingNormalized.length === 0
+                    ? `<div class="empty-state"><p>No pending items at the moment.</p></div>`
+                    : pendingNormalized.map(property => `
+                        <div class="pending-property-card">
+                            <div class="property-image" style="background-image: url('${property.image}')"></div>
+                            <div class="property-details">
+                                <h4>${property.title}</h4>
+                                <p>${property.type === 'hotel' ? 'Hotel listing' : 'Property listing'}</p>
+                                <div class="property-meta">
+                                    <div class="property-price">$${property.price ? Number(property.price).toLocaleString() : '0'}</div>
+                                    <div class="property-agent">by ${property.agent}</div>
+                                </div>
+                                <div class="property-actions">
+                                    <button class="action-btn-sm btn-approve" onclick="adminDashboard.approveProperty('${property.id}')">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                    <button class="action-btn-sm btn-reject" onclick="adminDashboard.rejectProperty('${property.id}')">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                    <button class="action-btn-sm btn-edit" onclick="adminDashboard.viewPropertyDetails('${property.id}')">
+                                        <i class="fas fa-eye"></i> Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
         } catch (err) {
             console.error('Failed to fetch pending items:', err);
             container.innerHTML = `<div class="empty-state"><p>Unable to load pending items.</p></div>`;
