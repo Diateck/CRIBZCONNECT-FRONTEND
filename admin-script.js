@@ -39,8 +39,6 @@ class AdminDashboard {
         const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
         if (!confirm('Are you sure you want to delete this property?')) return;
         try {
-            const token = localStorage.getItem('authToken');
-            console.log('Delete token:', token);
             let url = '';
             if (propertyType === 'hotel' || propertyType === 'Hotel') {
                 url = `${API_BASE_URL}/api/hotels/${propertyId}`;

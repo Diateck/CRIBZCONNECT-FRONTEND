@@ -404,19 +404,29 @@
                 };
 
                 try {
+                    console.log('[AdminLogin] POST', url, 'payload:', payload);
                     const res = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
 
-                    const data = await res.json().catch(() => ({}));
+                    // Try to parse JSON, but fallback to text for non-JSON responses
+                    let data;
+                    try {
+                        data = await res.json();
+                    } catch (e) {
+                        const text = await res.text();
+                        data = { text };
+                    }
+
+                    console.log('[AdminLogin] response status=', res.status, 'body=', data);
 
                     if (!res.ok) {
                         // Prefer server-provided message when available
-                        const msg = (data && (data.message || data.error)) ? (data.message || data.error) : 'Invalid username or password.';
+                        const msg = (data && (data.message || data.error)) ? (data.message || data.error) : (data && data.text) ? data.text : `Login failed (status ${res.status}).`;
                         this.setLoading(false);
-                        this.showError(msg);
+                        this.showError(msg + ' (see console for details)');
                         return;
                     }
 
@@ -434,6 +444,7 @@
                     }
 
                     if (token) {
+                        console.log('[AdminLogin] login successful, storing token and user');
                         localStorage.setItem('authToken', token);
                         localStorage.setItem('adminUser', JSON.stringify(user));
                         if (this.rememberMe.checked) {
@@ -447,10 +458,11 @@
 
                     // Fallback failure
                     this.setLoading(false);
-                    this.showError('Login failed. Please try again.');
+                    this.showError('Login failed. Please try again. (no token returned)');
                 } catch (err) {
+                    console.error('[AdminLogin] network/error', err);
                     this.setLoading(false);
-                    this.showError('Network error. Please check your connection and try again.');
+                    this.showError('Network error. Please check your connection and try again. (see console)');
                 }
             }
 
