@@ -4,157 +4,87 @@ class AdminDashboard {
         this.currentTab = 'dashboard';
         this.currentUser = JSON.parse(localStorage.getItem('adminUser')) || null;
         this.charts = {};
-        this.data = this.initializeMockData();
-        
+        this.data = {
+            stats: {},
+            agents: [],
+            clients: [],
+            properties: [],
+            transactions: [],
+            disputes: []
+        };
         this.init();
     }
 
-    init() {
+    async init() {
         this.setupEventListeners();
         this.setupMobileMenu();
+        await this.fetchDashboardData();
         this.initializeCharts();
         this.populateInitialData();
         this.startRealTimeUpdates();
     }
 
-    // Initialize mock data for demonstration
-    initializeMockData() {
-        return {
-            stats: {
-                totalProperties: 2847,
-                totalUsers: 8452,
-                totalRevenue: 247580,
-                verifiedAgents: 156
-            },
-            agents: [
-                {
-                    id: 1,
-                    name: 'Sarah Johnson',
-                    email: 'sarah@example.com',
-                    phone: '+234-801-234-5678',
-                    status: 'verified',
-                    listings: 24,
-                    joinDate: '2024-01-15',
-                    initials: 'SJ'
-                },
-                {
-                    id: 2,
-                    name: 'Michael Chen',
-                    email: 'michael@example.com',
-                    phone: '+234-802-345-6789',
-                    status: 'pending',
-                    listings: 12,
-                    joinDate: '2024-02-20',
-                    initials: 'MC'
-                },
-                {
-                    id: 3,
-                    name: 'David Wilson',
-                    email: 'david@example.com',
-                    phone: '+234-803-456-7890',
-                    status: 'verified',
-                    listings: 18,
-                    joinDate: '2024-01-10',
-                    initials: 'DW'
-                }
-            ],
-            clients: [
-                {
-                    id: 1,
-                    name: 'Emma Thompson',
-                    email: 'emma@example.com',
-                    bookings: 3,
-                    disputes: 0,
-                    status: 'active',
-                    joinDate: '2024-03-01'
-                },
-                {
-                    id: 2,
-                    name: 'John Smith',
-                    email: 'john@example.com',
-                    bookings: 1,
-                    disputes: 1,
-                    status: 'active',
-                    joinDate: '2024-02-15'
-                }
-            ],
-            properties: [
-                {
-                    id: 1,
-                    title: 'Modern 2BR Apartment in Victoria Island',
-                    agent: 'Sarah Johnson',
-                    price: 450000,
-                    status: 'approved',
-                    dateList: '2024-08-15',
-                    location: 'lagos',
-                    type: 'apartment'
-                },
-                {
-                    id: 2,
-                    title: 'Executive Studio in Lekki',
-                    agent: 'Michael Chen',
-                    price: 280000,
-                    status: 'pending',
-                    dateList: '2024-08-18',
-                    location: 'lagos',
-                    type: 'studio'
-                },
-                {
-                    id: 3,
-                    title: '4BR Duplex in Abuja',
-                    agent: 'David Wilson',
-                    price: 650000,
-                    status: 'approved',
-                    dateList: '2024-08-10',
-                    location: 'abuja',
-                    type: 'house'
-                }
-            ],
-            transactions: [
-                {
-                    id: 'BK001',
-                    tenant: 'Emma Thompson',
-                    agent: 'Sarah Johnson',
-                    property: 'Modern 2BR Apartment',
-                    amount: 450000,
-                    date: '2024-08-15',
-                    status: 'completed'
-                },
-                {
-                    id: 'BK002',
-                    tenant: 'John Smith',
-                    agent: 'Michael Chen',
-                    property: 'Executive Studio',
-                    amount: 280000,
-                    date: '2024-08-18',
-                    status: 'pending'
-                }
-            ],
-            disputes: [
-                {
-                    id: 1,
-                    title: 'Property Condition Issue',
-                    tenant: 'John Smith',
-                    agent: 'Michael Chen',
-                    property: 'Executive Studio in Lekki',
-                    priority: 'high',
-                    description: 'The property was not in the condition as advertised. Several appliances are not working properly.',
-                    date: '2024-08-17',
-                    status: 'open'
-                },
-                {
-                    id: 2,
-                    title: 'Refund Request Delay',
-                    tenant: 'Lisa Anderson',
-                    agent: 'Sarah Johnson',
-                    property: 'Modern 2BR Apartment',
-                    priority: 'medium',
-                    description: 'Security deposit refund has been delayed for over 30 days without proper justification.',
-                    date: '2024-08-16',
-                    status: 'open'
-                }
-            ]
-        };
+    // Fetch live dashboard data from backend
+    async fetchDashboardData() {
+        const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
+        try {
+            // Fetch all properties, users, agents
+            const [propertiesRes, usersRes, agentsRes] = await Promise.all([
+                fetch(`${API_BASE_URL}/api/listings`),
+                fetch(`${API_BASE_URL}/api/users`),
+                fetch(`${API_BASE_URL}/api/users/agents`)
+            ]);
+            const properties = await propertiesRes.json();
+            const users = await usersRes.json();
+            const agents = await agentsRes.json();
+
+            // Stats
+            this.data.stats.totalProperties = properties.length;
+            this.data.stats.totalUsers = users.length;
+            this.data.stats.totalRevenue = properties.reduce((sum, p) => sum + (p.price || 0), 0);
+            this.data.stats.verifiedAgents = agents.filter(a => a.verified).length;
+
+            // Agents
+            this.data.agents = agents.map(a => ({
+                id: a._id,
+                name: a.fullName,
+                email: a.email,
+                phone: a.phone || '',
+                status: a.verified ? 'verified' : 'pending',
+                listings: properties.filter(p => p.userId === a._id).length,
+                joinDate: a.createdAt,
+                initials: a.fullName ? a.fullName.split(' ').map(n => n[0]).join('').toUpperCase() : ''
+            }));
+
+            // Clients
+            this.data.clients = users.filter(u => u.role === 'client').map(u => ({
+                id: u._id,
+                name: u.fullName,
+                email: u.email,
+                bookings: 0, // You can update this if you have booking data
+                disputes: 0, // You can update this if you have dispute data
+                status: 'active',
+                joinDate: u.createdAt
+            }));
+
+            // Properties
+            this.data.properties = properties.map(p => ({
+                id: p._id,
+                title: p.title,
+                agent: agents.find(a => a._id === p.userId)?.fullName || 'Unknown',
+                price: p.price,
+                status: p.status,
+                dateList: p.createdAt,
+                location: p.location || '',
+                type: p.type || ''
+            }));
+
+            // Transactions & Disputes: You can fetch and process these if you have endpoints
+            this.data.transactions = [];
+            this.data.disputes = [];
+        } catch (err) {
+            console.error('Dashboard data fetch error:', err);
+        }
     }
 
     setupEventListeners() {
