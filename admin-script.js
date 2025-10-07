@@ -446,7 +446,7 @@ class AdminDashboard {
             // Update stat cards (dashboard overview)
             document.getElementById('totalProperties').textContent = stats.totalProperties?.toLocaleString() || '0';
             document.getElementById('totalUsers').textContent = stats.totalUsers?.toLocaleString() || '0';
-            document.getElementById('dashboardRevenue').textContent = `XAF ${stats.totalRevenue?.toLocaleString() || '0'}`;
+            document.getElementById('dashboardRevenue').textContent = `$${stats.totalRevenue?.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) || '0.00'}`;
             document.getElementById('verifiedAgents').textContent = stats.verifiedAgents?.toLocaleString() || '0';
             if (stats.totalPropertiesChange) document.getElementById('totalPropertiesChange').textContent = stats.totalPropertiesChange;
             if (stats.totalUsersChange) document.getElementById('totalUsersChange').textContent = stats.totalUsersChange;
