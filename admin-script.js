@@ -301,10 +301,10 @@ class AdminDashboard {
         const leaderboardContainer = document.querySelector('.leaderboard-list');
         if (!leaderboardContainer) return;
 
-        // Sort agents by performance and take top 5
+        // Sort agents by number of properties listed, take top 10
         const topAgents = [...this.data.agents]
             .sort((a, b) => b.listings - a.listings)
-            .slice(0, 5);
+            .slice(0, 10);
 
         leaderboardContainer.innerHTML = topAgents.map(agent => `
             <div class="leaderboard-item">
