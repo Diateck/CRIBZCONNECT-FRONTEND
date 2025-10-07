@@ -486,8 +486,8 @@ class AdminDashboard {
         try {
             const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
             const [pendingListingsRes, pendingHotelsRes] = await Promise.all([
-                fetch(`${API_BASE_URL}/api/listings/status/pending`),
-                fetch(`${API_BASE_URL}/api/hotels/status/pending`)
+                fetch(`${API_BASE_URL}/api/listings?status=pending`),
+                fetch(`${API_BASE_URL}/api/hotels?status=pending`)
             ]);
                 const pendingListings = pendingListingsRes.ok ? await pendingListingsRes.json() : [];
                 const pendingHotels = pendingHotelsRes.ok ? await pendingHotelsRes.json() : [];
