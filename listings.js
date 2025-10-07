@@ -110,11 +110,28 @@ async function loadListingsFromBackend() {
         if (!hotelsRes.ok) throw new Error('Failed to fetch hotels');
         const listings = await listingsRes.json();
         const hotels = await hotelsRes.json();
-        // store raw fetched items for filtering
+        // store raw fetched items for filtering (keep original arrays too)
         window._fetchedUserListings = listings || [];
         window._fetchedUserHotels = hotels || [];
+
+        // Normalize listing objects so the UI can treat listings and hotels uniformly
+        const normalizedListings = (listings || []).map(item => ({
+            ...item,
+            title: item.title || item.name || '',
+            listingType: item.listingType || item.type || 'Sale',
+            images: item.images || [],
+            price: item.price,
+            status: item.status || 'pending',
+            bedrooms: item.bedrooms || item.rooms || 0,
+            bathrooms: item.bathrooms || 1,
+            beds: item.beds || 1,
+            size: item.size || '',
+            unitMeasure: item.unitMeasure || '',
+            address: item.address || item.location || ''
+        }));
+
         // Normalize hotel objects to match listing card rendering
-        const normalizedHotels = hotels.map(hotel => ({
+        const normalizedHotels = (hotels || []).map(hotel => ({
             ...hotel,
             title: hotel.name,
             listingType: 'Hotel',
@@ -128,8 +145,9 @@ async function loadListingsFromBackend() {
             status: hotel.status || 'pending',
             address: hotel.address
         }));
-        // Merge listings and hotels
-        const allListings = [...listings, ...normalizedHotels];
+
+        // Merge listings and hotels (normalized) so filtering by status works
+        const allListings = [...normalizedListings, ...normalizedHotels];
         // Save for later filtering actions
         window.lastFetchedListings = allListings;
         // Apply default filter (all)
