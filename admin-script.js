@@ -15,7 +15,7 @@ class AdminDashboard {
             title: property.title,
             agentName: property.agent,
             price: typeof property.price === 'string' ? Number(property.price.replace(/[^\d.]/g, '')) : property.price,
-        status: property.status,
+            status: 'published',
             createdAt: property.dateList,
             isHotel: property.type === 'hotel' || property.type === 'Hotel'
         }));
@@ -44,8 +44,17 @@ class AdminDashboard {
                 : `${API_BASE_URL}/api/listings/${propertyId}`;
             const res = await fetch(url, { method: 'DELETE' });
             if (!res.ok) throw new Error('Failed to delete property');
+            // Remove from local data
+            this.data.properties = this.data.properties.filter(p => p.id !== propertyId && p._id !== propertyId);
             this.showMessage('success', 'Property deleted successfully!');
             await this.populatePropertiesTable();
+            // Refresh other frontend pages if needed
+            if (window.listingsPage && typeof window.listingsPage.refreshListings === 'function') {
+                window.listingsPage.refreshListings();
+            }
+            if (typeof this.populatePendingApprovals === 'function') {
+                this.populatePendingApprovals();
+            }
         } catch (err) {
             this.showMessage('error', 'Could not delete property: ' + err.message);
         }
