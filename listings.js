@@ -115,13 +115,14 @@ async function loadListingsFromBackend() {
         window._fetchedUserHotels = hotels || [];
 
         // Normalize listing objects so the UI can treat listings and hotels uniformly
+        // Force status to 'published' for existing items so they appear in Published tab
         const normalizedListings = (listings || []).map(item => ({
             ...item,
             title: item.title || item.name || '',
             listingType: item.listingType || item.type || 'Sale',
             images: item.images || [],
             price: item.price,
-            status: item.status || 'pending',
+            status: 'published',
             bedrooms: item.bedrooms || item.rooms || 0,
             bathrooms: item.bathrooms || 1,
             beds: item.beds || 1,
@@ -142,7 +143,7 @@ async function loadListingsFromBackend() {
             unitMeasure: hotel.unitMeasure || '',
             images: hotel.images || [],
             price: hotel.price,
-            status: hotel.status || 'pending',
+            status: 'published',
             address: hotel.address
         }));
 
