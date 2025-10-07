@@ -50,7 +50,7 @@ function closeSidebarMenu() {
     document.body.style.overflow = 'auto';
 }
 
-// Event Listeners for Mobile Navigation
+
 if (menuToggle) {
     menuToggle.addEventListener('click', toggleSidebar);
 }
@@ -58,6 +58,15 @@ if (menuToggle) {
 if (closeSidebar) {
     closeSidebar.addEventListener('click', closeSidebarMenu);
 }
+
+// Dynamic email display for verification page
+document.addEventListener('DOMContentLoaded', function() {
+    var emailSpan = document.querySelector('.email-verification .email-address');
+    var user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (emailSpan && user && user.email) {
+        emailSpan.textContent = user.email;
+    }
+});
 
 if (overlay) {
     overlay.addEventListener('click', closeSidebarMenu);
