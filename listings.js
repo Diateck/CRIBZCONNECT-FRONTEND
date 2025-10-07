@@ -16,6 +16,13 @@ function renderListings(listings) {
         </div>`;
         return;
     }
+    // Get selected currency from settings
+    let currency = 'XAF';
+    try {
+        const settings = JSON.parse(localStorage.getItem('userSettings') || '{}');
+        if (settings.currency) currency = settings.currency;
+    } catch (e) {}
+
     listings.forEach(listing => {
         // Determine badge text
         let badgeText = 'FOR SALE';
@@ -27,22 +34,42 @@ function renderListings(listings) {
             badgeText = 'FOR SALE';
         }
 
+        // Status badge
+        let statusBadge = '';
+        if (listing.status) {
+            let badgeClass = 'badge-published';
+            if (listing.status === 'pending') badgeClass = 'badge-pending';
+            if (listing.status === 'draft') badgeClass = 'badge-draft';
+            statusBadge = `<span class="listing-status-badge ${badgeClass}">${listing.status.charAt(0).toUpperCase() + listing.status.slice(1)}</span>`;
+        }
+
         // Determine image URL
         let imageUrl = (listing.images && listing.images.length) ? listing.images[0] : '/api/placeholder/350/180';
-        // Fallback for hotel images if needed (Cloudinary or backend URL)
         if (listing.listingType === 'Hotel' && listing.images && listing.images.length) {
             imageUrl = listing.images[0];
         }
 
-    listingsContent.innerHTML += `
-    <div class="listing-card enhanced-listing-card" data-id="${listing._id}" data-listing-type="${listing.listingType || ''}">
+        // Admin controls for approval
+        let adminControls = '';
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const isAdmin = user && user.role === 'admin';
+        if (isAdmin && listing.status === 'pending') {
+            adminControls = `
+                <button class="approve-listing-btn" data-id="${listing._id}" data-type="${listing.listingType}"><i class="fas fa-check"></i> Approve</button>
+                <button class="decline-listing-btn" data-id="${listing._id}" data-type="${listing.listingType}"><i class="fas fa-times"></i> Decline</button>
+            `;
+        }
+
+        listingsContent.innerHTML += `
+        <div class="listing-card enhanced-listing-card" data-id="${listing._id}" data-listing-type="${listing.listingType || ''}">
             <div class="listing-card-image-section" style="height:180px;">
                 <img src="${imageUrl}" alt="${listing.title || 'Property Image'}" class="listing-card-image" style="height:180px; object-fit:cover;" />
             </div>
             <div class="listing-card-content-section">
                 <div class="listing-card-header">
-                    <span class="listing-card-price">$${listing.price ? Number(listing.price).toLocaleString() : '0'}</span>
+                    <span class="listing-card-price">${listing.price ? Number(listing.price).toLocaleString() + ' ' + currency : '0 ' + currency}</span>
                     <span class="listing-card-badge">${badgeText}</span>
+                    ${statusBadge}
                 </div>
                 <h3 class="listing-card-title">${listing.title || 'Property Title'}</h3>
                 <div class="listing-card-specs">
@@ -53,6 +80,7 @@ function renderListings(listings) {
                 <div class="listing-card-actions">
                     <button class="edit-listing-btn" data-id="${listing._id}"><i class="fas fa-edit"></i> Edit</button>
                     <button class="delete-listing-btn" data-id="${listing._id}"><i class="fas fa-trash"></i> Delete</button>
+                    ${adminControls}
                 </div>
             </div>
         </div>
@@ -107,6 +135,61 @@ async function loadListingsFromBackend() {
 document.addEventListener('DOMContentLoaded', loadListingsFromBackend);
 // Handle Edit and Delete actions after rendering
 document.addEventListener('click', async function(e) {
+    // Approve Listing/Hotel
+    if (e.target.closest('.approve-listing-btn')) {
+        const btn = e.target.closest('.approve-listing-btn');
+        const listingId = btn.getAttribute('data-id');
+        const type = btn.getAttribute('data-type');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        let url = '';
+        if (type === 'Hotel') {
+            url = `https://cribzconnect-backend.onrender.com/api/hotels/${listingId}/approve`;
+        } else {
+            url = `https://cribzconnect-backend.onrender.com/api/listings/${listingId}/approve`;
+        }
+        try {
+            const res = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': user.token ? `Bearer ${user.token}` : ''
+                }
+            });
+            if (!res.ok) throw new Error('Failed to approve item');
+            showNotification('Item approved and published!', 'success');
+            await loadListingsFromBackend();
+        } catch (err) {
+            showNotification('Could not approve item: ' + err.message, 'error');
+        }
+    }
+
+    // Decline Listing/Hotel (set status to draft)
+    if (e.target.closest('.decline-listing-btn')) {
+        const btn = e.target.closest('.decline-listing-btn');
+        const listingId = btn.getAttribute('data-id');
+        const type = btn.getAttribute('data-type');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        let url = '';
+        if (type === 'Hotel') {
+            url = `https://cribzconnect-backend.onrender.com/api/hotels/${listingId}/approve`;
+        } else {
+            url = `https://cribzconnect-backend.onrender.com/api/listings/${listingId}/approve`;
+        }
+        try {
+            const res = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': user.token ? `Bearer ${user.token}` : '',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: 'draft' })
+            });
+            if (!res.ok) throw new Error('Failed to decline item');
+            showNotification('Item declined and moved to draft!', 'info');
+            await loadListingsFromBackend();
+        } catch (err) {
+            showNotification('Could not decline item: ' + err.message, 'error');
+        }
+    }
     // Delete Listing or Hotel
     if (e.target.closest('.delete-listing-btn')) {
         const btn = e.target.closest('.delete-listing-btn');

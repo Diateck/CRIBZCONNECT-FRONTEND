@@ -620,27 +620,59 @@ class AdminDashboard {
         this.showMessage('info', 'Agent edit functionality would open a detailed form here.');
     }
 
-    approveProperty(propertyId) {
+    async approveProperty(propertyId) {
         const property = this.data.properties.find(p => p.id === propertyId);
-        if (property) {
-            property.status = 'approved';
+        if (!property) return;
+        const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
+        let url = '';
+        if (property.type === 'hotel' || property.type === 'Hotel') {
+            url = `${API_BASE_URL}/api/hotels/${propertyId}/approve`;
+        } else {
+            url = `${API_BASE_URL}/api/listings/${propertyId}/approve`;
+        }
+        try {
+            const res = await fetch(url, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (!res.ok) throw new Error('Failed to approve property');
+            property.status = 'published';
+            this.showMessage('success', `Property "${property.title}" has been approved and published.`);
+            await this.fetchDashboardData();
             this.populatePropertiesTable();
             this.populatePendingApprovals();
-            this.showMessage('success', `Property "${property.title}" has been approved.`);
+        } catch (err) {
+            this.showMessage('error', 'Could not approve property: ' + err.message);
         }
     }
 
-    rejectProperty(propertyId) {
+    async rejectProperty(propertyId) {
         const property = this.data.properties.find(p => p.id === propertyId);
-        if (property) {
-            const reason = prompt('Please provide a reason for rejection:');
-            if (reason) {
-                property.status = 'rejected';
-                property.rejectionReason = reason;
-                this.populatePropertiesTable();
-                this.populatePendingApprovals();
-                this.showMessage('success', `Property "${property.title}" has been rejected.`);
-            }
+        if (!property) return;
+        const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
+        let url = '';
+        if (property.type === 'hotel' || property.type === 'Hotel') {
+            url = `${API_BASE_URL}/api/hotels/${propertyId}/approve`;
+        } else {
+            url = `${API_BASE_URL}/api/listings/${propertyId}/approve`;
+        }
+        const reason = prompt('Please provide a reason for rejection:');
+        if (!reason) return;
+        try {
+            const res = await fetch(url, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'draft', rejectionReason: reason })
+            });
+            if (!res.ok) throw new Error('Failed to reject property');
+            property.status = 'draft';
+            property.rejectionReason = reason;
+            this.showMessage('success', `Property "${property.title}" has been rejected and moved to draft.`);
+            await this.fetchDashboardData();
+            this.populatePropertiesTable();
+            this.populatePendingApprovals();
+        } catch (err) {
+            this.showMessage('error', 'Could not reject property: ' + err.message);
         }
     }
 
