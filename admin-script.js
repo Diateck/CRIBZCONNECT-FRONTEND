@@ -484,15 +484,31 @@ class AdminDashboard {
             const pendingHotels = pendingHotelsRes.ok ? await pendingHotelsRes.json() : [];
 
             const pendingNormalized = [
-                ...pendingListings.map(p => ({ id: p._id, title: p.title, price: p.price, agent: p.userId, type: 'listing' })),
-                ...pendingHotels.map(h => ({ id: h._id, title: h.name, price: h.price, agent: h.userId, type: 'hotel' }))
+                ...pendingListings.map(p => ({
+                    id: p._1 || p._id,
+                    title: p.title,
+                    price: p.price,
+                    agentId: p.userId,
+                    agent: (this.data.agents.find(a => String(a.id) === String(p.userId))?.name) || p.userId,
+                    type: 'listing',
+                    image: (p.images && p.images.length) ? p.images[0] : 'https://via.placeholder.com/350x200'
+                })),
+                ...pendingHotels.map(h => ({
+                    id: h._id,
+                    title: h.name,
+                    price: h.price,
+                    agentId: h.userId,
+                    agent: (this.data.agents.find(a => String(a.id) === String(h.userId))?.name) || h.userId,
+                    type: 'hotel',
+                    image: (h.images && h.images.length) ? h.images[0] : 'https://via.placeholder.com/350x200'
+                }))
             ];
 
             container.innerHTML = pendingNormalized.length === 0
                 ? `<div class="empty-state"><p>No pending items at the moment.</p></div>`
                 : pendingNormalized.map(property => `
                     <div class="pending-property-card">
-                        <div class="property-image" style="background-image: url('https://via.placeholder.com/350x200')"></div>
+                        <div class="property-image" style="background-image: url('${property.image}')"></div>
                         <div class="property-details">
                             <h4>${property.title}</h4>
                             <p>${property.type === 'hotel' ? 'Hotel listing' : 'Property listing'}</p>
