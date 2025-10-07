@@ -329,33 +329,20 @@ class AdminDashboard {
 
         tbody.innerHTML = this.data.agents.map(agent => `
             <tr>
-                <td>
-                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                        <div class="profile-avatar" data-name="${agent.name}" style="width: 35px; height: 35px; font-size: 0.8rem;">${agent.initials}</div>
-                        <div>
-                            <strong>${agent.name}</strong>
-                            <br><small style="color: var(--gray-500);">Agent ID: #${agent.id}</small>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <div>${agent.email}</div>
-                    <small style="color: var(--gray-500);">${agent.phone}</small>
-                </td>
+                <td>${agent.email}</td>
+                <td><strong>${agent.listings}</strong> listing(s)</td>
                 <td>
                     <span class="status-badge ${agent.status}">
                         ${agent.status === 'verified' ? 'Verified' : 'Pending'}
                     </span>
                 </td>
-                <td><strong>${agent.listings}</strong> active</td>
-                <td>${this.formatDate(agent.joinDate)}</td>
                 <td>
                     <div class="table-actions">
                         ${agent.status === 'pending' ? 
-                            `<button class="action-btn-sm btn-approve" onclick="adminDashboard.approveAgent(${agent.id})">Approve</button>` :
-                            `<button class="action-btn-sm btn-suspend" onclick="adminDashboard.suspendAgent(${agent.id})">Suspend</button>`
+                            `<button class="action-btn-sm btn-approve" onclick="adminDashboard.approveAgent('${agent.id}')">Approve</button>` :
+                            `<button class="action-btn-sm btn-suspend" onclick="adminDashboard.suspendAgent('${agent.id}')">Suspend</button>`
                         }
-                        <button class="action-btn-sm btn-edit" onclick="adminDashboard.editAgent(${agent.id})">Edit</button>
+                        <button class="action-btn-sm btn-edit" onclick="adminDashboard.editAgent('${agent.id}')">Edit</button>
                     </div>
                 </td>
             </tr>
