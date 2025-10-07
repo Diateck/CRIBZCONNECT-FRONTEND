@@ -59,23 +59,34 @@ if (closeSidebar) {
     closeSidebar.addEventListener('click', closeSidebarMenu);
 }
 
-// Dynamic email display for verification page (fetch from backend for all users)
+// Dynamic email display for verification page (localStorage first, backend fallback)
 document.addEventListener('DOMContentLoaded', async function() {
     var emailSpan = document.querySelector('.email-verification .email-address');
     var user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (emailSpan && user && user.token) {
-        try {
-            const res = await fetch('https://cribzconnect-backend.onrender.com/api/user/profile', {
-                headers: { 'Authorization': `Bearer ${user.token}` }
-            });
-            if (res.ok) {
-                const profile = await res.json();
-                if (profile.email) {
-                    emailSpan.textContent = profile.email;
+    if (emailSpan) {
+        if (user && user.email) {
+            emailSpan.textContent = user.email;
+        } else if (user && user.token) {
+            try {
+                const res = await fetch('https://cribzconnect-backend.onrender.com/api/user/profile', {
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                });
+                if (res.ok) {
+                    const profile = await res.json();
+                    if (profile.email) {
+                        emailSpan.textContent = profile.email;
+                    } else {
+                        emailSpan.textContent = "Email not found";
+                    }
+                } else {
+                    emailSpan.textContent = "Unable to load email";
                 }
+            } catch (err) {
+                emailSpan.textContent = "Error loading email";
+                console.error('Failed to fetch user profile:', err);
             }
-        } catch (err) {
-            console.error('Failed to fetch user profile:', err);
+        } else {
+            emailSpan.textContent = "Not logged in";
         }
     }
 });
