@@ -148,8 +148,48 @@ async function loadListingsFromBackend() {
 
         // Merge listings and hotels (normalized) so filtering by status works
         const allListings = [...normalizedListings, ...normalizedHotels];
+
+        // Automatically approve pending items (move to published) if present
+        // This will call the backend approve endpoints and update local status so the UI shows them as published
+        async function autoApprovePending(items) {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const token = user && user.token ? user.token : null;
+            const API_BASE = 'https://cribzconnect-backend.onrender.com';
+            const pendingItems = items.filter(i => String((i.status || '').toLowerCase()) === 'pending');
+            if (!pendingItems.length) return;
+
+            // Approve in parallel but allow failures
+            const approvePromises = pendingItems.map(item => {
+                const isHotel = (item.listingType || '').toLowerCase() === 'hotel';
+                const url = isHotel
+                    ? `${API_BASE}/api/hotels/${item._id || item.id}/approve`
+                    : `${API_BASE}/api/listings/${item._id || item.id}/approve`;
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                return fetch(url, { method: 'PATCH', headers })
+                    .then(res => ({ res, item }))
+                    .catch(err => ({ err, item }));
+            });
+
+            const settled = await Promise.allSettled(approvePromises);
+            // Update local statuses for successful approves
+            settled.forEach(s => {
+                if (s.status === 'fulfilled') {
+                    const payload = s.value;
+                    if (payload && payload.res && payload.res.ok) {
+                        // set the corresponding item's status to published
+                        const it = payload.item;
+                        const found = items.find(x => String(x._id || x.id) === String(it._id || it.id));
+                        if (found) found.status = 'published';
+                    }
+                }
+            });
+        }
+
         // Save for later filtering actions
         window.lastFetchedListings = allListings;
+
+        // Try auto-approving pending items, then render
+        await autoApprovePending(allListings);
         // Apply default filter (all)
         renderListings(allListings);
     } catch (err) {
