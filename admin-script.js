@@ -1,64 +1,28 @@
 // Admin Dashboard JavaScript
 class AdminDashboard {
-    async fetchAllPropertiesAndUsers() {
-        const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
-        try {
-            // Fetch all listings, hotels, and users
-            const [listingsRes, hotelsRes, usersRes] = await Promise.all([
-                fetch(`${API_BASE_URL}/api/listings`),
-                fetch(`${API_BASE_URL}/api/hotels`),
-                fetch(`${API_BASE_URL}/api/users`)
-            ]);
-            const listings = await listingsRes.json();
-            const hotels = await hotelsRes.json();
-            const users = await usersRes.json();
-
-            // Normalize hotel objects to match listing format
-            const normalizedHotels = hotels.map(hotel => ({
-                _id: hotel._id,
-                title: hotel.name,
-                agentId: hotel.userId,
-                price: hotel.price,
-                status: 'published', // You can update this if you add status to hotel schema
-                createdAt: hotel.createdAt,
-                isHotel: true
-            }));
-
-            // Normalize listings
-            const normalizedListings = listings.map(listing => ({
-                _id: listing._id,
-                title: listing.title,
-                agentId: listing.userId,
-                price: listing.price,
-                status: 'published', // You can update this if you add status to listing schema
-                createdAt: listing.createdAt,
-                isHotel: false
-            }));
-
-            // Merge all properties
-            const allProperties = [...normalizedListings, ...normalizedHotels];
-
-            // Attach agent name
-            allProperties.forEach(prop => {
-                const agent = users.find(u => String(u._id) === String(prop.agentId));
-                prop.agentName = agent ? agent.fullName : 'Unknown';
-            });
-
-            this.data.allProperties = allProperties;
-        } catch (err) {
-            console.error('Error fetching all properties:', err);
-            this.data.allProperties = [];
-        }
-    }
+    // Removed fetchAllPropertiesAndUsers. Use dashboard data instead.
     async populatePropertiesTable() {
         const tbody = document.getElementById('propertiesTableBody');
         if (!tbody) return;
 
-        // Fetch latest properties and users
-        await this.fetchAllPropertiesAndUsers();
-        const properties = this.data.allProperties || [];
+        // Use already fetched dashboard data
+        // Normalize hotel objects to match listing format
+        const hotels = this.data.properties.filter(p => p.type === 'hotel' || p.type === 'Hotel');
+        const listings = this.data.properties.filter(p => p.type !== 'hotel' && p.type !== 'Hotel');
 
-        tbody.innerHTML = properties.map(property => `
+        const allProperties = [...listings, ...hotels].map(property => ({
+            _id: property.id,
+            title: property.title,
+            agentName: property.agent,
+            price: property.price,
+            status: property.status || 'published',
+            createdAt: property.dateList,
+            isHotel: property.type === 'hotel' || property.type === 'Hotel'
+        }));
+
+        tbody.innerHTML = allProperties.length === 0
+            ? `<tr><td colspan="6" style="text-align:center; color:#888;">No properties found.</td></tr>`
+            : allProperties.map(property => `
             <tr>
                 <td><strong>${property.title}</strong></td>
                 <td>${property.agentName}</td>
