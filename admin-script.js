@@ -78,18 +78,20 @@ class AdminDashboard {
     async fetchDashboardData() {
         const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
         try {
-            // Fetch all properties and users
-            const [propertiesRes, usersRes] = await Promise.all([
+            // Fetch all listings, hotels, and users
+            const [listingsRes, hotelsRes, usersRes] = await Promise.all([
                 fetch(`${API_BASE_URL}/api/listings`),
+                fetch(`${API_BASE_URL}/api/hotels`),
                 fetch(`${API_BASE_URL}/api/users`)
             ]);
-            const properties = await propertiesRes.json();
+            const listings = await listingsRes.json();
+            const hotels = await hotelsRes.json();
             const users = await usersRes.json();
 
             // Stats
-            this.data.stats.totalProperties = properties.length;
+            this.data.stats.totalProperties = listings.length + hotels.length;
             this.data.stats.totalUsers = users.length;
-            this.data.stats.totalRevenue = properties.reduce((sum, p) => sum + (p.price || 0), 0);
+            this.data.stats.totalRevenue = [...listings, ...hotels].reduce((sum, p) => sum + (p.price || 0), 0);
             this.data.stats.verifiedAgents = users.filter(u => u.role === 'agent' && u.verified).length;
 
             // Map all users (agents and clients) with their listing count
@@ -99,22 +101,33 @@ class AdminDashboard {
                 email: u.email,
                 phone: u.phone || '',
                 status: u.verified ? 'verified' : (u.role === 'client' ? 'active' : 'pending'),
-                listings: properties.filter(p => p.userId === u._id).length,
+                listings: listings.filter(p => p.userId === u._id).length + hotels.filter(h => h.userId === u._id).length,
                 joinDate: u.createdAt,
                 initials: u.fullName ? u.fullName.split(' ').map(n => n[0]).join('').toUpperCase() : ''
             }));
 
-            // Properties
-            this.data.properties = properties.map(p => ({
+            // Properties: merge listings and hotels, normalize fields
+            const normalizedListings = listings.map(p => ({
                 id: p._id,
                 title: p.title,
                 agent: users.find(u => u._id === p.userId)?.fullName || 'Unknown',
                 price: p.price,
-                status: p.status,
+                status: p.status || 'published',
                 dateList: p.createdAt,
                 location: p.location || '',
-                type: p.type || ''
+                type: p.type || 'listing'
             }));
+            const normalizedHotels = hotels.map(h => ({
+                id: h._id,
+                title: h.name,
+                agent: users.find(u => u._id === h.userId)?.fullName || 'Unknown',
+                price: h.price,
+                status: 'published',
+                dateList: h.createdAt,
+                location: h.address || '',
+                type: 'hotel'
+            }));
+            this.data.properties = [...normalizedListings, ...normalizedHotels];
 
             // Transactions & Disputes: You can fetch and process these if you have endpoints
             this.data.transactions = [];
