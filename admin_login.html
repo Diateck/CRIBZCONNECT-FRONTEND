@@ -351,11 +351,7 @@
                 this.loginIcon = document.getElementById('loginIcon');
                 this.loginText = document.getElementById('loginText');
                 
-                this.validCredentials = [
-                    { username: 'admin', password: 'admin123', role: 'Super Admin' },
-                    { username: 'superadmin', password: 'super123', role: 'Super Admin' },
-                    { username: 'cribzadmin', password: 'cribz2024', role: 'Super Admin' }
-                ];
+                // Remove hardcoded demo credentials. Use backend API for authentication.
                 
                 this.init();
             }
