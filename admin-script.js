@@ -28,50 +28,37 @@ class AdminDashboard {
     async fetchDashboardData() {
         const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
         try {
-            // Fetch all properties, users, agents
-            const [propertiesRes, usersRes, agentsRes] = await Promise.all([
+            // Fetch all properties and users
+            const [propertiesRes, usersRes] = await Promise.all([
                 fetch(`${API_BASE_URL}/api/listings`),
-                fetch(`${API_BASE_URL}/api/users`),
-                fetch(`${API_BASE_URL}/api/users/agents`)
+                fetch(`${API_BASE_URL}/api/users`)
             ]);
             const properties = await propertiesRes.json();
             const users = await usersRes.json();
-            const agents = await agentsRes.json();
 
             // Stats
             this.data.stats.totalProperties = properties.length;
             this.data.stats.totalUsers = users.length;
             this.data.stats.totalRevenue = properties.reduce((sum, p) => sum + (p.price || 0), 0);
-            this.data.stats.verifiedAgents = agents.filter(a => a.verified).length;
+            this.data.stats.verifiedAgents = users.filter(u => u.role === 'agent' && u.verified).length;
 
-            // Agents
-            this.data.agents = agents.map(a => ({
-                id: a._id,
-                name: a.fullName,
-                email: a.email,
-                phone: a.phone || '',
-                status: a.verified ? 'verified' : 'pending',
-                listings: properties.filter(p => p.userId === a._id).length,
-                joinDate: a.createdAt,
-                initials: a.fullName ? a.fullName.split(' ').map(n => n[0]).join('').toUpperCase() : ''
-            }));
-
-            // Clients
-            this.data.clients = users.filter(u => u.role === 'client').map(u => ({
+            // Map all users (agents and clients) with their listing count
+            this.data.agents = users.map(u => ({
                 id: u._id,
                 name: u.fullName,
                 email: u.email,
-                bookings: 0, // You can update this if you have booking data
-                disputes: 0, // You can update this if you have dispute data
-                status: 'active',
-                joinDate: u.createdAt
+                phone: u.phone || '',
+                status: u.verified ? 'verified' : (u.role === 'client' ? 'active' : 'pending'),
+                listings: properties.filter(p => p.userId === u._id).length,
+                joinDate: u.createdAt,
+                initials: u.fullName ? u.fullName.split(' ').map(n => n[0]).join('').toUpperCase() : ''
             }));
 
             // Properties
             this.data.properties = properties.map(p => ({
                 id: p._id,
                 title: p.title,
-                agent: agents.find(a => a._id === p.userId)?.fullName || 'Unknown',
+                agent: users.find(u => u._id === p.userId)?.fullName || 'Unknown',
                 price: p.price,
                 status: p.status,
                 dateList: p.createdAt,
@@ -327,9 +314,8 @@ class AdminDashboard {
         const tbody = document.getElementById('agentsTableBody');
         if (!tbody) return;
 
-        // Show all users (like clients tab did), not just agents
-        const allUsers = [...this.data.agents, ...this.data.clients];
-        tbody.innerHTML = allUsers.map(user => `
+        // Show all users with their listing count
+        tbody.innerHTML = this.data.agents.map(user => `
             <tr>
                 <td>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -340,7 +326,7 @@ class AdminDashboard {
                     </div>
                 </td>
                 <td>${user.email}</td>
-                <td><strong>${user.listings !== undefined ? user.listings : user.bookings || 0}</strong> ${user.listings !== undefined ? 'listing(s)' : 'bookings'}</td>
+                <td><strong>${user.listings}</strong> listing(s)</td>
                 <td>
                     <span class="status-badge ${user.status}">
                         ${user.status === 'verified' ? 'Verified' : user.status === 'active' ? 'Active' : 'Pending'}
