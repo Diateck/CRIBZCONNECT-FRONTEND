@@ -397,7 +397,7 @@
                 fetch('https://cribzconnect-backend.onrender.com/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: username, password })
+                    body: JSON.stringify({ emailOrUsername: username, password })
                 })
                 .then(res => res.json())
                 .then(data => {
