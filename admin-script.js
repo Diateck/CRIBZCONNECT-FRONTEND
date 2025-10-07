@@ -327,30 +327,28 @@ class AdminDashboard {
         const tbody = document.getElementById('agentsTableBody');
         if (!tbody) return;
 
-        tbody.innerHTML = this.data.agents.map(agent => `
+        // Show all users (like clients tab did), not just agents
+        const allUsers = [...this.data.agents, ...this.data.clients];
+        tbody.innerHTML = allUsers.map(user => `
             <tr>
                 <td>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
-                        <div class="profile-avatar" data-name="${agent.name}" style="width: 35px; height: 35px; font-size: 0.8rem;">${agent.initials}</div>
+                        <div class="profile-avatar" data-name="${user.name}" style="width: 35px; height: 35px; font-size: 0.8rem;">${user.initials || ''}</div>
                         <div>
-                            <strong>${agent.name}</strong>
+                            <strong>${user.name}</strong>
                         </div>
                     </div>
                 </td>
-                <td>${agent.email}</td>
-                <td><strong>${agent.listings}</strong> listing(s)</td>
+                <td>${user.email}</td>
+                <td><strong>${user.listings !== undefined ? user.listings : user.bookings || 0}</strong> ${user.listings !== undefined ? 'listing(s)' : 'bookings'}</td>
                 <td>
-                    <span class="status-badge ${agent.status}">
-                        ${agent.status === 'verified' ? 'Verified' : 'Pending'}
+                    <span class="status-badge ${user.status}">
+                        ${user.status === 'verified' ? 'Verified' : user.status === 'active' ? 'Active' : 'Pending'}
                     </span>
                 </td>
                 <td>
                     <div class="table-actions">
-                        ${agent.status === 'pending' ? 
-                            `<button class="action-btn-sm btn-approve" onclick="adminDashboard.approveAgent('${agent.id}')">Approve</button>` :
-                            `<button class="action-btn-sm btn-suspend" onclick="adminDashboard.suspendAgent('${agent.id}')">Suspend</button>`
-                        }
-                        <button class="action-btn-sm btn-edit" onclick="adminDashboard.editAgent('${agent.id}')">Edit</button>
+                        <button class="action-btn-sm btn-edit" onclick="adminDashboard.editAgent('${user.id}')">Edit</button>
                     </div>
                 </td>
             </tr>
