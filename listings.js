@@ -110,6 +110,9 @@ async function loadListingsFromBackend() {
         if (!hotelsRes.ok) throw new Error('Failed to fetch hotels');
         const listings = await listingsRes.json();
         const hotels = await hotelsRes.json();
+        // store raw fetched items for filtering
+        window._fetchedUserListings = listings || [];
+        window._fetchedUserHotels = hotels || [];
         // Normalize hotel objects to match listing card rendering
         const normalizedHotels = hotels.map(hotel => ({
             ...hotel,
@@ -122,10 +125,14 @@ async function loadListingsFromBackend() {
             unitMeasure: hotel.unitMeasure || '',
             images: hotel.images || [],
             price: hotel.price,
+            status: hotel.status || 'pending',
             address: hotel.address
         }));
         // Merge listings and hotels
         const allListings = [...listings, ...normalizedHotels];
+        // Save for later filtering actions
+        window.lastFetchedListings = allListings;
+        // Apply default filter (all)
         renderListings(allListings);
     } catch (err) {
         showNotification('Could not load listings: ' + err.message, 'error');
@@ -261,6 +268,27 @@ document.addEventListener('click', async function(e) {
             showNotification('Could not load item for edit: ' + err.message, 'error');
         }
     }
+});
+
+// Filter buttons on My Listings page
+document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.btn-filter');
+    if (!btn) return;
+    const filter = btn.getAttribute('data-filter');
+    // Update active button styling
+    document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // Use lastFetchedListings to filter
+    const all = window.lastFetchedListings || [];
+    if (!all.length) return renderListings([]);
+    let filtered = all;
+    if (filter && filter !== 'all') {
+        filtered = all.filter(item => {
+            // map 'published' to published, 'draft' to draft, 'pending' to pending
+            return String(item.status || '').toLowerCase() === filter.toLowerCase();
+        });
+    }
+    renderListings(filtered);
 });
 
 // Show Edit Listing Modal (to be implemented)

@@ -112,7 +112,7 @@ class AdminDashboard {
                 title: p.title,
                 agent: users.find(u => u._id === p.userId)?.fullName || 'Unknown',
                 price: p.price,
-                status: p.status || 'published',
+                status: p.status || 'pending',
                 dateList: p.createdAt,
                 location: p.location || '',
                 type: p.type || 'listing'
@@ -122,7 +122,7 @@ class AdminDashboard {
                 title: h.name,
                 agent: users.find(u => u._id === h.userId)?.fullName || 'Unknown',
                 price: h.price,
-                status: 'published',
+                status: h.status || 'pending',
                 dateList: h.createdAt,
                 location: h.address || '',
                 type: 'hotel'
@@ -470,36 +470,54 @@ class AdminDashboard {
         `).join('');
     }
 
-    populatePendingApprovals() {
+    async populatePendingApprovals() {
         const container = document.getElementById('pendingPropertiesGrid');
         if (!container) return;
+        // Fetch latest pending items from backend for accuracy
+        try {
+            const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
+            const [pendingListingsRes, pendingHotelsRes] = await Promise.all([
+                fetch(`${API_BASE_URL}/api/listings/status/pending`),
+                fetch(`${API_BASE_URL}/api/hotels/status/pending`)
+            ]);
+            const pendingListings = pendingListingsRes.ok ? await pendingListingsRes.json() : [];
+            const pendingHotels = pendingHotelsRes.ok ? await pendingHotelsRes.json() : [];
 
-        const pendingProperties = this.data.properties.filter(p => p.status === 'pending');
+            const pendingNormalized = [
+                ...pendingListings.map(p => ({ id: p._id, title: p.title, price: p.price, agent: p.userId, type: 'listing' })),
+                ...pendingHotels.map(h => ({ id: h._id, title: h.name, price: h.price, agent: h.userId, type: 'hotel' }))
+            ];
 
-        container.innerHTML = pendingProperties.map(property => `
-            <div class="pending-property-card">
-                <div class="property-image" style="background-image: url('https://via.placeholder.com/350x200')"></div>
-                <div class="property-details">
-                    <h4>${property.title}</h4>
-                    <p>A modern property in a prime location with excellent amenities and facilities.</p>
-                    <div class="property-meta">
-                        <div class="property-price">$${property.price ? Number(property.price).toLocaleString() : '0'}/month</div>
-                        <div class="property-agent">by ${property.agent}</div>
+            container.innerHTML = pendingNormalized.length === 0
+                ? `<div class="empty-state"><p>No pending items at the moment.</p></div>`
+                : pendingNormalized.map(property => `
+                    <div class="pending-property-card">
+                        <div class="property-image" style="background-image: url('https://via.placeholder.com/350x200')"></div>
+                        <div class="property-details">
+                            <h4>${property.title}</h4>
+                            <p>${property.type === 'hotel' ? 'Hotel listing' : 'Property listing'}</p>
+                            <div class="property-meta">
+                                <div class="property-price">$${property.price ? Number(property.price).toLocaleString() : '0'}</div>
+                                <div class="property-agent">by ${property.agent}</div>
+                            </div>
+                            <div class="property-actions">
+                                <button class="action-btn-sm btn-approve" onclick="adminDashboard.approveProperty('${property.id}')">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button class="action-btn-sm btn-reject" onclick="adminDashboard.rejectProperty('${property.id}')">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                                <button class="action-btn-sm btn-edit" onclick="adminDashboard.viewPropertyDetails('${property.id}')">
+                                    <i class="fas fa-eye"></i> Details
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="property-actions">
-                        <button class="action-btn-sm btn-approve" onclick="adminDashboard.approveProperty(${property.id})">
-                            <i class="fas fa-check"></i> Approve
-                        </button>
-                        <button class="action-btn-sm btn-reject" onclick="adminDashboard.rejectProperty(${property.id})">
-                            <i class="fas fa-times"></i> Reject
-                        </button>
-                        <button class="action-btn-sm btn-edit" onclick="adminDashboard.viewPropertyDetails(${property.id})">
-                            <i class="fas fa-eye"></i> Details
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
+                `).join('');
+        } catch (err) {
+            console.error('Failed to fetch pending items:', err);
+            container.innerHTML = `<div class="empty-state"><p>Unable to load pending items.</p></div>`;
+        }
     }
 
     populateTransactionsTable() {
