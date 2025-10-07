@@ -14,7 +14,7 @@ class AdminDashboard {
             _id: property.id,
             title: property.title,
             agentName: property.agent,
-            price: property.price,
+            price: typeof property.price === 'string' ? Number(property.price.replace(/[^\d.]/g, '')) : property.price,
             status: property.status || 'published',
             createdAt: property.dateList,
             isHotel: property.type === 'hotel' || property.type === 'Hotel'
@@ -30,7 +30,7 @@ class AdminDashboard {
                 <td><span class=\"status-badge published\">${property.status.charAt(0).toUpperCase() + property.status.slice(1)}</span></td>
                 <td>${this.formatDate(property.createdAt)}</td>
                 <td>
-                    <button class=\"action-btn-sm btn-delete\" onclick=\"adminDashboard.deleteProperty('${property.id}', '${property.type}')\">Delete</button>
+                    <button class=\"action-btn-sm btn-delete\" onclick=\"adminDashboard.deleteProperty('${property._id}', '${property.isHotel ? 'hotel' : 'listing'}')\">Delete</button>
                 </td>
             </tr>
         `).join('');
@@ -454,7 +454,7 @@ class AdminDashboard {
                     </div>
                 </td>
                 <td>${property.agent}</td>
-                <td><strong>XAF${property.price.toLocaleString()}</strong></td>
+                <td><strong>$${property.price ? Number(property.price).toLocaleString() : '0'}</strong></td>
                 <td>
                     <span class="status-badge ${property.status}">
                         ${property.status.charAt(0).toUpperCase() + property.status.slice(1)}
@@ -463,11 +463,7 @@ class AdminDashboard {
                 <td>${this.formatDate(property.dateList)}</td>
                 <td>
                     <div class="table-actions">
-                        ${property.status === 'pending' ? 
-                            `<button class="action-btn-sm btn-approve" onclick="adminDashboard.approveProperty(${property.id})">Approve</button>
-                             <button class="action-btn-sm btn-reject" onclick="adminDashboard.rejectProperty(${property.id})">Reject</button>` :
-                            `<button class="action-btn-sm btn-edit" onclick="adminDashboard.editProperty(${property.id})">Edit</button>`
-                        }
+                        <button class="action-btn-sm btn-delete" onclick="adminDashboard.deleteProperty('${property.id}', '${property.type === 'hotel' ? 'hotel' : 'listing'}')">Delete</button>
                     </div>
                 </td>
             </tr>
@@ -487,7 +483,7 @@ class AdminDashboard {
                     <h4>${property.title}</h4>
                     <p>A modern property in a prime location with excellent amenities and facilities.</p>
                     <div class="property-meta">
-                        <div class="property-price">XAF${property.price.toLocaleString()}/month</div>
+                        <div class="property-price">$${property.price ? Number(property.price).toLocaleString() : '0'}/month</div>
                         <div class="property-agent">by ${property.agent}</div>
                     </div>
                     <div class="property-actions">
