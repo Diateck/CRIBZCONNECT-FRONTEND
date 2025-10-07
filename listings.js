@@ -121,7 +121,7 @@ async function loadListingsFromBackend() {
             listingType: item.listingType || item.type || 'Sale',
             images: item.images || [],
             price: item.price,
-            status: item.status || 'pending',
+            status: item.status,
             bedrooms: item.bedrooms || item.rooms || 0,
             bathrooms: item.bathrooms || 1,
             beds: item.beds || 1,
@@ -142,7 +142,7 @@ async function loadListingsFromBackend() {
             unitMeasure: hotel.unitMeasure || '',
             images: hotel.images || [],
             price: hotel.price,
-            status: hotel.status || 'pending',
+            status: hotel.status,
             address: hotel.address
         }));
 
