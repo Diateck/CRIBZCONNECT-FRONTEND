@@ -443,16 +443,30 @@ class AdminDashboard {
             });
             if (!res.ok) throw new Error('Failed to fetch stats');
             const stats = await res.json();
-            // Update stat cards
-            document.getElementById('totalRevenue').textContent = `XAF ${stats.totalRevenue.toLocaleString()}`;
-            document.getElementById('platformCommission').textContent = `XAF ${stats.platformCommission.toLocaleString()}`;
-            document.getElementById('agentEarnings').textContent = `XAF ${stats.agentEarnings.toLocaleString()}`;
-            document.getElementById('serviceFees').textContent = `XAF ${stats.serviceFees.toLocaleString()}`;
+            // Update stat cards (dashboard overview)
+            document.getElementById('totalProperties').textContent = stats.totalProperties?.toLocaleString() || '0';
+            document.getElementById('totalUsers').textContent = stats.totalUsers?.toLocaleString() || '0';
+            document.getElementById('dashboardRevenue').textContent = `XAF ${stats.totalRevenue?.toLocaleString() || '0'}`;
+            document.getElementById('verifiedAgents').textContent = stats.verifiedAgents?.toLocaleString() || '0';
+            if (stats.totalPropertiesChange) document.getElementById('totalPropertiesChange').textContent = stats.totalPropertiesChange;
+            if (stats.totalUsersChange) document.getElementById('totalUsersChange').textContent = stats.totalUsersChange;
+            if (stats.dashboardRevenueChange) document.getElementById('dashboardRevenueChange').textContent = stats.dashboardRevenueChange;
+            if (stats.verifiedAgentsChange) document.getElementById('verifiedAgentsChange').textContent = stats.verifiedAgentsChange;
+
+            // Revenue reports section (existing IDs)
+            document.getElementById('totalRevenue').textContent = `XAF ${stats.totalRevenue?.toLocaleString() || '0'}`;
+            document.getElementById('platformCommission').textContent = `XAF ${stats.platformCommission?.toLocaleString() || '0'}`;
+            document.getElementById('agentEarnings').textContent = `XAF ${stats.agentEarnings?.toLocaleString() || '0'}`;
+            document.getElementById('serviceFees').textContent = `XAF ${stats.serviceFees?.toLocaleString() || '0'}`;
             if (stats.totalRevenueChange) document.getElementById('totalRevenueChange').textContent = stats.totalRevenueChange;
             if (stats.platformCommissionChange) document.getElementById('platformCommissionChange').textContent = stats.platformCommissionChange;
             if (stats.agentEarningsChange) document.getElementById('agentEarningsChange').textContent = stats.agentEarningsChange;
             if (stats.serviceFeesChange) document.getElementById('serviceFeesChange').textContent = stats.serviceFeesChange;
         } catch (err) {
+            document.getElementById('totalProperties').textContent = 'Error';
+            document.getElementById('totalUsers').textContent = 'Error';
+            document.getElementById('dashboardRevenue').textContent = 'Error';
+            document.getElementById('verifiedAgents').textContent = 'Error';
             document.getElementById('totalRevenue').textContent = 'Error';
             document.getElementById('platformCommission').textContent = 'Error';
             document.getElementById('agentEarnings').textContent = 'Error';
