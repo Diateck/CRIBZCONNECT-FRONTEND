@@ -39,16 +39,17 @@ class AdminDashboard {
         const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
         if (!confirm('Are you sure you want to delete this property?')) return;
         try {
+            const token = localStorage.getItem('authToken');
             const url = propertyType === 'hotel'
                 ? `${API_BASE_URL}/api/hotels/${propertyId}`
                 : `${API_BASE_URL}/api/listings/${propertyId}`;
-                const res = await fetch(url, {
-                    method: 'DELETE',
-                    headers: {
-                        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-                        'Content-Type': 'application/json'
-                    }
-                });
+            const res = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                    'Content-Type': 'application/json'
+                }
+            });
             if (!res.ok) throw new Error('Failed to delete property');
             // Remove from local data
             this.data.properties = this.data.properties.filter(p => p.id !== propertyId && p._id !== propertyId);
