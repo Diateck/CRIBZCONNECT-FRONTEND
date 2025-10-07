@@ -329,6 +329,14 @@ class AdminDashboard {
 
         tbody.innerHTML = this.data.agents.map(agent => `
             <tr>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="profile-avatar" data-name="${agent.name}" style="width: 35px; height: 35px; font-size: 0.8rem;">${agent.initials}</div>
+                        <div>
+                            <strong>${agent.name}</strong>
+                        </div>
+                    </div>
+                </td>
                 <td>${agent.email}</td>
                 <td><strong>${agent.listings}</strong> listing(s)</td>
                 <td>
