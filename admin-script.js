@@ -21,16 +21,16 @@ class AdminDashboard {
         }));
 
         tbody.innerHTML = allProperties.length === 0
-            ? `<tr><td colspan="6" style="text-align:center; color:#888;">No properties found.</td></tr>`
+            ? `<tr><td colspan=\"6\" style=\"text-align:center; color:#888;\">No properties found.</td></tr>`
             : allProperties.map(property => `
             <tr>
                 <td><strong>${property.title}</strong></td>
                 <td>${property.agentName}</td>
-                <td><strong>XAF${property.price ? Number(property.price).toLocaleString() : '0'}</strong></td>
-                <td><span class="status-badge published">${property.status.charAt(0).toUpperCase() + property.status.slice(1)}</span></td>
+                <td><strong>$${property.price ? Number(property.price).toLocaleString() : '0'}</strong></td>
+                <td><span class=\"status-badge published\">${property.status.charAt(0).toUpperCase() + property.status.slice(1)}</span></td>
                 <td>${this.formatDate(property.createdAt)}</td>
                 <td>
-                    <button class="action-btn-sm btn-delete" onclick="adminDashboard.deleteProperty('${property._id}', ${property.isHotel})">Delete</button>
+                    <button class=\"action-btn-sm btn-delete\" onclick=\"adminDashboard.deleteProperty('${property._id}', ${property.isHotel})\">Delete</button>
                 </td>
             </tr>
         `).join('');
