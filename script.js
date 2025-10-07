@@ -59,12 +59,24 @@ if (closeSidebar) {
     closeSidebar.addEventListener('click', closeSidebarMenu);
 }
 
-// Dynamic email display for verification page
-document.addEventListener('DOMContentLoaded', function() {
+// Dynamic email display for verification page (fetch from backend for all users)
+document.addEventListener('DOMContentLoaded', async function() {
     var emailSpan = document.querySelector('.email-verification .email-address');
     var user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (emailSpan && user && user.email) {
-        emailSpan.textContent = user.email;
+    if (emailSpan && user && user.token) {
+        try {
+            const res = await fetch('https://cribzconnect-backend.onrender.com/api/user/profile', {
+                headers: { 'Authorization': `Bearer ${user.token}` }
+            });
+            if (res.ok) {
+                const profile = await res.json();
+                if (profile.email) {
+                    emailSpan.textContent = profile.email;
+                }
+            }
+        } catch (err) {
+            console.error('Failed to fetch user profile:', err);
+        }
     }
 });
 
