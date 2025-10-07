@@ -30,16 +30,16 @@ class AdminDashboard {
                 <td><span class=\"status-badge published\">${property.status.charAt(0).toUpperCase() + property.status.slice(1)}</span></td>
                 <td>${this.formatDate(property.createdAt)}</td>
                 <td>
-                    <button class=\"action-btn-sm btn-delete\" onclick=\"adminDashboard.deleteProperty('${property._id}', ${property.isHotel})\">Delete</button>
+                    <button class=\"action-btn-sm btn-delete\" onclick=\"adminDashboard.deleteProperty('${property.id}', '${property.type}')\">Delete</button>
                 </td>
             </tr>
         `).join('');
     }
-    async deleteProperty(propertyId, isHotel) {
+    async deleteProperty(propertyId, propertyType) {
         const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
         if (!confirm('Are you sure you want to delete this property?')) return;
         try {
-            const url = isHotel
+            const url = propertyType === 'hotel'
                 ? `${API_BASE_URL}/api/hotels/${propertyId}`
                 : `${API_BASE_URL}/api/listings/${propertyId}`;
             const res = await fetch(url, { method: 'DELETE' });
