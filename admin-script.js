@@ -40,9 +40,13 @@ class AdminDashboard {
         if (!confirm('Are you sure you want to delete this property?')) return;
         try {
             const token = localStorage.getItem('authToken');
-            const url = propertyType === 'hotel'
-                ? `${API_BASE_URL}/api/hotels/${propertyId}`
-                : `${API_BASE_URL}/api/listings/${propertyId}`;
+            console.log('Delete token:', token);
+            let url = '';
+            if (propertyType === 'hotel' || propertyType === 'Hotel') {
+                url = `${API_BASE_URL}/api/hotels/${propertyId}`;
+            } else {
+                url = `${API_BASE_URL}/api/listings/${propertyId}`;
+            }
             const res = await fetch(url, {
                 method: 'DELETE',
                 headers: {
@@ -50,7 +54,10 @@ class AdminDashboard {
                     'Content-Type': 'application/json'
                 }
             });
-            if (!res.ok) throw new Error('Failed to delete property');
+            const respBody = await res.text().catch(() => null);
+            console.log('[deleteProperty] response status=', res.status);
+            console.log('[deleteProperty] response body=', respBody);
+            if (!res.ok) throw new Error('Failed to delete property: ' + respBody);
             // Remove from local data
             this.data.properties = this.data.properties.filter(p => p.id !== propertyId && p._id !== propertyId);
             this.showMessage('success', 'Property deleted successfully!');
@@ -681,10 +688,17 @@ class AdminDashboard {
             url = `${API_BASE_URL}/api/listings/${propertyId}/approve`;
         }
         try {
+            const token = localStorage.getItem('authToken');
             const res = await fetch(url, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' }
+                headers: {
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                    'Content-Type': 'application/json'
+                }
             });
+            console.log('[approveProperty] response status=', res.status);
+            const respBody = await res.text().catch(() => null);
+            console.log('[approveProperty] response body=', respBody);
             if (!res.ok) throw new Error('Failed to approve property');
             // Refetch all properties and hotels to update status everywhere
             await this.fetchDashboardData();
@@ -713,11 +727,18 @@ class AdminDashboard {
         const reason = prompt('Please provide a reason for rejection:');
         if (!reason) return;
         try {
+            const token = localStorage.getItem('authToken');
             const res = await fetch(url, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({ status: 'draft', rejectionReason: reason })
             });
+            console.log('[rejectProperty] response status=', res.status);
+            const respBody = await res.text().catch(() => null);
+            console.log('[rejectProperty] response body=', respBody);
             if (!res.ok) throw new Error('Failed to reject property');
             property.status = 'draft';
             property.rejectionReason = reason;
