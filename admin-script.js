@@ -114,29 +114,40 @@ class AdminDashboard {
                 const id = req._id || req.id || '';
                 const user = req.user?.fullName || req.user?.username || req.user?.email || req.agentName || req.agentId || 'Unknown';
                 const amount = req.amount ? Number(req.amount).toLocaleString() : '0';
-                let payoutDetails = 'N/A';
-                let payoutObj = null;
-                if (req.payoutDetails) {
-                    payoutDetails = req.payoutDetails;
-                    try {
-                        payoutObj = typeof req.payoutDetails === 'string' ? JSON.parse(req.payoutDetails) : req.payoutDetails;
-                    } catch {}
-                } else if (req.description) {
-                    try {
-                        payoutObj = typeof req.description === 'string' ? JSON.parse(req.description) : req.description;
-                        if (payoutObj.payoutMethod === 'paypal') {
-                            payoutDetails = `PayPal: ${payoutObj.paypalEmail}`;
-                        } else if (payoutObj.payoutMethod === 'skrill') {
-                            payoutDetails = `Skrill: ${payoutObj.skrillEmail}`;
-                        } else if (payoutObj.payoutMethod === 'wire-transfer') {
-                            payoutDetails = `Bank: ${payoutObj.bankAccountName}, ${payoutObj.bankAccountNumber}, ${payoutObj.bankName}, ${payoutObj.bankCountry}`;
-                        } else {
-                            payoutDetails = payoutObj.payoutMethod || 'N/A';
+                    // Prefer payoutSummary from API; fall back to parsing payoutDetails/description
+                    let payoutSummary = req.payoutSummary || 'N/A';
+                    let payoutObj = null;
+                    // Try parsed payoutDetails first (may be object or JSON string)
+                    if (req.payoutDetails) {
+                        try {
+                            payoutObj = typeof req.payoutDetails === 'string' ? JSON.parse(req.payoutDetails) : req.payoutDetails;
+                        } catch (e) {
+                            // keep as raw string in summary if parsing fails
+                            if (!payoutSummary || payoutSummary === 'N/A') payoutSummary = String(req.payoutDetails);
                         }
-                    } catch (e) {
-                        payoutDetails = req.description;
                     }
-                }
+                    // If no payoutObj yet, try parsing description (where profileRoutes stores it)
+                    if (!payoutObj && req.description) {
+                        try {
+                            payoutObj = typeof req.description === 'string' ? JSON.parse(req.description) : req.description;
+                        } catch (e) {
+                            // leave payoutObj null and use raw description as summary if needed
+                            if (!payoutSummary || payoutSummary === 'N/A') payoutSummary = String(req.description);
+                        }
+                    }
+
+                    // If we have a parsed payoutObj but no payoutSummary, derive a readable summary
+                    if (payoutObj && (!payoutSummary || payoutSummary === 'N/A')) {
+                        if (payoutObj.payoutMethod === 'paypal') {
+                            payoutSummary = `PayPal: ${payoutObj.paypalEmail || payoutObj.email || ''}`.trim();
+                        } else if (payoutObj.payoutMethod === 'skrill') {
+                            payoutSummary = `Skrill: ${payoutObj.skrillEmail || payoutObj.email || ''}`.trim();
+                        } else if (payoutObj.payoutMethod === 'wire-transfer' || payoutObj.payoutMethod === 'bank') {
+                            payoutSummary = `Bank: ${payoutObj.bankAccountName || ''} ${payoutObj.bankAccountNumber || ''} ${payoutObj.bankName || ''}`.trim();
+                        } else if (payoutObj.payoutMethod) {
+                            payoutSummary = String(payoutObj.payoutMethod);
+                        }
+                    }
                 const date = req.createdAt || req.date || '';
                 const status = req.status ? req.status.charAt(0).toUpperCase() + req.status.slice(1) : 'Unknown';
                 // Store payoutObj as a string for modal
@@ -146,12 +157,12 @@ class AdminDashboard {
                         <td><strong>${id}</strong></td>
                         <td>${user}</td>
                         <td><strong>XAF ${amount}</strong></td>
-                        <td>${payoutDetails}</td>
+                            <td>${payoutSummary}</td>
                         <td>${this.formatDate(date)}</td>
                         <td><span class=\"status-badge ${req.status}\">${status}</span></td>
                         <td>
                             <div class=\"table-actions\">
-                                <button class=\"action-btn-sm btn-edit\" onclick=\"adminDashboard.showPayoutModal('${id}', '${payoutObjStr}')\">Review</button>
+                                    <button class="action-btn-sm btn-edit" onclick="adminDashboard.showPayoutModal('${id}', '${payoutObjStr}')">Review</button>
                             </div>
                         </td>
                     </tr>
