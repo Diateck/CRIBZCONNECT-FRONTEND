@@ -48,13 +48,10 @@ const overlay = document.getElementById('overlay');
 const navLinks = document.querySelectorAll('.nav-link');
 const pages = document.querySelectorAll('.page');
 const submenuToggles = document.querySelectorAll('.has-submenu');
-
-// Mobile Navigation
-function toggleSidebar() {
-    sidebar.classList.toggle('open');
-    overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
-    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : 'auto';
-}
+    const payoutMethodSelect = document.getElementById('payout-method-select');
+    const paypalDetails = document.getElementById('paypal-details');
+    const skrillDetails = document.getElementById('skrill-details');
+    const wireDetails = document.getElementById('wire-details');
 
 function closeSidebarMenu() {
     sidebar.classList.remove('open');
@@ -669,18 +666,47 @@ function setupPayoutMethodForm() {
     const payoutMethodForm = document.querySelector('.payout-method-form');
     const setPayoutMethodBtn = document.querySelector('.set-method-btn');
     const requestPayoutBtn = document.querySelector('.request-payout-btn');
+    const payoutMethodSelect = document.getElementById('payout-method-select');
+    const paypalDetails = document.getElementById('paypal-details');
+    const skrillDetails = document.getElementById('skrill-details');
+    const wireDetails = document.getElementById('wire-details');
+
+    // Show/hide payout detail forms based on selection
+    if (payoutMethodSelect) {
+        payoutMethodSelect.addEventListener('change', function() {
+            const method = payoutMethodSelect.value;
+            // Hide all
+            if (paypalDetails) paypalDetails.style.display = 'none';
+            if (skrillDetails) skrillDetails.style.display = 'none';
+            if (wireDetails) wireDetails.style.display = 'none';
+
+            // Show selected
+            if (method === 'paypal' && paypalDetails) {
+                paypalDetails.style.display = 'block';
+            } else if (method === 'skrill' && skrillDetails) {
+                skrillDetails.style.display = 'block';
+            } else if (method === 'wire-transfer' && wireDetails) {
+                wireDetails.style.display = 'block';
+            }
+        });
+    }
 
     if (payoutMethodForm) {
         payoutMethodForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            
             // Validate required fields
-            const requiredFields = ['payout-amount-method', 'first-name-method', 'last-name-method', 'street-address-method', 'city-method', 'state-method', 'zip-code-method', 'payout-method-select'];
+            const requiredFields = [
+                'payout-amount-method', 'first-name-method', 'last-name-method', 'street-address-method', 'city-method', 'state-method', 'zip-code-method', 'payout-method-select'
+            ];
+            const method = payoutMethodSelect ? payoutMethodSelect.value : '';
+            if (method === 'paypal') requiredFields.push('paypal-email');
+            if (method === 'skrill') requiredFields.push('skrill-email');
+            if (method === 'wire-transfer') requiredFields.push('bank-account-name', 'bank-account-number', 'bank-name', 'bank-country');
+
             const missingFields = requiredFields.filter(field => {
                 const input = document.getElementById(field);
                 return !input || !input.value.trim();
             });
-
             if (missingFields.length > 0) {
                 showNotification('Please fill in all required fields', 'error');
                 return;
@@ -692,25 +718,24 @@ function setupPayoutMethodForm() {
                 return;
             }
 
-            // Handle saving payout method details
+            // Gather payout method details
             const formData = new FormData(payoutMethodForm);
             const data = Object.fromEntries(formData);
-            
+            // Add selected method details
+            if (method === 'paypal') {
+                data.paypalEmail = document.getElementById('paypal-email').value;
+            } else if (method === 'skrill') {
+                data.skrillEmail = document.getElementById('skrill-email').value;
+            } else if (method === 'wire-transfer') {
+                data.bankAccountName = document.getElementById('bank-account-name').value;
+                data.bankAccountNumber = document.getElementById('bank-account-number').value;
+                data.bankName = document.getElementById('bank-name').value;
+                data.bankCountry = document.getElementById('bank-country').value;
+            }
+            data.payoutMethod = method;
+
             // Store payout method data for use in payout requests
-            localStorage.setItem('payoutMethodData', JSON.stringify({
-                payoutAmount: data['payout-amount-method'],
-                firstName: data['first-name-method'],
-                lastName: data['last-name-method'],
-                companyName: data['company-name-method'],
-                taxId: data['tax-id-method'],
-                streetAddress: data['street-address-method'],
-                aptSuite: data['apt-suite-method'],
-                city: data['city-method'],
-                state: data['state-method'],
-                zipCode: data['zip-code-method'],
-                payoutMethod: data['payout-method-select']
-            }));
-            
+            localStorage.setItem('payoutMethodData', JSON.stringify(data));
             console.log('Payout method saved:', data);
             showNotification('Payout method updated successfully!', 'success');
         });
@@ -727,137 +752,15 @@ function setupPayoutMethodForm() {
         });
     }
 
-    function setupPayoutMethodForm() {
-        const payoutMethodForm = document.querySelector('.payout-method-form');
-        const setPayoutMethodBtn = document.querySelector('.set-method-btn');
-        const requestPayoutBtn = document.querySelector('.request-payout-btn');
-        const payoutMethodSelect = document.getElementById('payout-method-select');
-        const paypalDetails = document.getElementById('paypal-details');
-        const skrillDetails = document.getElementById('skrill-details');
-        const wireDetails = document.getElementById('wire-details');
-
-        // Show/hide payout detail forms based on selection
-        if (payoutMethodSelect) {
-            payoutMethodSelect.addEventListener('change', function() {
-                const method = payoutMethodSelect.value;
-                // Hide all
-                if (paypalDetails) paypalDetails.style.display = 'none';
-                if (skrillDetails) skrillDetails.style.display = 'none';
-                if (wireDetails) wireDetails.style.display = 'none';
-
-                // Show selected
-                if (method === 'paypal' && paypalDetails) {
-                    paypalDetails.style.display = 'block';
-                } else if (method === 'skrill' && skrillDetails) {
-                    skrillDetails.style.display = 'block';
-                } else if (method === 'wire-transfer' && wireDetails) {
-                    wireDetails.style.display = 'block';
-                }
-            });
-        }
-
-        if (payoutMethodForm) {
-            payoutMethodForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                // Validate required fields
-                const requiredFields = [
-                    'payout-amount-method', 'first-name-method', 'last-name-method', 'street-address-method', 'city-method', 'state-method', 'zip-code-method', 'payout-method-select'
-                ];
-                const method = payoutMethodSelect ? payoutMethodSelect.value : '';
-                if (method === 'paypal') requiredFields.push('paypal-email');
-                if (method === 'skrill') requiredFields.push('skrill-email');
-                if (method === 'wire-transfer') requiredFields.push('bank-account-name', 'bank-account-number', 'bank-name', 'bank-country');
-
-                const missingFields = requiredFields.filter(field => {
-                    const input = document.getElementById(field);
-                    return !input || !input.value.trim();
-                });
-                if (missingFields.length > 0) {
-                    showNotification('Please fill in all required fields', 'error');
-                    return;
-                }
-
-                const payoutAmount = parseFloat(document.getElementById('payout-amount-method').value);
-                if (payoutAmount < 50000) {
-                    showNotification('Minimum payout amount is 50,000 FCFA', 'error');
-                    return;
-                }
-
-                // Gather payout method details
-                const formData = new FormData(payoutMethodForm);
-                const data = Object.fromEntries(formData);
-                // Add selected method details
-                if (method === 'paypal') {
-                    data.paypalEmail = document.getElementById('paypal-email').value;
-                } else if (method === 'skrill') {
-                    data.skrillEmail = document.getElementById('skrill-email').value;
-                } else if (method === 'wire-transfer') {
-                    data.bankAccountName = document.getElementById('bank-account-name').value;
-                    data.bankAccountNumber = document.getElementById('bank-account-number').value;
-                    data.bankName = document.getElementById('bank-name').value;
-                    data.bankCountry = document.getElementById('bank-country').value;
-                }
-                data.payoutMethod = method;
-
-                // Store payout method data for use in payout requests
-                localStorage.setItem('payoutMethodData', JSON.stringify(data));
-                console.log('Payout method saved:', data);
-                showNotification('Payout method updated successfully!', 'success');
-            });
-        }
-
-        if (setPayoutMethodBtn) {
-            setPayoutMethodBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                // Trigger form submission for saving payout method
-                if (payoutMethodForm) {
-                    const submitEvent = new Event('submit', { cancelable: true, bubbles: true });
-                    payoutMethodForm.dispatchEvent(submitEvent);
-                }
-            });
-        }
-
-        if (requestPayoutBtn) {
-            requestPayoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                // Navigate to the payout page using the existing navigation system
-                showPage('payouts');
-            });
-        }
-    }
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-
-            setTimeout(() => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-                
-                // Create payout record (in real app, this would be sent to backend)
-                const payoutRequest = {
-                    id: Date.now(),
-                    amount: payoutAmount,
-                    status: 'pending',
-                    requestDate: new Date().toISOString(),
-                    method: JSON.parse(payoutMethodData).payoutMethod
-                };
-
-                // Store payout request (in real app, this would be handled by backend)
-                const existingPayouts = JSON.parse(localStorage.getItem('payoutHistory') || '[]');
-                existingPayouts.unshift(payoutRequest);
-                localStorage.setItem('payoutHistory', JSON.stringify(existingPayouts));
-
-                showNotification(`Payout request for ${payoutAmount.toLocaleString()} FCFA submitted successfully! You will receive confirmation within 24-48 hours.`, 'success');
-                payoutForm.reset();
-                
-                // Reset input border color
-                if (payoutAmountInput) {
-                    payoutAmountInput.style.borderColor = '#e9ecef';
-                }
-            }, 2000);
+    if (requestPayoutBtn) {
+        requestPayoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Navigate to the payout page using the existing navigation system
+            showPage('payouts');
         });
     }
 }
+// End of setupPayoutMethodForm
 
 // Setup Wallet Page
 function setupWalletPage() {
