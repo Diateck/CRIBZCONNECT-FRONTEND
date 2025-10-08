@@ -2056,29 +2056,38 @@ function setupLivePaymentForm() {
             paymentData[input.name] = input.value;
         });
         // Send payment method to backend
-        try {
-            const res = await fetch('http://localhost:5000/api/user/payment-method', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user.token}`
-                },
-                body: JSON.stringify(paymentData)
-            });
-            const result = await res.json();
-            if (res.ok) {
-                user = { ...user, ...result, paymentMethodAdded: true };
-                localStorage.setItem('user', JSON.stringify(user));
-                showNotification('Payment method saved!', 'success');
-                updateProfileCompletion();
-            } else {
-                showNotification(result.message || 'Payment method failed.', 'error');
+            try {
+                const response = await fetch('https://cribzconnect-backend.onrender.com/api/user/payment-method', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user.token}`
+                    },
+                    body: JSON.stringify(paymentData)
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    user = { ...user, ...result, paymentMethodAdded: true };
+                    localStorage.setItem('user', JSON.stringify(user));
+                    showNotification('Payment method saved!', 'success');
+                    updateProfileCompletion();
+                } else {
+                    showNotification(result.message || 'Payment method failed.', 'error');
+                }
+            } catch (err) {
+                showNotification('Server error. Please try again.', 'error');
             }
-        } catch (err) {
-            showNotification('Server error. Please try again.', 'error');
-        }
     });
 }
+        // Attach event listener to Request Payout button in payout method form
+        const requestPayoutBtn = document.getElementById('requestPayoutBtn');
+        if (requestPayoutBtn) {
+            requestPayoutBtn.onclick = function (e) {
+                e.preventDefault();
+                // Redirect to wallet/payout page
+                window.location.hash = '#wallet';
+            };
+        }
 
 function setupLivePasswordForm() {
     const passwordForm = document.querySelector('.password-form');
