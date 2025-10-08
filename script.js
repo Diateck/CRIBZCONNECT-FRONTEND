@@ -669,6 +669,14 @@ function setupVerificationPage() {
 
 // Setup Payout Method Form
 function setupPayoutMethodForm() {
+    const payoutMethodForm = document.querySelector('.payout-method-form');
+    const setPayoutMethodBtn = document.querySelector('.set-method-btn');
+    const requestPayoutBtn = document.querySelector('.request-payout-btn');
+    const payoutMethodSelect = document.getElementById('payout-method-select');
+    const paypalDetails = document.getElementById('paypal-details');
+    const skrillDetails = document.getElementById('skrill-details');
+    const wireDetails = document.getElementById('wire-details');
+
     // Auto-fill form with saved payout method data
     const savedData = localStorage.getItem('payoutMethodData');
     if (savedData) {
@@ -685,13 +693,6 @@ function setupPayoutMethodForm() {
             payoutMethodSelect.dispatchEvent(new Event('change'));
         }
     }
-    const payoutMethodForm = document.querySelector('.payout-method-form');
-    const setPayoutMethodBtn = document.querySelector('.set-method-btn');
-    const requestPayoutBtn = document.querySelector('.request-payout-btn');
-    const payoutMethodSelect = document.getElementById('payout-method-select');
-    const paypalDetails = document.getElementById('paypal-details');
-    const skrillDetails = document.getElementById('skrill-details');
-    const wireDetails = document.getElementById('wire-details');
 
     // Show/hide payout detail forms based on selection
     if (payoutMethodSelect) {
