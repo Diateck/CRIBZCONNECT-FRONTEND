@@ -157,6 +157,12 @@ class AdminDashboard {
                     </tr>
                 `;
             }).join('');
+        } catch (err) {
+            console.error('[Withdrawal Requests Error]:', err);
+            tbody.innerHTML = `<tr><td colspan='7'>Error loading withdrawal requests: ${err.message}</td></tr>`;
+        }
+    }
+
     // Show payout details modal
     showPayoutModal(id, payoutObjStr) {
         let payoutObj = {};
@@ -194,11 +200,6 @@ class AdminDashboard {
         } else {
             modal.innerHTML = `<div style='background:#fff; padding:2rem; border-radius:8px; min-width:300px; max-width:90vw;'>${html}<br><button onclick="document.getElementById('payoutDetailsModal').remove()">Close</button></div>`;
             modal.style.display = 'flex';
-        }
-    }
-        } catch (err) {
-            console.error('[Withdrawal Requests Error]:', err);
-            tbody.innerHTML = `<tr><td colspan='7'>Error loading withdrawal requests: ${err.message}</td></tr>`;
         }
     }
     // Removed fetchAllPropertiesAndUsers. Use dashboard data instead.
