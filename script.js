@@ -804,32 +804,37 @@ function setupPayoutMethodForm() {
 
     // Withdrawal logic for payout page
     if (requestPayoutBtn) {
-        requestPayoutBtn.addEventListener('click', async (e) => {
+        requestPayoutBtn.addEventListener('click', async function(e) {
             e.preventDefault();
             if (e.stopPropagation) e.stopPropagation();
-            // Get withdrawal amount
-            const payoutAmountInput = document.getElementById('payout-amount-method');
-            const payoutAmount = payoutAmountInput ? parseFloat(payoutAmountInput.value) : 0;
-            if (!payoutAmount || payoutAmount < 50000) {
-                showNotification('Minimum payout amount is 50,000 FCFA', 'error');
-                return;
-            }
-            // Get payout details from form
-            const payoutMethodForm = document.querySelector('.payout-method-form');
-            const formData = new FormData(payoutMethodForm);
-            const payoutDetails = Object.fromEntries(formData);
-            // Get user token
-            let token = '';
-            const userObj = localStorage.getItem('user');
-            if (userObj) {
-                try {
-                    token = JSON.parse(userObj).token;
-                } catch (e) {
-                    token = '';
-                }
-            }
-            // Send withdrawal request to backend
+            // Disable button and show loading
+            requestPayoutBtn.disabled = true;
+            const originalText = requestPayoutBtn.innerHTML;
+            requestPayoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
             try {
+                // Get withdrawal amount
+                const payoutAmountInput = document.getElementById('payout-amount-method');
+                const payoutAmount = payoutAmountInput ? parseFloat(payoutAmountInput.value) : 0;
+                if (!payoutAmount || payoutAmount < 50000) {
+                    showNotification('Minimum payout amount is 50,000 FCFA', 'error');
+                    return;
+                }
+                // Get payout details from form
+                const payoutMethodForm = document.querySelector('.payout-method-form');
+                const formData = new FormData(payoutMethodForm);
+                const payoutDetails = Object.fromEntries(formData);
+                // Get user token
+                let token = '';
+                const userObj = localStorage.getItem('user');
+                if (userObj) {
+                    try {
+                        token = JSON.parse(userObj).token;
+                    } catch (e) {
+                        token = '';
+                    }
+                }
+                // Send withdrawal request to backend
                 const response = await fetch('https://cribzconnect-backend.onrender.com/api/user/request-payout', {
                     method: 'POST',
                     headers: {
@@ -855,6 +860,10 @@ function setupPayoutMethodForm() {
                 }
             } catch (err) {
                 showNotification('Network error: Unable to request withdrawal', 'error');
+            } finally {
+                // Re-enable button and restore text
+                requestPayoutBtn.disabled = false;
+                requestPayoutBtn.innerHTML = originalText;
             }
         });
     }
