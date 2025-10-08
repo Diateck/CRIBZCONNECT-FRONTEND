@@ -733,59 +733,59 @@
                         <form class="payout-method-form">
                             <div class="form-group">
                                 <label for="payout-amount-method">Payout Amount</label>
-                                <input type="number" id="payout-amount-method" class="form-control" placeholder="Enter the payout amount. Only numbers" min="50000" required>
+                                <input type="number" id="payout-amount-method" name="payout-amount-method" class="form-control" placeholder="Enter the payout amount. Only numbers" min="50000" required>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="first-name-method">First Name</label>
-                                    <input type="text" id="first-name-method" class="form-control" placeholder="Enter your name" required>
+                                    <input type="text" id="first-name-method" name="first-name-method" class="form-control" placeholder="Enter your name" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="last-name-method">Last Name</label>
-                                    <input type="text" id="last-name-method" class="form-control" placeholder="Enter last name" required>
+                                    <input type="text" id="last-name-method" name="last-name-method" class="form-control" placeholder="Enter last name" required>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="company-name-method">Company Name</label>
-                                <input type="text" id="company-name-method" class="form-control" placeholder="Enter the company name">
+                                <input type="text" id="company-name-method" name="company-name-method" class="form-control" placeholder="Enter the company name">
                             </div>
 
                             <div class="form-group">
                                 <label for="tax-id-method">Tax Identification Number</label>
-                                <input type="text" id="tax-id-method" class="form-control" placeholder="Enter tax identification number">
+                                <input type="text" id="tax-id-method" name="tax-id-method" class="form-control" placeholder="Enter tax identification number">
                             </div>
 
                             <div class="form-group">
                                 <label for="street-address-method">Street Address</label>
-                                <input type="text" id="street-address-method" class="form-control" placeholder="Enter street address" required>
+                                <input type="text" id="street-address-method" name="street-address-method" class="form-control" placeholder="Enter street address" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="apt-suite-method">Apt, Suite</label>
-                                <input type="text" id="apt-suite-method" class="form-control" placeholder="Ex. #123">
+                                <input type="text" id="apt-suite-method" name="apt-suite-method" class="form-control" placeholder="Ex. #123">
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="city-method">City</label>
-                                    <input type="text" id="city-method" class="form-control" placeholder="Enter your city" required>
+                                    <input type="text" id="city-method" name="city-method" class="form-control" placeholder="Enter your city" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="state-method">State</label>
-                                    <input type="text" id="state-method" class="form-control" placeholder="Enter your state/country" required>
+                                    <input type="text" id="state-method" name="state-method" class="form-control" placeholder="Enter your state/country" required>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="zip-code-method">Zip/Post Code</label>
-                                <input type="text" id="zip-code-method" class="form-control" placeholder="Enter zip/post code" required>
+                                <input type="text" id="zip-code-method" name="zip-code-method" class="form-control" placeholder="Enter zip/post code" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="payout-method-select">Select Your Payout Method</label>
-                                <select id="payout-method-select" class="form-control" required>
+                                <select id="payout-method-select" name="payout-method-select" class="form-control" required>
 
                                     <option value="">Choose payout method</option>
                                     <option value="paypal">PayPal</option>
@@ -798,31 +798,31 @@
                             <div id="paypal-details" class="payout-details-form" style="display:none;">
                                 <div class="form-group">
                                     <label for="paypal-email">PayPal Email</label>
-                                    <input type="email" id="paypal-email" class="form-control" placeholder="Enter your PayPal email" required>
+                                    <input type="email" id="paypal-email" name="paypal-email" class="form-control" placeholder="Enter your PayPal email" required>
                                 </div>
                             </div>
                             <div id="skrill-details" class="payout-details-form" style="display:none;">
                                 <div class="form-group">
                                     <label for="skrill-email">Skrill Email</label>
-                                    <input type="email" id="skrill-email" class="form-control" placeholder="Enter your Skrill email" required>
+                                    <input type="email" id="skrill-email" name="skrill-email" class="form-control" placeholder="Enter your Skrill email" required>
                                 </div>
                             </div>
                             <div id="wire-details" class="payout-details-form" style="display:none;">
                                 <div class="form-group">
                                     <label for="bank-account-name">Account Name</label>
-                                    <input type="text" id="bank-account-name" class="form-control" placeholder="Enter account name" required>
+                                    <input type="text" id="bank-account-name" name="bank-account-name" class="form-control" placeholder="Enter account name" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="bank-account-number">Account Number</label>
-                                    <input type="text" id="bank-account-number" class="form-control" placeholder="Enter account number" required>
+                                    <input type="text" id="bank-account-number" name="bank-account-number" class="form-control" placeholder="Enter account number" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="bank-name">Bank Name</label>
-                                    <input type="text" id="bank-name" class="form-control" placeholder="Enter bank name" required>
+                                    <input type="text" id="bank-name" name="bank-name" class="form-control" placeholder="Enter bank name" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="bank-country">Bank Country</label>
-                                    <input type="text" id="bank-country" class="form-control" placeholder="Enter bank country" required>
+                                    <input type="text" id="bank-country" name="bank-country" class="form-control" placeholder="Enter bank country" required>
                                 </div>
                             </div>
 
@@ -865,10 +865,10 @@
                 </div>
 
                 <div class="form-section">
-                    <form class="payout-form">
+                        <form class="payout-form">
                         <div class="form-group">
                             <label for="payout-amount">Payout Amount</label>
-                            <input type="number" id="payout-amount" class="form-control" placeholder="Enter the payout amount. Only numbers" min="50000" required>
+                            <input type="number" id="payout-amount" name="payout-amount" class="form-control" placeholder="Enter the payout amount. Only numbers" min="50000" required>
                         </div>
 
                         <div class="payout-button-container">
