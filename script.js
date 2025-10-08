@@ -727,73 +727,104 @@ function setupPayoutMethodForm() {
         });
     }
 
-    if (requestPayoutBtn) {
-        requestPayoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            // Navigate to the payout page using the existing navigation system
-            showPage('payouts');
-        });
+    function setupPayoutMethodForm() {
+        const payoutMethodForm = document.querySelector('.payout-method-form');
+        const setPayoutMethodBtn = document.querySelector('.set-method-btn');
+        const requestPayoutBtn = document.querySelector('.request-payout-btn');
+        const payoutMethodSelect = document.getElementById('payout-method-select');
+        const paypalDetails = document.getElementById('paypal-details');
+        const skrillDetails = document.getElementById('skrill-details');
+        const wireDetails = document.getElementById('wire-details');
+
+        // Show/hide payout detail forms based on selection
+        if (payoutMethodSelect) {
+            payoutMethodSelect.addEventListener('change', function() {
+                const method = payoutMethodSelect.value;
+                // Hide all
+                if (paypalDetails) paypalDetails.style.display = 'none';
+                if (skrillDetails) skrillDetails.style.display = 'none';
+                if (wireDetails) wireDetails.style.display = 'none';
+
+                // Show selected
+                if (method === 'paypal' && paypalDetails) {
+                    paypalDetails.style.display = 'block';
+                } else if (method === 'skrill' && skrillDetails) {
+                    skrillDetails.style.display = 'block';
+                } else if (method === 'wire-transfer' && wireDetails) {
+                    wireDetails.style.display = 'block';
+                }
+            });
+        }
+
+        if (payoutMethodForm) {
+            payoutMethodForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Validate required fields
+                const requiredFields = [
+                    'payout-amount-method', 'first-name-method', 'last-name-method', 'street-address-method', 'city-method', 'state-method', 'zip-code-method', 'payout-method-select'
+                ];
+                const method = payoutMethodSelect ? payoutMethodSelect.value : '';
+                if (method === 'paypal') requiredFields.push('paypal-email');
+                if (method === 'skrill') requiredFields.push('skrill-email');
+                if (method === 'wire-transfer') requiredFields.push('bank-account-name', 'bank-account-number', 'bank-name', 'bank-country');
+
+                const missingFields = requiredFields.filter(field => {
+                    const input = document.getElementById(field);
+                    return !input || !input.value.trim();
+                });
+                if (missingFields.length > 0) {
+                    showNotification('Please fill in all required fields', 'error');
+                    return;
+                }
+
+                const payoutAmount = parseFloat(document.getElementById('payout-amount-method').value);
+                if (payoutAmount < 50000) {
+                    showNotification('Minimum payout amount is 50,000 FCFA', 'error');
+                    return;
+                }
+
+                // Gather payout method details
+                const formData = new FormData(payoutMethodForm);
+                const data = Object.fromEntries(formData);
+                // Add selected method details
+                if (method === 'paypal') {
+                    data.paypalEmail = document.getElementById('paypal-email').value;
+                } else if (method === 'skrill') {
+                    data.skrillEmail = document.getElementById('skrill-email').value;
+                } else if (method === 'wire-transfer') {
+                    data.bankAccountName = document.getElementById('bank-account-name').value;
+                    data.bankAccountNumber = document.getElementById('bank-account-number').value;
+                    data.bankName = document.getElementById('bank-name').value;
+                    data.bankCountry = document.getElementById('bank-country').value;
+                }
+                data.payoutMethod = method;
+
+                // Store payout method data for use in payout requests
+                localStorage.setItem('payoutMethodData', JSON.stringify(data));
+                console.log('Payout method saved:', data);
+                showNotification('Payout method updated successfully!', 'success');
+            });
+        }
+
+        if (setPayoutMethodBtn) {
+            setPayoutMethodBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Trigger form submission for saving payout method
+                if (payoutMethodForm) {
+                    const submitEvent = new Event('submit', { cancelable: true, bubbles: true });
+                    payoutMethodForm.dispatchEvent(submitEvent);
+                }
+            });
+        }
+
+        if (requestPayoutBtn) {
+            requestPayoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Navigate to the payout page using the existing navigation system
+                showPage('payouts');
+            });
+        }
     }
-}
-
-
-// Setup Payout Form
-function setupPayoutForm() {
-    const payoutForm = document.querySelector('.payout-form');
-    const payoutAmountInput = document.getElementById('payout-amount');
-
-    if (payoutAmountInput) {
-        payoutAmountInput.addEventListener('input', (e) => {
-            const amount = parseFloat(e.target.value);
-            const minAmount = 50000;
-
-            if (amount > 0 && amount < minAmount) {
-                e.target.setCustomValidity(`Minimum payout amount is ${minAmount} FCFA`);
-                e.target.style.borderColor = '#dc3545';
-            } else if (amount >= minAmount) {
-                e.target.setCustomValidity('');
-                e.target.style.borderColor = '#28a745';
-            } else {
-                e.target.setCustomValidity('');
-                e.target.style.borderColor = '#e9ecef';
-            }
-        });
-    }
-
-    if (payoutForm) {
-        payoutForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const payoutAmount = parseFloat(payoutAmountInput.value);
-            const availableBalance = 0; // This would come from your backend
-            const minAmount = 50000;
-
-            // Validation
-            if (!payoutAmount || isNaN(payoutAmount)) {
-                showNotification('Please enter a valid payout amount', 'error');
-                return;
-            }
-
-            if (payoutAmount < minAmount) {
-                showNotification(`Minimum payout amount is ${minAmount.toLocaleString()} FCFA`, 'error');
-                return;
-            }
-
-            if (payoutAmount > availableBalance && availableBalance > 0) {
-                showNotification('Payout amount cannot exceed available balance', 'error');
-                return;
-            }
-
-            // Check if user has set up payout method
-            const payoutMethodData = localStorage.getItem('payoutMethodData');
-            if (!payoutMethodData) {
-                showNotification('Please set up your payout method first in Profile > Payout Method', 'error');
-                return;
-            }
-
-            // Simulate payout request
-            const submitBtn = payoutForm.querySelector('.request-payout-submit-btn');
-            const originalText = submitBtn.innerHTML;
 
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';

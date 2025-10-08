@@ -786,11 +786,44 @@
                             <div class="form-group">
                                 <label for="payout-method-select">Select Your Payout Method</label>
                                 <select id="payout-method-select" class="form-control" required>
+
                                     <option value="">Choose payout method</option>
                                     <option value="paypal">PayPal</option>
                                     <option value="skrill">Skrill</option>
                                     <option value="wire-transfer">Wire Transfer</option>
                                 </select>
+                            </div>
+
+                            <!-- Dynamic payout detail forms -->
+                            <div id="paypal-details" class="payout-details-form" style="display:none;">
+                                <div class="form-group">
+                                    <label for="paypal-email">PayPal Email</label>
+                                    <input type="email" id="paypal-email" class="form-control" placeholder="Enter your PayPal email" required>
+                                </div>
+                            </div>
+                            <div id="skrill-details" class="payout-details-form" style="display:none;">
+                                <div class="form-group">
+                                    <label for="skrill-email">Skrill Email</label>
+                                    <input type="email" id="skrill-email" class="form-control" placeholder="Enter your Skrill email" required>
+                                </div>
+                            </div>
+                            <div id="wire-details" class="payout-details-form" style="display:none;">
+                                <div class="form-group">
+                                    <label for="bank-account-name">Account Name</label>
+                                    <input type="text" id="bank-account-name" class="form-control" placeholder="Enter account name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bank-account-number">Account Number</label>
+                                    <input type="text" id="bank-account-number" class="form-control" placeholder="Enter account number" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bank-name">Bank Name</label>
+                                    <input type="text" id="bank-name" class="form-control" placeholder="Enter bank name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bank-country">Bank Country</label>
+                                    <input type="text" id="bank-country" class="form-control" placeholder="Enter bank country" required>
+                                </div>
                             </div>
 
                             <div class="payout-method-buttons">
