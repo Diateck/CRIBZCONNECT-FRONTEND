@@ -669,6 +669,22 @@ function setupVerificationPage() {
 
 // Setup Payout Method Form
 function setupPayoutMethodForm() {
+    // Auto-fill form with saved payout method data
+    const savedData = localStorage.getItem('payoutMethodData');
+    if (savedData) {
+        const data = JSON.parse(savedData);
+        Object.keys(data).forEach(key => {
+            const input = document.getElementById(key);
+            if (input) {
+                input.value = data[key];
+            }
+        });
+        // Set payout method select and show correct details section
+        if (payoutMethodSelect && data.payoutMethod) {
+            payoutMethodSelect.value = data.payoutMethod;
+            payoutMethodSelect.dispatchEvent(new Event('change'));
+        }
+    }
     const payoutMethodForm = document.querySelector('.payout-method-form');
     const setPayoutMethodBtn = document.querySelector('.set-method-btn');
     const requestPayoutBtn = document.querySelector('.request-payout-btn');
@@ -698,7 +714,7 @@ function setupPayoutMethodForm() {
     }
 
     if (payoutMethodForm) {
-        payoutMethodForm.addEventListener('submit', (e) => {
+        payoutMethodForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             // Validate required fields
             const requiredFields = [
@@ -742,8 +758,27 @@ function setupPayoutMethodForm() {
 
             // Store payout method data for use in payout requests
             localStorage.setItem('payoutMethodData', JSON.stringify(data));
-            console.log('Payout method saved:', data);
-            showNotification('Payout method updated successfully!', 'success');
+
+            // Send payout method data to backend
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/profile/payment-method', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) {
+                    showNotification('Payout method updated successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showNotification(error.message || 'Failed to update payout method', 'error');
+                }
+            } catch (err) {
+                showNotification('Network error: Unable to update payout method', 'error');
+            }
         });
     }
 
