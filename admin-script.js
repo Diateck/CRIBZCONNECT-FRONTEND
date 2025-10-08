@@ -102,6 +102,12 @@ class AdminDashboard {
             });
                 const requests = res.ok ? await res.json() : [];
                 console.log('[Withdrawal Requests API Response]:', requests || 'Failed to fetch requests');
+                // Cache latest withdrawals so modal can lookup by id
+                this.latestWithdrawals = Array.isArray(requests) ? requests : [];
+                // Log payout fields for each withdrawal to aid debugging
+                (this.latestWithdrawals || []).forEach(r => {
+                    try { console.log(`[withdrawal ${r._id || r.id}] payoutSummary:`, r.payoutSummary, 'payoutDetails:', r.payoutDetails, 'description:', r.description); } catch(e){}
+                });
             if (!res.ok) {
                 throw new Error('Failed to fetch withdrawal requests');
             }
