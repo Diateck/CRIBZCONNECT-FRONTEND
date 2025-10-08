@@ -1701,6 +1701,67 @@ document.addEventListener('DOMContentLoaded', () => {
     setupPasswordForm();
     setupVerificationPage();
     setupPayoutMethodForm();
+    // Ensure payout button handler is attached after DOM loads
+    setTimeout(() => {
+        const requestPayoutBtn = document.querySelector('.request-payout-btn');
+        if (requestPayoutBtn) {
+            requestPayoutBtn.addEventListener('click', async function(e) {
+                console.log('Request Payout button clicked'); // Debug log
+                e.preventDefault();
+                if (e.stopPropagation) e.stopPropagation();
+                requestPayoutBtn.disabled = true;
+                const originalText = requestPayoutBtn.innerHTML;
+                requestPayoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                try {
+                    const payoutAmountInput = document.getElementById('payout-amount-method');
+                    const payoutAmount = payoutAmountInput ? parseFloat(payoutAmountInput.value) : 0;
+                    if (!payoutAmount || payoutAmount < 50000) {
+                        showNotification('Minimum payout amount is 50,000 FCFA', 'error');
+                        return;
+                    }
+                    const payoutMethodForm = document.querySelector('.payout-method-form');
+                    const formData = new FormData(payoutMethodForm);
+                    const payoutDetails = Object.fromEntries(formData);
+                    let token = '';
+                    const userObj = localStorage.getItem('user');
+                    if (userObj) {
+                        try {
+                            token = JSON.parse(userObj).token;
+                        } catch (e) {
+                            token = '';
+                        }
+                    }
+                    const response = await fetch('https://cribzconnect-backend.onrender.com/api/user/request-payout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ payoutAmount, payoutDetails })
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        showNotification('Withdrawal request successful!', 'success');
+                        const profile = JSON.parse(localStorage.getItem('user')) || {};
+                        if (profile.balance !== undefined) {
+                            profile.balance = Math.max(0, (profile.balance || 0) - payoutAmount);
+                            localStorage.setItem('user', JSON.stringify(profile));
+                        }
+                        updateDashboardStats();
+                    } else {
+                        showNotification(result.message || 'Withdrawal failed.', 'error');
+                    }
+                } catch (err) {
+                    showNotification('Network error: Unable to request withdrawal', 'error');
+                } finally {
+                    requestPayoutBtn.disabled = false;
+                    requestPayoutBtn.innerHTML = originalText;
+                }
+            });
+        } else {
+            console.error('Request Payout button not found in DOM');
+        }
+    }, 500); // Delay to ensure DOM is ready
     setupWalletPage();
     setupEarningsPage();
     // REMOVE: setupAddListingPage
