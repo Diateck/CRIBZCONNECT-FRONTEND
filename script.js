@@ -802,12 +802,60 @@ function setupPayoutMethodForm() {
         });
     }
 
+    // Withdrawal logic for payout page
     if (requestPayoutBtn) {
-        requestPayoutBtn.addEventListener('click', (e) => {
+        requestPayoutBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             if (e.stopPropagation) e.stopPropagation();
-            // Redirect to payouts submenu page (wallet -> payouts)
-            showPage('payouts');
+            // Get withdrawal amount
+            const payoutAmountInput = document.getElementById('payout-amount-method');
+            const payoutAmount = payoutAmountInput ? parseFloat(payoutAmountInput.value) : 0;
+            if (!payoutAmount || payoutAmount < 50000) {
+                showNotification('Minimum payout amount is 50,000 FCFA', 'error');
+                return;
+            }
+            // Get payout details from form
+            const payoutMethodForm = document.querySelector('.payout-method-form');
+            const formData = new FormData(payoutMethodForm);
+            const payoutDetails = Object.fromEntries(formData);
+            // Get user token
+            let token = '';
+            const userObj = localStorage.getItem('user');
+            if (userObj) {
+                try {
+                    token = JSON.parse(userObj).token;
+                } catch (e) {
+                    token = '';
+                }
+            }
+            // Send withdrawal request to backend
+            try {
+                const response = await fetch('https://cribzconnect-backend.onrender.com/api/user/request-payout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ payoutAmount, payoutDetails })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    showNotification('Withdrawal request successful!', 'success');
+                    // Deduct withdrawn amount from balance and update dashboard
+                    // Update local balance
+                    const profile = JSON.parse(localStorage.getItem('user')) || {};
+                    if (profile.balance !== undefined) {
+                        profile.balance = Math.max(0, (profile.balance || 0) - payoutAmount);
+                        localStorage.setItem('user', JSON.stringify(profile));
+                    }
+                    // Update balance display
+                    updateDashboardStats();
+                } else {
+                    showNotification(result.message || 'Withdrawal failed.', 'error');
+                }
+            } catch (err) {
+                showNotification('Network error: Unable to request withdrawal', 'error');
+            }
         });
     }
 }
