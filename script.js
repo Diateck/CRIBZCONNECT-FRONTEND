@@ -762,7 +762,15 @@ function setupPayoutMethodForm() {
 
             // Send payout method data to backend
             try {
-                const token = localStorage.getItem('token');
+                let token = '';
+                const userObj = localStorage.getItem('user');
+                if (userObj) {
+                    try {
+                        token = JSON.parse(userObj).token;
+                    } catch (e) {
+                        token = '';
+                    }
+                }
                 const response = await fetch('https://cribzconnect-backend.onrender.com/api/user/payment-method', {
                     method: 'POST',
                     headers: {
