@@ -760,7 +760,7 @@ function setupPayoutMethodForm() {
             // Always save payout method data to localStorage
             localStorage.setItem('payoutMethodData', JSON.stringify(data));
 
-            // Send payout method data to backend (try both deployed and local URLs)
+            // Send payout method data to backend (only deployed URL)
             let token = '';
             const userObj = localStorage.getItem('user');
             if (userObj) {
@@ -770,8 +770,6 @@ function setupPayoutMethodForm() {
                     token = '';
                 }
             }
-            let success = false;
-            // Try deployed backend first
             try {
                 const response = await fetch('https://cribzconnect-backend.onrender.com/api/user/payment-method', {
                     method: 'POST',
@@ -783,34 +781,12 @@ function setupPayoutMethodForm() {
                 });
                 if (response.ok) {
                     showNotification('Payout method updated successfully!', 'success');
-                    success = true;
                 } else {
                     const error = await response.json();
                     showNotification(error.message || 'Failed to update payout method', 'error');
                 }
             } catch (err) {
-                // Try local backend if deployed fails
-                try {
-                    const responseLocal = await fetch('http://localhost:5000/api/user/payment-method', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify(data)
-                    });
-                    if (responseLocal.ok) {
-                        showNotification('Payout method updated locally!', 'success');
-                        success = true;
-                    } else {
-                        const error = await responseLocal.json();
-                        showNotification(error.message || 'Failed to update payout method locally', 'error');
-                    }
-                } catch (err2) {
-                    if (!success) {
-                        showNotification('Network error: Unable to update payout method', 'error');
-                    }
-                }
+                showNotification('Network error: Unable to update payout method', 'error');
             }
         });
     }
