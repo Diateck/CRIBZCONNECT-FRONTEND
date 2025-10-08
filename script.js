@@ -896,7 +896,6 @@ function setupPayoutMethodForm() {
 function setupWalletPage() {
     const detailsBtn = document.querySelector('.details-btn');
     const manageBtn = document.querySelector('.manage-btn');
-        const requestPayoutBtn = document.querySelector('.request-payout-btn');
 
     if (detailsBtn) {
         detailsBtn.addEventListener('click', () => {
@@ -909,89 +908,6 @@ function setupWalletPage() {
             showPage('bookings');
         });
     }
-
-        // Attach payout logic to payout button only
-        if (requestPayoutBtn) {
-            requestPayoutBtn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                if (e.stopPropagation) e.stopPropagation();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-
-                // Check payout method
-                const payoutDetailsRaw = localStorage.getItem('payoutMethodData');
-                let payoutDetails = null;
-                try {
-                    payoutDetails = payoutDetailsRaw ? JSON.parse(payoutDetailsRaw) : null;
-                } catch (err) {
-                    payoutDetails = null;
-                }
-                if (!payoutDetails || Object.keys(payoutDetails).length === 0) {
-                    showNotification('Please fill out your payout form before requesting a payout.', 'error');
-                    // Redirect to payout form section/modal
-                    const setupBtn = document.querySelector('.set-method-btn');
-                    if (setupBtn) setupBtn.focus();
-                    // Optionally scroll to form
-                    const formSection = document.querySelector('.payout-method-form');
-                    if (formSection) formSection.scrollIntoView({ behavior: 'smooth' });
-                    return;
-                }
-
-                // Get payout amount
-                const payoutAmountInput = document.getElementById('payout-amount-method');
-                const payoutAmount = payoutAmountInput ? parseFloat(payoutAmountInput.value) : 0;
-                // Get current balance from dashboard
-                const balanceElem = document.querySelector('.dashboard-balance, .available-balance');
-                let currentBalance = 0;
-                if (balanceElem) {
-                    // Extract number from text (e.g., "65000 XAF")
-                    const match = balanceElem.textContent.match(/\d+/);
-                    if (match) currentBalance = parseFloat(match[0]);
-                }
-                if (!payoutAmount || payoutAmount < 50000) {
-                    showNotification('Minimum payout amount is 50,000 FCFA', 'error');
-                    return;
-                }
-                if (currentBalance <= 0 || payoutAmount > currentBalance) {
-                    showNotification('Insufficient balance for payout request', 'error');
-                    return;
-                }
-
-                // Get token
-                let token = '';
-                const userObj = localStorage.getItem('user');
-                if (userObj) {
-                    try {
-                        token = JSON.parse(userObj).token;
-                    } catch (e) {
-                        token = '';
-                    }
-                }
-                // Send payout request to backend
-                try {
-                    const response = await fetch('https://cribzconnect-backend.onrender.com/api/user/request-payout', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({ payoutAmount, payoutDetails })
-                    });
-                    if (response.ok) {
-                        showNotification('Payout request submitted successfully!', 'success');
-                        // Deduct amount from dashboard balance
-                        if (balanceElem) {
-                            const newBalance = currentBalance - payoutAmount;
-                            balanceElem.textContent = `${newBalance} XAF`;
-                        }
-                    } else {
-                        const error = await response.json();
-                        showNotification(error.message || 'Failed to submit payout request', 'error');
-                    }
-                } catch (err) {
-                    showNotification('Network error: Unable to submit payout request', 'error');
-                }
-            });
-        }
 }
 
 // Setup Earnings Page
