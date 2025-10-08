@@ -1695,6 +1695,69 @@ function setupSettingsPage() {
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Attach payout logic to payouts page button
+    setTimeout(() => {
+        const payoutForm = document.querySelector('.payout-form');
+        const payoutSubmitBtn = document.querySelector('.request-payout-submit-btn');
+        if (payoutForm && payoutSubmitBtn) {
+            payoutForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                payoutSubmitBtn.disabled = true;
+                const originalText = payoutSubmitBtn.innerHTML;
+                payoutSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                try {
+                    const payoutAmountInput = document.getElementById('payout-amount');
+                    const payoutAmount = payoutAmountInput ? parseFloat(payoutAmountInput.value) : 0;
+                    if (!payoutAmount || payoutAmount < 50000) {
+                        showNotification('Minimum payout amount is 50,000 FCFA', 'error');
+                        return;
+                    }
+                    // Get user token
+                    let token = '';
+                    const userObj = localStorage.getItem('user');
+                    if (userObj) {
+                        try {
+                            token = JSON.parse(userObj).token;
+                        } catch (e) {
+                            token = '';
+                        }
+                    }
+                    // Optionally, get payout details from localStorage (from payout method setup)
+                    let payoutDetails = {};
+                    const payoutMethodData = localStorage.getItem('payoutMethodData');
+                    if (payoutMethodData) {
+                        payoutDetails = JSON.parse(payoutMethodData);
+                    }
+                    const response = await fetch('https://cribzconnect-backend.onrender.com/api/user/request-payout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ payoutAmount, payoutDetails })
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        showNotification('Withdrawal request successful!', 'success');
+                        // Deduct withdrawn amount from balance and update dashboard
+                        const profile = JSON.parse(localStorage.getItem('user')) || {};
+                        if (profile.balance !== undefined) {
+                            profile.balance = Math.max(0, (profile.balance || 0) - payoutAmount);
+                            localStorage.setItem('user', JSON.stringify(profile));
+                        }
+                        updateDashboardStats();
+                    } else {
+                        showNotification(result.message || 'Withdrawal failed.', 'error');
+                    }
+                } catch (err) {
+                    showNotification('Network error: Unable to request withdrawal', 'error');
+                } finally {
+                    payoutSubmitBtn.disabled = false;
+                    payoutSubmitBtn.innerHTML = originalText;
+                }
+            });
+        }
+    }, 500);
     initializePage();
     setupForms();
     setupPhotoUpload();
