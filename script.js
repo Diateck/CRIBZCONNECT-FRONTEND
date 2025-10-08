@@ -1634,7 +1634,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupPasswordForm();
     setupVerificationPage();
     setupPayoutMethodForm();
-    setupPayoutForm();
     setupWalletPage();
     setupEarningsPage();
     // REMOVE: setupAddListingPage
