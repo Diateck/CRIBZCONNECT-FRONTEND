@@ -100,29 +100,60 @@ class AdminDashboard {
             const res = await fetch(`${API_BASE_URL}/api/admin/withdrawals`, {
                 headers: token ? { 'Authorization': `Bearer ${token}` } : {}
             });
-            if (!res.ok) throw new Error('Failed to fetch withdrawal requests');
             const requests = await res.json();
-            if (!requests.length) {
+            console.log('[Withdrawal Requests API Response]:', requests);
+            if (!res.ok) {
+                throw new Error('Failed to fetch withdrawal requests');
+            }
+            if (!Array.isArray(requests) || requests.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#888;">No withdrawal requests found.</td></tr>';
                 return;
             }
-            tbody.innerHTML = requests.map(req => `
-                <tr>
-                    <td><strong>${req._id || req.id}</strong></td>
-                    <td>${req.user?.fullName || req.user?.username || req.user?.email || 'Unknown'}</td>
-                    <td><strong>XAF ${req.amount?.toLocaleString() || '0'}</strong></td>
-                    <td>${req.payoutDetails ? req.payoutDetails : 'N/A'}</td>
-                    <td>${this.formatDate(req.createdAt)}</td>
-                    <td><span class="status-badge ${req.status}">${req.status.charAt(0).toUpperCase() + req.status.slice(1)}</span></td>
-                    <td>
-                        <div class="table-actions">
-                            <button class="action-btn-sm btn-edit" onclick="adminDashboard.reviewWithdrawal('${req._id || req.id}')">Review</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = requests.map(req => {
+                // Defensive: handle possible data formats
+                const id = req._id || req.id || '';
+                const user = req.user?.fullName || req.user?.username || req.user?.email || req.agentName || req.agentId || 'Unknown';
+                const amount = req.amount ? Number(req.amount).toLocaleString() : '0';
+                let payoutDetails = 'N/A';
+                if (req.payoutDetails) {
+                    payoutDetails = req.payoutDetails;
+                } else if (req.description) {
+                    try {
+                        const details = typeof req.description === 'string' ? JSON.parse(req.description) : req.description;
+                        if (details.payoutMethod === 'paypal') {
+                            payoutDetails = `PayPal: ${details.paypalEmail}`;
+                        } else if (details.payoutMethod === 'skrill') {
+                            payoutDetails = `Skrill: ${details.skrillEmail}`;
+                        } else if (details.payoutMethod === 'wire-transfer') {
+                            payoutDetails = `Bank: ${details.bankAccountName}, ${details.bankAccountNumber}, ${details.bankName}, ${details.bankCountry}`;
+                        } else {
+                            payoutDetails = details.payoutMethod || 'N/A';
+                        }
+                    } catch (e) {
+                        payoutDetails = req.description;
+                    }
+                }
+                const date = req.createdAt || req.date || '';
+                const status = req.status ? req.status.charAt(0).toUpperCase() + req.status.slice(1) : 'Unknown';
+                return `
+                    <tr>
+                        <td><strong>${id}</strong></td>
+                        <td>${user}</td>
+                        <td><strong>XAF ${amount}</strong></td>
+                        <td>${payoutDetails}</td>
+                        <td>${this.formatDate(date)}</td>
+                        <td><span class="status-badge ${req.status}">${status}</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="action-btn-sm btn-edit" onclick="adminDashboard.reviewWithdrawal('${id}')">Review</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         } catch (err) {
-            tbody.innerHTML = `<tr><td colspan='7'>Error loading withdrawal requests</td></tr>`;
+            console.error('[Withdrawal Requests Error]:', err);
+            tbody.innerHTML = `<tr><td colspan='7'>Error loading withdrawal requests: ${err.message}</td></tr>`;
         }
     }
     // Removed fetchAllPropertiesAndUsers. Use dashboard data instead.
