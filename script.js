@@ -2084,7 +2084,7 @@ function setupLivePaymentForm() {
         if (requestPayoutBtn) {
             requestPayoutBtn.onclick = function (e) {
                 e.preventDefault();
-                // Redirect to payouts page
+                // Redirect to payouts submenu page
                 window.location.hash = '#payouts';
             };
         }
