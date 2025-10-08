@@ -22,14 +22,14 @@ class AdminDashboard {
             agentSelect.innerHTML = '<option value="">Loading...</option>';
             try {
                 const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
-                const res = await fetch(`${API_BASE_URL}/api/users/agents`, {
+                const res = await fetch(`${API_BASE_URL}/api/users`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
                 });
-                const agents = res.ok ? await res.json() : [];
-                if (agents.length) {
-                    agentSelect.innerHTML = '<option value="">Select an agent</option>' + agents.map(a => `<option value="${a._id}">${a.fullName || a.username || a.email}</option>`).join('');
+                const users = res.ok ? await res.json() : [];
+                if (users.length) {
+                    agentSelect.innerHTML = '<option value="">Select a user</option>' + users.map(u => `<option value="${u._id}">${u.fullName || u.username || u.email}</option>`).join('');
                 } else {
-                    agentSelect.innerHTML = '<option value="">No agents found</option>';
+                    agentSelect.innerHTML = '<option value="">No users found</option>';
                 }
             } catch {
                 agentSelect.innerHTML = '<option value="">Error loading agents</option>';
@@ -447,6 +447,7 @@ class AdminDashboard {
             document.getElementById('totalProperties').textContent = stats.totalProperties?.toLocaleString() || '0';
             document.getElementById('totalUsers').textContent = stats.totalUsers?.toLocaleString() || '0';
             document.getElementById('dashboardRevenue').textContent = `$${stats.totalRevenue?.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) || '0.00'}`;
+            document.getElementById('totalBalance').textContent = `$${stats.totalBalance?.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) || '0.00'}`;
             document.getElementById('verifiedAgents').textContent = stats.verifiedAgents?.toLocaleString() || '0';
             if (stats.totalPropertiesChange) document.getElementById('totalPropertiesChange').textContent = stats.totalPropertiesChange;
             if (stats.totalUsersChange) document.getElementById('totalUsersChange').textContent = stats.totalUsersChange;
