@@ -115,19 +115,23 @@ class AdminDashboard {
                 const user = req.user?.fullName || req.user?.username || req.user?.email || req.agentName || req.agentId || 'Unknown';
                 const amount = req.amount ? Number(req.amount).toLocaleString() : '0';
                 let payoutDetails = 'N/A';
+                let payoutObj = null;
                 if (req.payoutDetails) {
                     payoutDetails = req.payoutDetails;
+                    try {
+                        payoutObj = typeof req.payoutDetails === 'string' ? JSON.parse(req.payoutDetails) : req.payoutDetails;
+                    } catch {}
                 } else if (req.description) {
                     try {
-                        const details = typeof req.description === 'string' ? JSON.parse(req.description) : req.description;
-                        if (details.payoutMethod === 'paypal') {
-                            payoutDetails = `PayPal: ${details.paypalEmail}`;
-                        } else if (details.payoutMethod === 'skrill') {
-                            payoutDetails = `Skrill: ${details.skrillEmail}`;
-                        } else if (details.payoutMethod === 'wire-transfer') {
-                            payoutDetails = `Bank: ${details.bankAccountName}, ${details.bankAccountNumber}, ${details.bankName}, ${details.bankCountry}`;
+                        payoutObj = typeof req.description === 'string' ? JSON.parse(req.description) : req.description;
+                        if (payoutObj.payoutMethod === 'paypal') {
+                            payoutDetails = `PayPal: ${payoutObj.paypalEmail}`;
+                        } else if (payoutObj.payoutMethod === 'skrill') {
+                            payoutDetails = `Skrill: ${payoutObj.skrillEmail}`;
+                        } else if (payoutObj.payoutMethod === 'wire-transfer') {
+                            payoutDetails = `Bank: ${payoutObj.bankAccountName}, ${payoutObj.bankAccountNumber}, ${payoutObj.bankName}, ${payoutObj.bankCountry}`;
                         } else {
-                            payoutDetails = details.payoutMethod || 'N/A';
+                            payoutDetails = payoutObj.payoutMethod || 'N/A';
                         }
                     } catch (e) {
                         payoutDetails = req.description;
@@ -135,6 +139,8 @@ class AdminDashboard {
                 }
                 const date = req.createdAt || req.date || '';
                 const status = req.status ? req.status.charAt(0).toUpperCase() + req.status.slice(1) : 'Unknown';
+                // Store payoutObj as a string for modal
+                const payoutObjStr = payoutObj ? encodeURIComponent(JSON.stringify(payoutObj)) : '';
                 return `
                     <tr>
                         <td><strong>${id}</strong></td>
@@ -142,15 +148,54 @@ class AdminDashboard {
                         <td><strong>XAF ${amount}</strong></td>
                         <td>${payoutDetails}</td>
                         <td>${this.formatDate(date)}</td>
-                        <td><span class="status-badge ${req.status}">${status}</span></td>
+                        <td><span class=\"status-badge ${req.status}\">${status}</span></td>
                         <td>
-                            <div class="table-actions">
-                                <button class="action-btn-sm btn-edit" onclick="adminDashboard.reviewWithdrawal('${id}')">Review</button>
+                            <div class=\"table-actions\">
+                                <button class=\"action-btn-sm btn-edit\" onclick=\"adminDashboard.showPayoutModal('${id}', '${payoutObjStr}')\">Review</button>
                             </div>
                         </td>
                     </tr>
                 `;
             }).join('');
+    // Show payout details modal
+    showPayoutModal(id, payoutObjStr) {
+        let payoutObj = {};
+        try {
+            payoutObj = payoutObjStr ? JSON.parse(decodeURIComponent(payoutObjStr)) : {};
+        } catch {}
+        let html = `<h2>Payout Details for Request ID: ${id}</h2>`;
+        if (Object.keys(payoutObj).length === 0) {
+            html += '<p>No payout details available.</p>';
+        } else {
+            html += '<ul style="list-style:none; padding:0;">';
+            for (const key in payoutObj) {
+                html += `<li><strong>${key}:</strong> ${payoutObj[key]}</li>`;
+            }
+            html += '</ul>';
+        }
+        // Create and show modal
+        let modal = document.getElementById('payoutDetailsModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'payoutDetailsModal';
+            modal.className = 'modal';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.background = 'rgba(0,0,0,0.4)';
+            modal.style.zIndex = '9999';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.innerHTML = `<div style='background:#fff; padding:2rem; border-radius:8px; min-width:300px; max-width:90vw;'>${html}<br><button onclick="document.getElementById('payoutDetailsModal').remove()">Close</button></div>`;
+            document.body.appendChild(modal);
+        } else {
+            modal.innerHTML = `<div style='background:#fff; padding:2rem; border-radius:8px; min-width:300px; max-width:90vw;'>${html}<br><button onclick="document.getElementById('payoutDetailsModal').remove()">Close</button></div>`;
+            modal.style.display = 'flex';
+        }
+    }
         } catch (err) {
             console.error('[Withdrawal Requests Error]:', err);
             tbody.innerHTML = `<tr><td colspan='7'>Error loading withdrawal requests: ${err.message}</td></tr>`;
