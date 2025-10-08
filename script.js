@@ -827,10 +827,45 @@ function setupPayoutMethodForm() {
     }
 
     if (requestPayoutBtn) {
-        requestPayoutBtn.addEventListener('click', (e) => {
+        requestPayoutBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            // Navigate to the payout page using the existing navigation system
-            showPage('payouts');
+            // Get payout amount
+            const payoutAmountInput = document.getElementById('payout-amount-method');
+            const payoutAmount = payoutAmountInput ? parseFloat(payoutAmountInput.value) : 0;
+            if (!payoutAmount || payoutAmount < 50000) {
+                showNotification('Minimum payout amount is 50,000 FCFA', 'error');
+                return;
+            }
+            // Get payout method details from localStorage
+            const payoutDetails = localStorage.getItem('payoutMethodData');
+            let token = '';
+            const userObj = localStorage.getItem('user');
+            if (userObj) {
+                try {
+                    token = JSON.parse(userObj).token;
+                } catch (e) {
+                    token = '';
+                }
+            }
+            // Send payout request to backend
+            try {
+                const response = await fetch('https://cribzconnect-backend.onrender.com/api/user/request-payout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ payoutAmount, payoutDetails: payoutDetails ? JSON.parse(payoutDetails) : {} })
+                });
+                if (response.ok) {
+                    showNotification('Payout request submitted successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showNotification(error.message || 'Failed to submit payout request', 'error');
+                }
+            } catch (err) {
+                showNotification('Network error: Unable to submit payout request', 'error');
+            }
         });
     }
 }
