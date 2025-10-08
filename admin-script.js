@@ -1207,6 +1207,13 @@ function logout() {
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', function() {
     window.adminDashboard = new AdminDashboard();
+    // Force call withdrawal requests table for debug
+    if (window.adminDashboard && typeof window.adminDashboard.populateWithdrawalRequestsTable === 'function') {
+        console.log('[DEBUG] Forcing withdrawal requests fetch on page load');
+        window.adminDashboard.populateWithdrawalRequestsTable();
+    } else {
+        console.error('[DEBUG] AdminDashboard or populateWithdrawalRequestsTable not available');
+    }
 });
 
 // Close modals when clicking outside
