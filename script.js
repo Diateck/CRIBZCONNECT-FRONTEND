@@ -806,8 +806,8 @@ function setupPayoutMethodForm() {
         requestPayoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
             if (e.stopPropagation) e.stopPropagation();
-            // Only redirect to wallet dashboard, do not process payout
-            showPage('wallet');
+            // Redirect to payouts submenu page (wallet -> payouts)
+            showPage('payouts');
         });
     }
 }
