@@ -27,7 +27,17 @@ class AdminDashboard {
                 });
                 const users = res.ok ? await res.json() : [];
                 if (users.length) {
-                    agentSelect.innerHTML = '<option value="">Select a user</option>' + users.map(u => `<option value="${u._id}">${u.fullName || u.username || u.email}</option>`).join('');
+                    agentSelect.innerHTML = '<option value="">Select a user</option>' + users.map(u => {
+                        let name = '';
+                        if (u.fullName && u.fullName.trim()) {
+                            name = u.fullName;
+                        } else if (u.username && u.username.trim()) {
+                            name = u.username;
+                        } else if (u.email && u.email.trim()) {
+                            name = u.email;
+                        }
+                        return `<option value="${u._id}">${name}</option>`;
+                    }).join('');
                 } else {
                     agentSelect.innerHTML = '<option value="">No users found</option>';
                 }
@@ -198,20 +208,28 @@ class AdminDashboard {
             // Map all users (agents and clients) with their listing count
             this.data.agents = users.map(u => ({
                 id: u._id,
-                name: u.fullName,
+                name: (u.fullName && u.fullName.trim()) ? u.fullName : (u.username && u.username.trim()) ? u.username : (u.email && u.email.trim()) ? u.email : '',
                 email: u.email,
                 phone: u.phone || '',
                 status: u.verified ? 'verified' : (u.role === 'client' ? 'active' : 'pending'),
                 listings: listings.filter(p => p.userId === u._id).length + hotels.filter(h => h.userId === u._id).length,
                 joinDate: u.createdAt,
-                initials: u.fullName ? u.fullName.split(' ').map(n => n[0]).join('').toUpperCase() : ''
+                initials: (u.fullName && u.fullName.trim()) ? u.fullName.split(' ').map(n => n[0]).join('').toUpperCase() : ((u.username && u.username.trim()) ? u.username.charAt(0).toUpperCase() : ((u.email && u.email.trim()) ? u.email.charAt(0).toUpperCase() : ''))
             }));
 
             // Properties: merge listings and hotels, normalize fields
             const normalizedListings = listings.map(p => ({
                 id: p._id,
                 title: p.title,
-                agent: users.find(u => u._id === p.userId)?.fullName || 'Unknown',
+                agent: (() => {
+                    const u = users.find(u => u._id === p.userId);
+                    if (u) {
+                        if (u.fullName && u.fullName.trim()) return u.fullName;
+                        if (u.username && u.username.trim()) return u.username;
+                        if (u.email && u.email.trim()) return u.email;
+                    }
+                    return 'Unknown';
+                })(),
                 price: p.price,
                 status: p.status,
                 dateList: p.createdAt,
@@ -221,7 +239,15 @@ class AdminDashboard {
             const normalizedHotels = hotels.map(h => ({
                 id: h._id,
                 title: h.name,
-                agent: users.find(u => u._id === h.userId)?.fullName || 'Unknown',
+                agent: (() => {
+                    const u = users.find(u => u._id === h.userId);
+                    if (u) {
+                        if (u.fullName && u.fullName.trim()) return u.fullName;
+                        if (u.username && u.username.trim()) return u.username;
+                        if (u.email && u.email.trim()) return u.email;
+                    }
+                    return 'Unknown';
+                })(),
                 price: h.price,
                 status: h.status,
                 dateList: h.createdAt,

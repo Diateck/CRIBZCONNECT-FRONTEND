@@ -376,7 +376,17 @@ function showNotification(message, type = 'info') {
     let name = '';
     try {
         const user = JSON.parse(localStorage.getItem('user'));
-        name = user && (user.fullName || user.username) ? user.fullName || user.username : '';
+        if (user) {
+            if (user.fullName && user.fullName.trim()) {
+                name = user.fullName;
+            } else if (user.username && user.username.trim()) {
+                name = user.username;
+            } else if (user.email && user.email.trim()) {
+                name = user.email;
+            } else {
+                name = '';
+            }
+        }
     } catch (e) {
         name = '';
     }
@@ -2129,12 +2139,17 @@ function setupLiveProfileForm() {
     // Fetch user data (replace with API call in production)
     let user = JSON.parse(localStorage.getItem('user')) || {};
 
-    // Populate fields
-    infoForm.querySelector('input[placeholder="Enter your name"]').value = user.firstName || '';
-    infoForm.querySelector('input[placeholder="Enter your last name"]').value = user.lastName || '';
-    infoForm.querySelector('input[placeholder="Native Language"]').value = user.nativeLanguage || '';
-    infoForm.querySelector('input[placeholder="Other Language"]').value = user.otherLanguage || '';
-    infoForm.querySelector('input[placeholder="Display name publicly as"]').value = user.displayName || '';
+    // Populate fields safely
+    const firstNameInput = infoForm.querySelector('input[placeholder="Enter your name"]');
+    if (firstNameInput) firstNameInput.value = user.firstName || '';
+    const lastNameInput = infoForm.querySelector('input[placeholder="Enter your last name"]');
+    if (lastNameInput) lastNameInput.value = user.lastName || '';
+    const nativeLangInput = infoForm.querySelector('input[placeholder="Native Language"]');
+    if (nativeLangInput) nativeLangInput.value = user.nativeLanguage || '';
+    const otherLangInput = infoForm.querySelector('input[placeholder="Other Language"]');
+    if (otherLangInput) otherLangInput.value = user.otherLanguage || '';
+    const displayNameInput = infoForm.querySelector('input[placeholder="Display name publicly as"]');
+    if (displayNameInput) displayNameInput.value = user.displayName || '';
     // Username is editable
     const usernameInput = document.getElementById('profile-username');
     if (usernameInput) {

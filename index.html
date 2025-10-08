@@ -314,20 +314,50 @@
             <div class="dashboard-sections">
         <script>
         // Personalized dashboard greeting
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             const greetingEl = document.getElementById('dashboard-greeting');
             let user = localStorage.getItem('user');
+            let name = '';
+            let token = '';
             if (user) {
                 user = JSON.parse(user);
-                let welcomeText = '';
-                if (localStorage.getItem('hasLoggedInBefore')) {
-                    welcomeText = `Welcome back, ${user.fullName || user.username}!`;
-                } else {
-                    welcomeText = `Welcome, ${user.fullName || user.username}!`;
-                    localStorage.setItem('hasLoggedInBefore', 'true');
+                token = user.token;
+                if (user.fullName && user.fullName.trim()) {
+                    name = user.fullName;
+                } else if (user.username && user.username.trim()) {
+                    name = user.username;
+                } else if (user.email && user.email.trim()) {
+                    name = user.email;
                 }
-                greetingEl.textContent = welcomeText;
             }
+            // If name is still empty, fetch from backend
+            if ((!name || name === 'undefined') && token) {
+                try {
+                    const res = await fetch('https://cribzconnect-backend.onrender.com/api/user/profile', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.ok) {
+                        const profile = await res.json();
+                        if (profile.fullName && profile.fullName.trim()) {
+                            name = profile.fullName;
+                        } else if (profile.username && profile.username.trim()) {
+                            name = profile.username;
+                        } else if (profile.email && profile.email.trim()) {
+                            name = profile.email;
+                        }
+                    }
+                } catch (err) {
+                    // fallback: do nothing
+                }
+            }
+            let welcomeText = '';
+            if (localStorage.getItem('hasLoggedInBefore')) {
+                welcomeText = `Welcome back, ${name || 'User'}!`;
+            } else {
+                welcomeText = `Welcome, ${name || 'User'}!`;
+                localStorage.setItem('hasLoggedInBefore', 'true');
+            }
+            greetingEl.textContent = welcomeText;
 
             // Dashboard stat links navigation
             const addNewLink = document.getElementById('add-new-link');
