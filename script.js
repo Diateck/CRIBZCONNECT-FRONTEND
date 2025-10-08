@@ -762,7 +762,7 @@ function setupPayoutMethodForm() {
             // Send payout method data to backend
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('/api/profile/payment-method', {
+                const response = await fetch('/api/user/payment-method', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
