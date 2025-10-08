@@ -827,66 +827,11 @@ function setupPayoutMethodForm() {
     }
 
     if (requestPayoutBtn) {
-        requestPayoutBtn.addEventListener('click', async (e) => {
+        requestPayoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            // Prevent any parent form submission
             if (e.stopPropagation) e.stopPropagation();
-            // Scroll to top to ensure notification is visible
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            // Get payout amount
-            const payoutAmountInput = document.getElementById('payout-amount-method');
-            const payoutAmount = payoutAmountInput ? parseFloat(payoutAmountInput.value) : 0;
-            // Get current balance from dashboard
-            const balanceElem = document.querySelector('.dashboard-balance, .available-balance');
-            let currentBalance = 0;
-            if (balanceElem) {
-                // Extract number from text (e.g., "65000 XAF")
-                const match = balanceElem.textContent.match(/\d+/);
-                if (match) currentBalance = parseFloat(match[0]);
-            }
-            if (!payoutAmount || payoutAmount < 50000) {
-                showNotification('Minimum payout amount is 50,000 FCFA', 'error');
-                return;
-            }
-            if (payoutAmount > currentBalance) {
-                showNotification('Insufficient balance for payout request', 'error');
-                return;
-            }
-            // Get payout method details from localStorage
-            const payoutDetails = localStorage.getItem('payoutMethodData');
-            let token = '';
-            const userObj = localStorage.getItem('user');
-            if (userObj) {
-                try {
-                    token = JSON.parse(userObj).token;
-                } catch (e) {
-                    token = '';
-                }
-            }
-            // Send payout request to backend
-            try {
-                const response = await fetch('https://cribzconnect-backend.onrender.com/api/user/request-payout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ payoutAmount, payoutDetails: payoutDetails ? JSON.parse(payoutDetails) : {} })
-                });
-                if (response.ok) {
-                    showNotification('Payout request submitted successfully!', 'success');
-                    // Deduct amount from dashboard balance
-                    if (balanceElem) {
-                        const newBalance = currentBalance - payoutAmount;
-                        balanceElem.textContent = `${newBalance} XAF`;
-                    }
-                } else {
-                    const error = await response.json();
-                    showNotification(error.message || 'Failed to submit payout request', 'error');
-                }
-            } catch (err) {
-                showNotification('Network error: Unable to submit payout request', 'error');
-            }
+            // Only redirect to wallet dashboard, do not process payout
+            showPage('wallet');
         });
     }
 }
