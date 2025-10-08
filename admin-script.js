@@ -100,8 +100,8 @@ class AdminDashboard {
             const res = await fetch(`${API_BASE_URL}/api/admin/withdrawals`, {
                 headers: token ? { 'Authorization': `Bearer ${token}` } : {}
             });
-            const requests = await res.json();
-            console.log('[Withdrawal Requests API Response]:', requests);
+                const requests = res.ok ? await res.json() : [];
+                console.log('[Withdrawal Requests API Response]:', requests || 'Failed to fetch requests');
             if (!res.ok) {
                 throw new Error('Failed to fetch withdrawal requests');
             }
@@ -162,7 +162,7 @@ class AdminDashboard {
                         <td><span class=\"status-badge ${req.status}\">${status}</span></td>
                         <td>
                             <div class=\"table-actions\">
-                                    <button class="action-btn-sm btn-edit" onclick="adminDashboard.showPayoutModal('${id}', '${payoutObjStr}')">Review</button>
+                                    <button class="action-btn-sm btn-edit" onclick="adminDashboard.showPayoutModal('${id}')">Review</button>
                             </div>
                         </td>
                     </tr>
@@ -176,10 +176,34 @@ class AdminDashboard {
 
     // Show payout details modal
     showPayoutModal(id, payoutObjStr) {
+        // Support either showPayoutModal(id) where we lookup the latest fetched withdrawals,
+        // or showPayoutModal(id, payloadStr) where payloadStr is an encoded JSON string.
         let payoutObj = {};
-        try {
-            payoutObj = payoutObjStr ? JSON.parse(decodeURIComponent(payoutObjStr)) : {};
-        } catch {}
+        if (!payoutObjStr) {
+            // try to find in latestWithdrawals
+            try {
+                const found = (this.latestWithdrawals || []).find(r => (r._id || r.id) === id);
+                if (found) {
+                    if (found.payoutDetails) {
+                        payoutObj = typeof found.payoutDetails === 'string' ? JSON.parse(found.payoutDetails) : found.payoutDetails;
+                    } else if (found.description) {
+                        payoutObj = typeof found.description === 'string' ? JSON.parse(found.description) : found.description;
+                    } else if (found.payoutSummary) {
+                        payoutObj = { summary: found.payoutSummary };
+                    }
+                }
+            } catch (e) {
+                // ignore parse errors
+                console.error('showPayoutModal lookup error', e);
+            }
+        } else {
+            try {
+                payoutObj = payoutObjStr ? JSON.parse(decodeURIComponent(payoutObjStr)) : {};
+            } catch (e) {
+                console.error('showPayoutModal parse error', e);
+                payoutObj = { raw: payoutObjStr };
+            }
+        }
         let html = `<h2>Payout Details for Request ID: ${id}</h2>`;
         if (Object.keys(payoutObj).length === 0) {
             html += '<p>No payout details available.</p>';
