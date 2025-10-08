@@ -41,6 +41,12 @@
     // Call on dashboard load
     updateDashboardStats();
 // DOM Elements
+function toggleSidebar() {
+    if (!sidebar || !overlay) return;
+    sidebar.classList.toggle('open');
+    overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : 'auto';
+}
 const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.getElementById('sidebar');
 const closeSidebar = document.getElementById('closeSidebar');
