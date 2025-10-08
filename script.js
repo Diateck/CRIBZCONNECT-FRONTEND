@@ -832,8 +832,20 @@ function setupPayoutMethodForm() {
             // Get payout amount
             const payoutAmountInput = document.getElementById('payout-amount-method');
             const payoutAmount = payoutAmountInput ? parseFloat(payoutAmountInput.value) : 0;
+            // Get current balance from dashboard
+            const balanceElem = document.querySelector('.dashboard-balance, .available-balance');
+            let currentBalance = 0;
+            if (balanceElem) {
+                // Extract number from text (e.g., "65000 XAF")
+                const match = balanceElem.textContent.match(/\d+/);
+                if (match) currentBalance = parseFloat(match[0]);
+            }
             if (!payoutAmount || payoutAmount < 50000) {
                 showNotification('Minimum payout amount is 50,000 FCFA', 'error');
+                return;
+            }
+            if (payoutAmount > currentBalance) {
+                showNotification('Insufficient balance for payout request', 'error');
                 return;
             }
             // Get payout method details from localStorage
@@ -859,6 +871,11 @@ function setupPayoutMethodForm() {
                 });
                 if (response.ok) {
                     showNotification('Payout request submitted successfully!', 'success');
+                    // Deduct amount from dashboard balance
+                    if (balanceElem) {
+                        const newBalance = currentBalance - payoutAmount;
+                        balanceElem.textContent = `${newBalance} XAF`;
+                    }
                 } else {
                     const error = await response.json();
                     showNotification(error.message || 'Failed to submit payout request', 'error');
