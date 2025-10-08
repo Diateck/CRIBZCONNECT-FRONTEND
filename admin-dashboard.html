@@ -83,7 +83,7 @@
                     <div class="submenu">
                         <div class="submenu-item" data-tab="transaction-history">Transaction History</div>
                         <div class="submenu-item" data-tab="revenue-reports">Revenue Reports</div>
-                        <div class="submenu-item" data-tab="refund-requests">Refund Requests</div>
+                        <div class="submenu-item" data-tab="withdrawal-requests">Withdrawal Requests</div>
                         <div class="submenu-item" data-tab="payment-gateways">Payment Gateways</div>
                     </div>
                 </div>
@@ -596,11 +596,11 @@
                 </div>
             </div>
 
-            <!-- Refund Requests -->
-            <div id="refund-requests" class="tab-content">
+            <!-- Withdrawal Requests -->
+            <div id="withdrawal-requests" class="tab-content">
                 <div class="content-header">
-                    <h1>Refund Requests</h1>
-                    <p>Pending refund cases for admin review</p>
+                    <h1>Withdrawal Requests</h1>
+                    <p>Pending withdrawal cases for admin review</p>
                 </div>
 
                 <div class="table-container">
@@ -608,31 +608,16 @@
                         <thead>
                             <tr>
                                 <th>Request ID</th>
-                                <th>Client</th>
-                                <th>Property</th>
-                                <th>Amount</th>
-                                <th>Reason</th>
-                                <th>Date</th>
+                                <th>Name of Agent/User</th>
+                                <th>Amount to Withdraw</th>
+                                <th>Payout Details</th>
+                                <th>Date Requested</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="refundRequestsBody">
-                            <tr>
-                                <td><strong>RF001</strong></td>
-                                <td>John Smith</td>
-                                <td>Executive Studio in Lekki</td>
-                                <td id="refundAmount"><strong>Loading...</strong></td>
-                                <td>Property condition issues</td>
-                                <td>Aug 17, 2024</td>
-                                <td><span class="status-badge pending">Pending</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="action-btn-sm btn-approve">Approve</button>
-                                        <button class="action-btn-sm btn-reject">Reject</button>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tbody id="withdrawalRequestsBody">
+                            <!-- Withdrawal request rows will be populated by JS -->
                         </tbody>
                     </table>
                 </div>
