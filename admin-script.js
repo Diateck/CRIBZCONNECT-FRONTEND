@@ -64,6 +64,42 @@ class AdminDashboard {
         const amount = Number(document.getElementById('creditAmount').value);
         if (!agentId || !amount || amount <= 0) {
             this.showMessage('error', 'Please select an agent and enter a valid amount.');
+                // Fetch and populate withdrawal requests
+                async populateWithdrawalRequestsTable() {
+                    const tbody = document.getElementById('withdrawalRequestsBody');
+                    if (!tbody) return;
+                    tbody.innerHTML = '<tr><td colspan="7">Loading...</td></tr>';
+                    const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
+                    try {
+                        const token = localStorage.getItem('authToken');
+                        const res = await fetch(`${API_BASE_URL}/api/admin/withdrawals`, {
+                            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                        });
+                        if (!res.ok) throw new Error('Failed to fetch withdrawal requests');
+                        const requests = await res.json();
+                        if (!requests.length) {
+                            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#888;">No withdrawal requests found.</td></tr>';
+                            return;
+                        }
+                        tbody.innerHTML = requests.map(req => `
+                            <tr>
+                                <td><strong>${req._id || req.id}</strong></td>
+                                <td>${req.user?.fullName || req.user?.username || req.user?.email || 'Unknown'}</td>
+                                <td><strong>XAF ${req.amount?.toLocaleString() || '0'}</strong></td>
+                                <td>${req.payoutDetails ? req.payoutDetails : 'N/A'}</td>
+                                <td>${this.formatDate(req.createdAt)}</td>
+                                <td><span class="status-badge ${req.status}">${req.status.charAt(0).toUpperCase() + req.status.slice(1)}</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="action-btn-sm btn-edit" onclick="adminDashboard.reviewWithdrawal('${req._id || req.id}')">Review</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('');
+                    } catch (err) {
+                        tbody.innerHTML = `<tr><td colspan='7'>Error loading withdrawal requests</td></tr>`;
+                    }
+                }
             return;
         }
         const API_BASE_URL = 'https://cribzconnect-backend.onrender.com';
@@ -86,6 +122,9 @@ class AdminDashboard {
             this.populateAgentsTable();
         } catch (err) {
             this.showMessage('error', 'Could not credit agent: ' + err.message);
+                        case 'withdrawal-requests':
+                            this.populateWithdrawalRequestsTable();
+                            break;
         }
     }
     // Removed fetchAllPropertiesAndUsers. Use dashboard data instead.
