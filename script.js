@@ -2084,8 +2084,8 @@ function setupLivePaymentForm() {
         if (requestPayoutBtn) {
             requestPayoutBtn.onclick = function (e) {
                 e.preventDefault();
-                // Redirect to wallet/payout page
-                window.location.hash = '#wallet';
+                // Redirect to payouts page
+                window.location.hash = '#payouts';
             };
         }
 
